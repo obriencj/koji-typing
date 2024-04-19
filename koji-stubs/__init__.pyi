@@ -26,7 +26,6 @@ help check that the calls are being used correctly.
 
 from configparser import ConfigParser, RawConfigParser
 from datetime import datetime
-from preoccupied.proxytype import proxytype
 from typing import (
     Any, Dict, Generic, Iterable, List, Optional, Tuple,
     TypedDict, TypeVar, Union, Set, overload, )
@@ -39,6 +38,15 @@ from koji_types import (
     RPMSignature, SearchResult, TagBuildInfo, TagInfo, TagGroupInfo,
     TagInheritance, TagPackageInfo, TargetInfo, TaskInfo,
     UserGroup, UserInfo, )
+
+
+try:
+    from preoccupied.proxytype import proxytype
+except ImportError:
+    def proxtype(_ot, _rt):
+        def deco(tp):
+            return tp
+        return deco
 
 
 try:
