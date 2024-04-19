@@ -14,14 +14,14 @@ to start including typing stubs. However, because koji still supports
 Python 2, they are limited to only providing stubs. This means that
 their `TypedDict` declarations are also constrained purely to the stub
 definitions. The problem with this approach is that one cannot import
-typing declarations from a stub for use in a non-stub. While MyPy can
-infer some of the fields from the usage of the return values this way,
-anything more complex than mutating the fields in the same function
-they are obtained becomes un-checkable. One could not declare helper
-functions and then annotate them to make it clear that they operate
-specifically on the `BuildInfo` structure, because `BuildInfo` could
-not be imported and used for the annotation during runtime loading of
-the hypothetical module.
+typing declarations from a stub for use in a non-stub. While [MyPy]
+can infer some of the fields from the usage of the return values this
+way, anything more complex than mutating the fields in the same
+function they are obtained becomes un-checkable. One could not declare
+helper functions and then annotate them to make it clear that they
+operate specifically on the `BuildInfo` structure, because `BuildInfo`
+could not be imported and used for the annotation during runtime
+loading of the hypothetical module.
 
 [issue]: https://pagure.io/koji/issue/3708
 
@@ -37,7 +37,7 @@ order to later perform anaylsis.
 
 ## Static analysis package `koji-stubs`
 
-Following [PEP 561] guidelines, `koij-stubs` provides partial stub
+Following [PEP-561] guidelines, `koij-stubs` provides partial stub
 annotations for use during static analysis with tools like
 [MyPy]. This package relies on the `koji_types` package definitions in
 order to supply accurate signatures for many of the dict-based
