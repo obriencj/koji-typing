@@ -13,7 +13,7 @@
 
 
 """
-Koji Smoky Dingo - Type Definitions
+Koji Types - typing declatations for koji data structures
 
 Python typing compatible definitions for the Koji dict types and
 enumerations
@@ -57,7 +57,6 @@ except ImportError:
 __all__ = (
     "ArchiveInfo",
     "ArchiveInfos",
-    "ArchiveSpec",
     "ArchiveTypeInfo",
     "AuthType",
     "BuildInfo",
@@ -65,41 +64,26 @@ __all__ = (
     "BuildrootInfo",
     "BuildrootState",
     "BuildrootType",
-    "BuildSpec",
     "BuildState",
     "BTypeInfo",
     "ChannelInfo",
-    "ChannelSpec",
     "ChecksumType",
     "CGInfo",
     "CLIHandler",
     "CLIProtocol",
-    "DecoratedBuildInfo",
-    "DecoratedHostInfo",
-    "DecoratedHostInfos",
-    "DecoratedTagExtra",
-    "DecoratedTagExtras",
-    "DecoratedPermInfo",
-    "DecoratedUserInfo",
     "GOptions",
     "HistoryEntry",
     "HostInfo",
-    "HubVersionSpec",
-    "KeySpec",
     "ListTasksOptions",
     "NamedCGInfo",
     "PackageInfo",
-    "PackageSpec",
-    "PathSpec",
     "PermInfo",
-    "PermSpec",
     "QueryOptions",
     "RepoInfo",
     "RepoState",
     "RPMInfo",
     "RPMInfos",
     "RPMSignature",
-    "RPMSpec",
     "SearchResult",
     "TagBuildInfo",
     "TagInfo",
@@ -110,16 +94,12 @@ __all__ = (
     "TagGroupPackage",
     "TagGroupReq",
     "TagPackageInfo",
-    "TagSpec",
     "TargetInfo",
     "TargetInfos",
-    "TargetSpec",
     "TaskInfo",
-    "TaskSpec",
     "TaskState",
     "UserGroup",
     "UserInfo",
-    "UserSpec",
     "UserStatus",
     "UserStatistics",
     "UserType",
@@ -129,9 +109,6 @@ __all__ = (
 class AuthType(IntEnum):
     """
     Authentication method types
-
-    Normally only used in the `kojismokydingo.types.UserInfo` dict
-    when obtained via the ``getLoggedInUser`` XMLRPC call.
 
     See `koji.AUTHTYPES`
     """
@@ -265,8 +242,7 @@ class UserType(IntEnum):
 class ArchiveInfo(TypedDict):
     """
     Data representing a koji archive. These are typically obtained via
-    the ``getArchive`` or ``listArchives`` XMLRPC calls, or from the
-    `kojismokydingo.as_archiveinfo` function
+    the ``getArchive`` or ``listArchives`` XMLRPC calls.
     """
 
     btype: str
@@ -339,19 +315,6 @@ ArchiveInfos = Iterable[ArchiveInfo]
 """ An Iterable of ArchiveInfo dicts """
 
 
-class DecoratedArchiveInfo(ArchiveInfo):
-    filepath: str
-
-
-DecoratedArchiveInfos = Iterable[DecoratedArchiveInfo]
-
-
-ArchiveSpec = Union[int, str, ArchiveInfo]
-"""
-An archive ID, filename, or info dict
-"""
-
-
 class ArchiveTypeInfo(TypedDict):
 
     description: str
@@ -414,8 +377,7 @@ class BuildrootInfo(TypedDict):
 class BuildInfo(TypedDict):
     """
     Data representing a koji build. These are typically obtained via
-    the ``getBuild`` XMLRPC call, or from the
-    `kojismokydingo.as_buildinfo` function.
+    the ``getBuild`` XMLRPC call.
     """
 
     build_id: int
@@ -526,7 +488,7 @@ class BuildInfo(TypedDict):
 
 class TagBuildInfo(BuildInfo):
     """
-    Decorated form of BuildInfo as returned by listTagged
+    Form of BuildInfo as returned by ``listTagged``
 
     :since: 2.1
     """
@@ -538,31 +500,9 @@ class TagBuildInfo(BuildInfo):
     """ the name of the tag this build was found in """
 
 
-class DecoratedBuildInfo(BuildInfo):
-
-    archive_btype_names: List[str]
-    archive_btype_ids: List[int]
-
-    archive_cg_names: List[str]
-    archive_cg_ids: List[int]
-
-
 BuildInfos = Iterable[BuildInfo]
 """
 An Iterable of BuildInfo dicts
-"""
-
-
-DecoratedBuildInfos = Iterable[DecoratedBuildInfo]
-"""
-An Iterable of DecoratedBuildInfo dicts
-"""
-
-
-BuildSpec = Union[int, str, BuildInfo]
-"""
-An indicator for a build in cases where the build may be
-communicated as its ID, its NVR, or as an already-loaded BuildInfo
 """
 
 
@@ -574,17 +514,11 @@ class BTypeInfo(TypedDict):
     """ the name of the btype """
 
 
-PathSpec = Union[str, PathInfo]
-"""
-
-"""
-
 
 class RPMInfo(TypedDict):
     """
     Data representing a koji RPM. These are typically obtained via the
-    ``listRPMs`` XMLRPC call, or from the `kojismokydingo.as_rpminfo`
-    function
+    ``listRPMs`` XMLRPC call.
     """
 
     arch: str
@@ -642,17 +576,10 @@ class RPMInfo(TypedDict):
 RPMInfos = Iterable[RPMInfo]
 
 
-RPMSpec = Union[int, str, RPMInfo]
-"""
-Ways to indicate an RPM to `as_rpminfo`
-"""
-
-
 class RPMSignature(TypedDict):
     """
     Data representing an RPM signature in koji. Obtained via the
-    ``queryRPMSigs`` XMLRPC API or from the
-    `kojismokydingo.bulk_load_rpm_sigs` function.
+    ``queryRPMSigs`` XMLRPC API.
     """
 
     rpm_id: int
@@ -660,27 +587,6 @@ class RPMSignature(TypedDict):
     sigkey: str
 
     sighash: str
-
-
-class DecoratedRPMInfo(RPMInfo):
-    """
-    Returned by `kojismokydingo.archives.gather_signed_rpms` Simply an
-    `RPMInfo` dict with a single additional field representing which
-    preferred signature (if any) was available.
-    """
-
-    btype: str
-    btype_id: int
-
-    filepath: str
-
-    sigkey: str
-
-    type_id: int
-    type_name: str
-
-
-DecoratedRPMInfos = Iterable[DecoratedRPMInfo]
 
 
 class HostInfo(TypedDict):
@@ -725,20 +631,6 @@ class HostInfo(TypedDict):
     type HOST, which is how they authenticate with the hub """
 
 
-HostSpec = Union[int, str, HostInfo]
-"""
-Acceptable ways to specify a host
-"""
-
-
-class DecoratedHostInfo(HostInfo):
-    last_update: datetime
-    """ The last time that a host checked in with an update """
-
-
-DecoratedHostInfos = Iterable[DecoratedHostInfo]
-
-
 class UserGroup(TypedDict):
     """
     The results of the ``getUserGroups`` XMLRPC call
@@ -756,8 +648,7 @@ class UserGroup(TypedDict):
 class UserInfo(TypedDict):
     """
     Data representing a koji user account. These are typically
-    obtained via the ``getUser`` or ``getLoggedInUser`` XMLRPC calls,
-    or the ``kojismokydingo.as_userinfo`` function.
+    obtained via the ``getUser`` or ``getLoggedInUser`` XMLRPC call
     """
 
     authtype: AuthType
@@ -788,13 +679,6 @@ class UserInfo(TypedDict):
     """ type of the account """
 
 
-UserSpec = Union[int, str, UserInfo]
-"""
-Acceptable ways to specify a user, either by a UserInfo dict, a
-username str, or a user's int ID
-"""
-
-
 class CGInfo(TypedDict):
     """
     Data representing a koji Content Generator. A dict of these are
@@ -810,16 +694,6 @@ class CGInfo(TypedDict):
     this content generator """
 
 
-class NamedCGInfo(CGInfo):
-    """
-    A CGInfo with its name merged into it. Obtained via
-    `kojismokydingo.users.collect_cgs`
-    """
-
-    name: str
-    """ friendly name for this content generator """
-
-
 class PermUser(TypedDict):
     user_name: str
     permission_name: str
@@ -830,22 +704,6 @@ class PermUser(TypedDict):
 class PermInfo(TypedDict):
     id: int
     name: str
-
-
-class DecoratedPermInfo(PermInfo):
-    """
-    A `PermInfo` decorated with the list of users that have been
-    granted the permission. Obtained via
-    `kojismokydingo.users.collect_perminfo`
-    """
-
-    users: List[PermUser]
-
-
-PermSpec = Union[int, str]
-"""
-a permission's ID or name
-"""
 
 
 class UserStatistics(TypedDict):
@@ -866,34 +724,11 @@ class UserStatistics(TypedDict):
     """ the most recent task by this user """
 
 
-class DecoratedUserInfo(UserInfo):
-    """
-    A `UserInfo` decorated with additional fields that merge more data
-    together from other calls. Obtained via
-    `kojismokydingo.users.collect_userinfo`
-    """
-
-    permissions: List[str]
-    """ names of granted permissions """
-
-    content_generators: List[NamedCGInfo]
-    """ names of granted content generators """
-
-    ksd_members: List[UserInfo]
-    """ membership if user is a group """
-
-    ksd_groups: List[UserGroup]
-    """ groups that user is a member of """
-
-    statistics: Optional[UserStatistics]
-    """ user's interaction statistics """
-
-
 class RepoInfo(TypedDict):
     """
     Data representing a koji build tag's repository. These are
     typically obtained via the ``getRepo`` or ``repoInfo`` XMLRPC
-    calls, or from the `kojismokydingo.as_repoinfo` function.
+    calls
     """
 
     create_event: int
@@ -932,17 +767,10 @@ class RepoInfo(TypedDict):
     """ ID of the task which generated this repository """
 
 
-RepoSpec = Union[int, RepoInfo, str, 'TagInfo']
-"""
-`kojismokydingo.as_repoinfo`
-"""
-
-
 class TargetInfo(TypedDict):
     """
-    Data representing a koji build target. Typically obtained via the
-    ``getBuildTarget`` or ``getBuildTargets`` XMLRPC calls, or the
-    `kojismokydingo.as_targetinfo` function.
+    Data representing a koji build target. Typically obtained via
+    the ``getBuildTarget`` or ``getBuildTargets`` XMLRPC calls
     """
 
     build_tag: int
@@ -967,18 +795,10 @@ class TargetInfo(TypedDict):
 TargetInfos = Iterable[TargetInfo]
 
 
-TargetSpec = Union[int, str, TargetInfo]
-"""
-An indicator for a target in cases where it may be communicated by
-its ID, its name, or an already-loaded TargetInfo
-"""
-
-
 class TagInfo(TypedDict):
     """
     Data representing a koji tag. Typically obtained via the
-    ``getTag`` XMLRPC call, or the `kojismokydingo.as_taginfo` and
-    `kojismokydingo.bulk_load_tags` functions.
+    ``getTag`` XMLRPC call
     """
 
     arches: str
@@ -1017,40 +837,25 @@ class TagInfo(TypedDict):
 TagInfos = Iterable[TagInfo]
 
 
-TagSpec = Union[int, str, TagInfo]
-"""
-An indicator for a tag in cases where it may be communicated by
-its ID, its name, or as an already-loaded TagInfo
-"""
-
-
 class TagInheritanceEntry(TypedDict):
     """
     Data representing a single inheritance element. A list of these
     represents the inheritance data for a tag. Typically obtained via
-    the ``getFullInheritance`` XMLRPC call.
+    the ``getInheritanceData`` XMLRPC call.
     """
 
     child_id: int
     """ the ID of the child tag in the inheritance link. The child tag
     inherits from the parent tag """
 
-    currdepth: int
-    """ only present from the ``getFullInheritance`` call. The inheritance
-    depth this link occurs at. A depth of 1 indicates that the child
-    tag would be the one originally queried for its inheritance tree
-    """
-
-    filter: list
-    """ only present from the ``getFullInheritance`` call. """
-
     intransitive: bool
     """ if true then this inheritance link would not be inherited. ie.
-    this link only appears at a depth of 1, and is otherwise omitted. """
+    this link only appears at a depth of 1, and is otherwise
+    omitted. """
 
     maxdepth: int
-    """ additional parents in the inheritance tree from this link are only
-    considered up to this depth, relative from the link's current
+    """ additional parents in the inheritance tree from this link are
+    only considered up to this depth, relative from the link's current
     depth.  A maxdepth of 1 indicates that only the immediate parents
     will be inherited. A maxdepth of 0 indicates that the tag and none
     of its parents will be inherited. A value of None indicates no
@@ -1058,9 +863,6 @@ class TagInheritanceEntry(TypedDict):
 
     name: str
     """ the parent tag's name """
-
-    nextdepth: int
-    """ only present from the ``getFullInheritance`` call. """
 
     noconfig: bool
     """ if True then this inheritance link does not include tag
@@ -1070,8 +872,8 @@ class TagInheritanceEntry(TypedDict):
     """ the parent tag's internal ID """
 
     pkg_filter: str
-    """ a regex indicating which package entries may be inherited. If empty,
-    all packages are inherited """
+    """ a regex indicating which package entries may be inherited. If
+    empty, all packages are inherited """
 
     priority: int
     """ the inheritance link priority, which provides an ordering for
@@ -1081,22 +883,28 @@ class TagInheritanceEntry(TypedDict):
 
 
 TagInheritance = List[TagInheritanceEntry]
-"""
-As returned by the ``getInheritanceData`` and
-``getFullInheritance`` XMLRPC calls. A list of inheritance elements
-for a tag.
-"""
+""" As returned by the ``getInheritanceData`` XMLRPC call. A list of
+inheritance elements for a tag.  """
 
 
-class DecoratedTagExtra(TypedDict):
-    blocked: bool
-    name: str
-    tag_name: str
-    tag_id: int
-    value: str
+class TagFullInheritanceEntry(TagInheritanceEntry):
+
+    currdepth: int
+    """ only present from the ``getFullInheritance`` call. The
+    inheritance depth this link occurs at. A depth of 1 indicates that
+    the child tag would be the one originally queried for its
+    inheritance tree """
+
+    filter: list
+    """ only present from the ``getFullInheritance`` call. """
+
+    nextdepth: int
+    """ only present from the ``getFullInheritance`` call. """
 
 
-DecoratedTagExtras = Dict[str, DecoratedTagExtra]
+TagFullInheritance = List[TagFullInheritanceEntry]
+""" As returned by the ``getFullInheritance`` XMLRPC call. A list of
+inheritance elements for a tag.  """
 
 
 class PackageInfo(TypedDict):
@@ -1113,12 +921,6 @@ class PackageInfo(TypedDict):
     """
     the package name
     """
-
-
-PackageSpec = Union[int, str, PackageInfo]
-"""
-`kojismokydingo.as_packageinfo`
-"""
 
 
 class TagPackageInfo(TypedDict):
@@ -1193,7 +995,7 @@ class TagGroupInfo(TypedDict):
 
 class TaskInfo(TypedDict):
     """
-    ``getTaskInfo`` XMLRPC call or `kojismokydingo.as_taskinfo` function
+    ``getTaskInfo`` XMLRPC call
     """
 
     arch: str
@@ -1270,21 +1072,12 @@ class TaskInfo(TypedDict):
     function does set that parameter to True. """
 
 
-TaskSpec = Union[int, TaskInfo]
-"""
-task ID or TaskInfo dict
-"""
-
-
 class ChannelInfo(TypedDict):
     id: int
     """ internal channel ID """
 
     name: str
     """ channel name """
-
-
-ChannelSpec = Union[int, str, ChannelInfo]
 
 
 class SearchResult(TypedDict):
@@ -1297,36 +1090,12 @@ class SearchResult(TypedDict):
     """ result name """
 
 
-HubVersionSpec = Union[str, Tuple[int, ...]]
-"""
-a koji version requirement, specified as either a string or tuple of ints
-
-  * ``"1.25"``
-  * ``(1, 25)``
-"""
-
-
-KeySpec = Union[Callable[[Any], Any], Any]
-"""
-a key specifier, used as either an index/item lookup on objects, or a
-unary callable which returns the desired field.
-
-Typically non callable keyspec values are converted into an itemgetter
-using that value.
-"""
-
-
 class GOptions(Values):
     """
     Represents the koji client configuration options as provided by the
     baseline koji CLI.
 
-    `Values` instances with these fields are fed to
-    `kojismokydingo.cli.SmokyDingo` instances via their ``__call__``
-    handlers.
-
-    Note that koji uses the `optparse` package, while koji smoky dingo
-    uses the `argparse` package.
+    `Values` instances with these fields are fed to a `CLIHandler`
 
     Returned by the ``get_options`` function from within the koji CLI
     utility, which cannot be imported normally. Default values for

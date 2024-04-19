@@ -13,12 +13,11 @@
 
 
 """
-Koji - type stubs
+Koji - typing stubs
 
-Typing annotations stub for the parts of koji used by koji smoky
-dingo. In particular there are annotations for the virtual XMLRPC
-methods on the ClientSession class which should help check that the
-calls are being used correctly.
+Typing annotations stub for koji. In particular there are annotations
+for the virtual XMLRPC methods on the ClientSession class which should
+help check that the calls are being used correctly.
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
@@ -1073,11 +1072,6 @@ class MultiCallSession:
     All of the same methods from a `ClientSession`, but wrapped to
     return `VirtualCall` instances instead.
     """
-
-    # KSD doesn't use this type directly and I didn't want the proxytype
-    # plugin to become a runtime dependency of KSD itself, so I left its
-    # definition here rather than in `kojismokydingo.types` where it will
-    # only be utilized when running mypy.
     ...
 
 
