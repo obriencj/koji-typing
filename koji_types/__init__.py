@@ -706,24 +706,6 @@ class PermInfo(TypedDict):
     name: str
 
 
-class UserStatistics(TypedDict):
-
-    build_count: int
-    """ count of builds owned by this user """
-
-    package_count: int
-    """ count of packages owned by this user """
-
-    task_count: int
-    """ count of tasks submitted by this user """
-
-    last_build: Optional["BuildInfo"]
-    """ the most recent build by this user """
-
-    last_task: Optional["TaskInfo"]
-    """ the most recent task by this user """
-
-
 class RepoInfo(TypedDict):
     """
     Data representing a koji build tag's repository. These are
