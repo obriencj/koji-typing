@@ -694,13 +694,6 @@ class CGInfo(TypedDict):
     this content generator """
 
 
-class PermUser(TypedDict):
-    user_name: str
-    permission_name: str
-    create_ts: float
-    create_date: datetime
-
-
 class PermInfo(TypedDict):
     id: int
     name: str
