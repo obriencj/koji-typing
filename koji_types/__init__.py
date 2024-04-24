@@ -75,7 +75,6 @@ __all__ = (
     "HistoryEntry",
     "HostInfo",
     "ListTasksOptions",
-    "NamedCGInfo",
     "PackageInfo",
     "PermInfo",
     "QueryOptions",
@@ -101,7 +100,6 @@ __all__ = (
     "UserGroup",
     "UserInfo",
     "UserStatus",
-    "UserStatistics",
     "UserType",
 )
 
