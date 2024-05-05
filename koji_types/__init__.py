@@ -42,13 +42,6 @@ except ImportError:
     from typing_extensions import TypedDict
 
 try:
-    from typing import Protocol
-except ImportError:
-    # Python < 3.8 doesn't have typing.Protocol
-    class Protocol:  # type: ignore
-        ...
-
-try:
     from contextlib import AbstractContextManager as ContextManager
 except ImportError:
     from typing import ContextManager
@@ -1094,26 +1087,6 @@ class GOptions(Values):
     topurl: str
     user: str
     weburl: str
-
-
-CLIHandler = Callable[[GOptions, ClientSession, List[str]],
-                      int]
-"""
-The callable signature used by Koji's CLI command handlers.
-"""
-
-
-class CLIProtocol(Protocol):
-    """
-    A Protocol variation on the `CLIHandler` callable definition.
-    """
-
-    def __call__(
-            self,
-            goptions: GOptions,
-            session: ClientSession,
-            args: List[str]) -> int:
-        ...
 
 
 HistoryEntry = Tuple[int, str, bool, Dict[str, Any]]
