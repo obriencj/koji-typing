@@ -1160,5 +1160,10 @@ class ListTasksOptions(TypedDict, total=False):
     completeAfter: Union[float, str]
 
 
+class FaultInfo(TypedDict):
+    faultCode: int
+    faultString: str
+
+
 #
 # The end.

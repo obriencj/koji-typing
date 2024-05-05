@@ -28,16 +28,16 @@ from configparser import ConfigParser, RawConfigParser
 from datetime import datetime
 from typing import (
     Any, Dict, Generic, Iterable, List, Optional, Tuple,
-    TypedDict, TypeVar, Union, Set, overload, )
+    TypeVar, Union, Set, overload, )
 from xmlrpc.client import DateTime
 
 from koji_types import (
     ArchiveInfo, ArchiveTypeInfo, BuildInfo, BuildrootInfo, BuildState,
-    BTypeInfo, ChannelInfo, CGInfo, HostInfo, ListTasksOptions,
+    BTypeInfo, ChannelInfo, CGInfo, FaultInfo, HostInfo, ListTasksOptions,
     PackageInfo, PermInfo, QueryOptions, RepoInfo, RepoState, RPMInfo,
     RPMSignature, SearchResult, TagBuildInfo, TagInfo, TagGroupInfo,
     TagInheritance, TagPackageInfo, TargetInfo, TaskInfo,
-    UserGroup, UserInfo, )
+    UserGroup, UserInfo, UserType, )
 
 
 try:
@@ -577,7 +577,7 @@ class ClientSession:
     @overload
     def listUsers(
             self,
-            userType: int = 0,
+            userType: UserType = UserType.NORMAL,
             prefix: Optional[str] = None,
             queryOpts: Optional[QueryOptions] = None) -> List[UserInfo]:
         ...
@@ -585,7 +585,7 @@ class ClientSession:
     @overload
     def listUsers(
             self,
-            userType: int = 0,
+            userType: UserType = UserType.NORMAL,
             prefix: Optional[str] = None,
             queryOpts: Optional[QueryOptions] = None,
             perm: Optional[str] = None,
@@ -668,10 +668,22 @@ class ClientSession:
             update: bool = False):
         ...
 
+    @overload
     def queryHistory(
             self,
             tables: Optional[List[str]] = None,
             **kwargs: Any) -> Dict[str, List[Dict[str, Any]]]:
+        ...
+
+    def queryHistory(
+            self,
+            tables: Optional[List[str]] = None,
+            *,
+            queryOpts: Optional[QueryOptions] = None,
+            **kwargs: Any) -> Dict[str, List[Dict[str, Any]]]:
+        """
+        :since: koji 1.34
+        """
         ...
 
     def queryRPMSigs(
@@ -769,11 +781,6 @@ class Fault:
             faultString: str,
             **extra: Dict[str, Any]):
         ...
-
-
-class FaultInfo(TypedDict):
-    faultCode: int
-    faultString: str
 
 
 class PathInfo:
