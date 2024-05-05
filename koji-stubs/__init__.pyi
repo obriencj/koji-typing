@@ -653,7 +653,8 @@ class ClientSession:
     def multiCall(
             self,
             strict: bool = False,
-            batch: Optional[int] = None) -> List[Union[FaultInfo, List[Any]]]:
+            batch: Optional[int] = None) -> List[Union["FaultInfo",
+                                                       List[Any]]]:
         ...
 
     def packageListAdd(
@@ -766,7 +767,7 @@ class Fault:
             self,
             faultCode: int,
             faultString: str,
-            **extra: Dict[str,Any]):
+            **extra: Dict[str, Any]):
         ...
 
 
