@@ -49,11 +49,9 @@ except ImportError:
 
 __all__ = (
     "ArchiveInfo",
-    "ArchiveInfos",
     "ArchiveTypeInfo",
     "AuthType",
     "BuildInfo",
-    "BuildInfos",
     "BuildrootInfo",
     "BuildrootState",
     "BuildrootType",
@@ -74,12 +72,10 @@ __all__ = (
     "RepoInfo",
     "RepoState",
     "RPMInfo",
-    "RPMInfos",
     "RPMSignature",
     "SearchResult",
     "TagBuildInfo",
     "TagInfo",
-    "TagInfos",
     "TagInheritance",
     "TagInheritanceEntry",
     "TagGroupInfo",
@@ -87,7 +83,6 @@ __all__ = (
     "TagGroupReq",
     "TagPackageInfo",
     "TargetInfo",
-    "TargetInfos",
     "TaskInfo",
     "TaskState",
     "UserGroup",
@@ -302,10 +297,6 @@ class ArchiveInfo(TypedDict):
     """ Only present on Image archives """
 
 
-ArchiveInfos = Iterable[ArchiveInfo]
-""" An Iterable of ArchiveInfo dicts """
-
-
 class ArchiveTypeInfo(TypedDict):
 
     description: str
@@ -491,12 +482,6 @@ class TagBuildInfo(BuildInfo):
     """ the name of the tag this build was found in """
 
 
-BuildInfos = Iterable[BuildInfo]
-"""
-An Iterable of BuildInfo dicts
-"""
-
-
 class BTypeInfo(TypedDict):
     id: int
     """ the internal ID of the btype """
@@ -562,9 +547,6 @@ class RPMInfo(TypedDict):
 
     version: str
     """ The RPM's version field """
-
-
-RPMInfos = Iterable[RPMInfo]
 
 
 class RPMSignature(TypedDict):
@@ -758,9 +740,6 @@ class TargetInfo(TypedDict):
     """ name of this build target """
 
 
-TargetInfos = Iterable[TargetInfo]
-
-
 class TagInfo(TypedDict):
     """
     Data representing a koji tag. Typically obtained via the
@@ -798,9 +777,6 @@ class TagInfo(TypedDict):
     perm_id: int
     """ ID of the required permission to associate builds with this tag,
     or None """
-
-
-TagInfos = Iterable[TagInfo]
 
 
 class TagInheritanceEntry(TypedDict):
