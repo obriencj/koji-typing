@@ -27,7 +27,7 @@ help check that the calls are being used correctly.
 from configparser import ConfigParser, RawConfigParser
 from datetime import datetime
 from typing import (
-    Any, Dict, Generic, Iterable, List, Optional, Tuple,
+    Any, Dict, Generic, Iterable, List, Literal, Optional, Tuple,
     TypeVar, Union, Set, overload, )
 from xmlrpc.client import DateTime
 
@@ -312,10 +312,31 @@ class ClientSession:
         """
         ...
 
+    @overload
     def getLastHostUpdate(
             self,
             hostID: int,
             ts: bool = False) -> Union[str, float, None]:
+        ...
+
+    @overload
+    def getLastHostUpdate(
+            self,
+            hostID: int) -> Union[str, None]:
+        ...
+
+    @overload
+    def getLastHostUpdate(
+            self,
+            hostID: int,
+            ts: Literal[False]) -> Union[str, None]:
+        ...
+
+    @overload
+    def getLastHostUpdate(
+            self,
+            hostID: int,
+            ts: Literal[True]) -> Union[float, None]:
         ...
 
     def getLatestBuilds(
@@ -365,11 +386,35 @@ class ClientSession:
             dist: bool = False) -> RepoInfo:
         ...
 
+    @overload
     def getRPM(
             self,
             rpminfo: Union[int, str],
             strict: bool = False,
             multi: bool = False) -> Union[RPMInfo, List[RPMInfo]]:
+        ...
+
+    @overload
+    def getRPM(
+            self,
+            rpminfo: Union[int, str],
+            strict: bool = False) -> RPMInfo:
+        ...
+
+    @overload
+    def getRPM(
+            self,
+            rpminfo: Union[int, str],
+            strict: bool = False,
+            multi: Literal[False] = ...) -> RPMInfo:
+        ...
+
+    @overload
+    def getRPM(
+            self,
+            rpminfo: Union[int, str],
+            strict: bool = False,
+            multi: Literal[True] = ...) -> List[RPMInfo]:
         ...
 
     @overload
@@ -675,6 +720,7 @@ class ClientSession:
             **kwargs: Any) -> Dict[str, List[Dict[str, Any]]]:
         ...
 
+    @overload
     def queryHistory(
             self,
             tables: Optional[List[str]] = None,
@@ -869,7 +915,7 @@ class PathInfo:
 
     def work(
             self,
-            volume=Optional[str]) -> str:
+            volume: Optional[str]) -> str:
         ...
 
 
@@ -1052,11 +1098,38 @@ def parse_NVRA(nvra: str) -> Dict[str, Union[str, int]]:
     ...
 
 
+@overload
 def parse_arches(
-        arches: str,
+        arches: Union[str, List[str]],
         to_list: bool = False,
         strict: bool = False,
         allow_none: bool = False) -> Union[str, List[str]]:
+    ...
+
+
+@overload
+def parse_arches(
+        arches: Union[str, List[str]],
+        strict: bool = False,
+        allow_none: bool = False) -> str:
+    ...
+
+
+@overload
+def parse_arches(
+        arches: Union[str, List[str]],
+        to_list: Literal[False],
+        strict: bool = False,
+        allow_none: bool = False) -> str:
+    ...
+
+
+@overload
+def parse_arches(
+        arches: Union[str, List[str]],
+        to_list: Literal[True],
+        strict: bool = False,
+        allow_none: bool = False) -> List[str]:
     ...
 
 
@@ -1066,14 +1139,34 @@ def read_config(
     ...
 
 
+@overload
 def read_config_files(
         config_files: List[Union[str, Tuple[str, bool]]],
         raw: bool = False) -> Union[RawConfigParser, ConfigParser]:
     ...
 
 
-# === MultiCallSession ===
+@overload
+def read_config_files(
+        config_files: List[Union[str, Tuple[str, bool]]]) -> ConfigParser:
+    ...
 
+
+@overload
+def read_config_files(
+        config_files: List[Union[str, Tuple[str, bool]]],
+        raw: Literal[False]) -> ConfigParser:
+    ...
+
+
+@overload
+def read_config_files(
+        config_files: List[Union[str, Tuple[str, bool]]],
+        raw: Literal[True]) -> RawConfigParser:
+    ...
+
+
+# === MultiCallSession ===
 
 VirtualResultType = TypeVar("VirtualResultType")
 
