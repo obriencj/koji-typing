@@ -21,14 +21,14 @@ help check that the calls are being used correctly.
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
-"""
+"""  # noqa: Y021
 
 
 from configparser import ConfigParser, RawConfigParser
 from datetime import datetime
 from typing import (
-    Any, Dict, Generic, Iterable, List, Literal, Optional, Tuple,
-    TypeVar, Union, Set, overload, )
+    Any, Callable, Dict, Generic, Iterable, List, Literal, Optional,
+    Protocol, Tuple, Type, TypeVar, Union, Set, overload, )
 from xmlrpc.client import DateTime
 
 from koji_types import (
@@ -39,21 +39,15 @@ from koji_types import (
     TagInheritance, TagPackageInfo, TargetInfo, TaskInfo,
     UserGroup, UserInfo, UserType, )
 
+from preoccupied.proxytype import proxytype
 
 try:
-    from preoccupied.proxytype import proxytype
+    from typing import Self  # type: ignore
 except ImportError:
-    def proxtype(_ot, _rt):
-        def deco(tp):
-            return tp
-        return deco
+    from typing_extensions import Self
 
 
-try:
-    from contextlib import AbstractContextManager as ContextManager
-except ImportError:
-    from typing import ContextManager
-
+API_VERSION: int
 
 # Koji 1.34.0 intentionally broke API compatibility and removed these.
 # https://pagure.io/koji/pull-request/3818
@@ -65,13 +59,20 @@ except ImportError:
 
 BASEDIR: str
 
-PRIO_DEFAULT: int
+CONTROL_CHARS: List[str]
+NONPRINTABLE_CHARS: str
+NONPRINTABLE_CHARS_TABLE: Dict[int, str]
 
-# REPO_DELETED: int
-# REPO_EXPIRED: int
-# REPO_INIT: int
-# REPO_PROBLEM: int
-# REPO_READY: int
+DRAFT_RELEASE_DELIMITER: str
+
+PRIO_DEFAULT: int
+PROFILE_MODULES: Dict[str, Any]
+
+REPO_DELETED: int
+REPO_EXPIRED: int
+REPO_INIT: int
+REPO_PROBLEM: int
+REPO_READY: int
 
 REPO_MERGE_MODES: Set[str]
 
@@ -83,18 +84,18 @@ RPM_SIGTAG_RSA: int
 RPM_TAG_FILEDIGESTALGO: int
 RPM_TAG_HEADERSIGNATURES: int
 
-AUTHTYPES: "Enum"
-BR_STATES: "Enum"
-BR_TYPES: "Enum"
-BUILD_STATES: "Enum"
-CHECKSUM_TYPES: "Enum"
-REPO_STATES: "Enum"
-TAG_UPDATE_TYPES: "Enum"
-TASK_STATES: "Enum"
-USERTYPES: "Enum"
-USER_STATUS: "Enum"
+AUTHTYPES: Enum
+BR_STATES: Enum
+BR_TYPES: Enum
+BUILD_STATES: Enum
+CHECKSUM_TYPES: Enum
+REPO_STATES: Enum
+TAG_UPDATE_TYPES: Enum
+TASK_STATES: Enum
+USERTYPES: Enum
+USER_STATUS: Enum
 
-pathinfo: "PathInfo"
+pathinfo: PathInfo
 
 
 # === Exceptions ===
@@ -132,6 +133,10 @@ class BuildrootError(BuildError):
     ...
 
 
+class CallbackError(GenericError):
+    ...
+
+
 class ConfigurationError(GenericError):
     ...
 
@@ -160,20 +165,13 @@ class TagError(GenericError):
     ...
 
 
-# === Classes ===
+# === Protocols ===
 
-class ClientSession:
-
-    baseurl: str
-    multicall: "MultiCallHack"
-    opts: Dict[str, Any]
-
-    def __init__(
-            self,
-            baseurl: str,
-            opts: Optional[Dict[str, Any]] = None,
-            sinfo: Optional[Dict[str, Any]] = None):
-        ...
+class _ClientSessionProtocol:
+    # This is non-runtime class which presents the interfaces for the
+    # baseline koji hub API calls. Its methods will be copied into the
+    # ClientSession and MultiCallSession definitions via the proxytype
+    # plugin
 
     def count(
             self,
@@ -288,9 +286,7 @@ class ClientSession:
     def getUserGroups(
             self,
             user: Union[int, str]) -> List[UserGroup]:
-        """
-        :since: koji 1.35
-        """
+        # :since: koji 1.35
         ...
 
     def getHost(
@@ -307,16 +303,7 @@ class ClientSession:
         ...
 
     def getKojiVersion(self) -> str:
-        """
-        :since: koji 1.23
-        """
-        ...
-
-    @overload
-    def getLastHostUpdate(
-            self,
-            hostID: int,
-            ts: bool = False) -> Union[str, float, None]:
+        # :since: koji 1.23
         ...
 
     @overload
@@ -337,6 +324,13 @@ class ClientSession:
             self,
             hostID: int,
             ts: Literal[True]) -> Union[float, None]:
+        ...
+
+    @overload
+    def getLastHostUpdate(
+            self,
+            hostID: int,
+            ts: bool = False) -> Union[str, float, None]:
         ...
 
     def getLatestBuilds(
@@ -390,14 +384,6 @@ class ClientSession:
     def getRPM(
             self,
             rpminfo: Union[int, str],
-            strict: bool = False,
-            multi: bool = False) -> Union[RPMInfo, List[RPMInfo]]:
-        ...
-
-    @overload
-    def getRPM(
-            self,
-            rpminfo: Union[int, str],
             strict: bool = False) -> RPMInfo:
         ...
 
@@ -406,7 +392,8 @@ class ClientSession:
             self,
             rpminfo: Union[int, str],
             strict: bool = False,
-            multi: Literal[False] = ...) -> RPMInfo:
+            *,
+            multi: Literal[False]) -> RPMInfo:
         ...
 
     @overload
@@ -414,7 +401,16 @@ class ClientSession:
             self,
             rpminfo: Union[int, str],
             strict: bool = False,
-            multi: Literal[True] = ...) -> List[RPMInfo]:
+            *,
+            multi: Literal[True]) -> List[RPMInfo]:
+        ...
+
+    @overload
+    def getRPM(
+            self,
+            rpminfo: Union[int, str],
+            strict: bool = False,
+            multi: bool = False) -> Union[RPMInfo, List[RPMInfo]]:
         ...
 
     @overload
@@ -434,9 +430,7 @@ class ClientSession:
             filepath: Optional[str] = None,
             headers: Optional[List[str]] = None,
             strict: Optional[bool] = False) -> Dict[str, Any]:
-        """
-        :since: koji 1.29.0
-        """
+        # :since: koji 1.29.0
         ...
 
     def getTag(
@@ -495,9 +489,7 @@ class ClientSession:
             strict: bool = False,
             krb_princs: bool = True,
             groups: bool = False) -> UserInfo:
-        """
-        :since: koji 1.34
-        """
+        # :since: koji 1.34
         ...
 
     @overload
@@ -511,17 +503,13 @@ class ClientSession:
             self,
             userID: Optional[Union[int, str]] = None,
             with_groups: bool = True) -> List[str]:
-        """
-        :since: koji 1.34
-        """
+        # :since: koji 1.34
         ...
 
     def getUserPermsInheritance(
             self,
             userID: Union[int, str]) -> Dict[str, List[str]]:
-        """
-        :since: koji 1.34
-        """
+        # :since: koji 1.34
         ...
 
     def gssapi_login(
@@ -635,9 +623,7 @@ class ClientSession:
             queryOpts: Optional[QueryOptions] = None,
             perm: Optional[str] = None,
             inherited_perm: bool = False) -> List[UserInfo]:
-        """
-        :since: koji 1.35
-        """
+        # :since: koji 1.35
         ...
 
     def listTagged(
@@ -678,28 +664,11 @@ class ClientSession:
             queryOpts: Optional[QueryOptions] = None) -> List[TaskInfo]:
         ...
 
-    def login(
-            self,
-            opts: Optional[Dict[str, Any]] = None) -> bool:
-        ...
-
-    def logout(self) -> None:
-        ...
-
     def massTag(
             self,
             tag: Union[int, str],
             builds: List[Union[int, str]]) -> None:
-        """
-        :since: koji 1.30
-        """
-        ...
-
-    def multiCall(
-            self,
-            strict: bool = False,
-            batch: Optional[int] = None) -> List[Union["FaultInfo",
-                                                       List[Any]]]:
+        # :since: koji 1.30
         ...
 
     def packageListAdd(
@@ -717,19 +686,17 @@ class ClientSession:
     def queryHistory(
             self,
             tables: Optional[List[str]] = None,
+            *,
+            queryOpts: Optional[QueryOptions] = None,
             **kwargs: Any) -> Dict[str, List[Dict[str, Any]]]:
+        # :since: koji 1.34
         ...
 
     @overload
     def queryHistory(
             self,
             tables: Optional[List[str]] = None,
-            *,
-            queryOpts: Optional[QueryOptions] = None,
             **kwargs: Any) -> Dict[str, List[Dict[str, Any]]]:
-        """
-        :since: koji 1.34
-        """
         ...
 
     def queryRPMSigs(
@@ -797,6 +764,154 @@ class ClientSession:
         ...
 
 
+_VirtualResultType = TypeVar("_VirtualResultType")
+
+
+class VirtualCall(Generic[_VirtualResultType]):
+    result: _VirtualResultType
+
+
+@proxytype(_ClientSessionProtocol, VirtualCall)
+class _MultiCallSessionProtocol:
+    ...
+
+
+# === Classes ===
+
+class ClientSession(_ClientSessionProtocol):
+
+    baseurl: str
+    multicall: MultiCallHack
+    opts: Dict[str, Any]
+
+    def __init__(
+            self,
+            baseurl: str,
+            opts: Optional[Dict[str, Any]] = None,
+            sinfo: Optional[Dict[str, Any]] = None,
+            auth_method: Optional[str] = None):
+        ...
+
+    def __del__(self):
+        ...
+
+    def __getattr__(self, name: str) -> VirtualMethod:
+        ...
+
+    def callMethod(
+            self,
+            name: str,
+            *args,
+            **kwds) -> Any:
+        ...
+
+    def downloadTaskOutput(
+            self,
+            taskID: int,
+            fileName: str,
+            offset: int = 0,
+            size: int = -1,
+            volume: Optional[str] = None) -> bytes:
+        ...
+
+    def exclusiveSession(
+            self,
+            force: bool = False) -> None:
+        ...
+
+    def fastUpload(
+            self,
+            localfile: str,
+            path: str,
+            name: Optional[str] = None,
+            callback: Optional[Callable[[int, int, int, int, int],
+                                        None]] = None,
+            blocksize: Optional[int] = None,
+            overwrite: bool = False,
+            volume: Optional[str] = None) -> None:
+        ...
+
+    def login(
+            self,
+            opts: Dict[str, Any],
+            renew: bool = False) -> bool:
+        ...
+
+    def logout(
+            self,
+            session_id: Optional[int] = None) -> None:
+        ...
+
+    def multiCall(
+            self,
+            strict: bool = False,
+            batch: Optional[int] = None) -> List[Union[FaultInfo,
+                                                       List[Any]]]:
+        ...
+
+    def ssl_login(
+            self,
+            cert: Optional[str] = None,
+            ca: Optional[str] = None,
+            serverca: Optional[str] = None,
+            proxyuser: Optional[str] = None,
+            proxyauthtype: Optional[int] = None,
+            renew: bool = False) -> bool:
+        ...
+
+    def uploadWrapper(
+            self,
+            localfile: str,
+            path: str,
+            name: Optional[str] = None,
+            callback: Optional[Callable[[int, int, int, int, int],
+                                        None]] = None,
+            blocksize: Optional[int] = None) -> None:
+        ...
+
+
+class MultiCallSession(_MultiCallSessionProtocol):
+
+    def __init__(
+            self,
+            session: ClientSession,
+            strict: bool = False,
+            batch: Optional[int] = None):
+        ...
+
+    @property
+    def multicall(self) -> bool:
+        ...
+
+    def __enter__(self) -> Self:
+        ...
+
+    def __exit__(self, _tb, _te, _tt) -> bool:
+        ...
+
+
+class MultiCallHack:
+
+    def __init__(self, session: ClientSession):
+        ...
+
+    def __set__(self, obj: Any, value: bool) -> None:
+        # assignment to bool, eg. `session.multicall = True`
+        ...
+
+    def __bool__(self) -> bool:
+        ...
+
+    def __nonzero__(self) -> bool:
+        ...
+
+    def __call__(
+            self,
+            strict: Optional[bool] = False,
+            batch: Optional[int] = None) -> MultiCallSession:
+        ...
+
+
 class Enum(dict):
     def __init__(
             self,
@@ -821,6 +936,7 @@ class Enum(dict):
 
 
 class Fault:
+
     def __init__(
             self,
             faultCode: int,
@@ -830,7 +946,9 @@ class Fault:
 
 
 class PathInfo:
+
     topdir: str
+    ASCII_CHARS: List[str]
 
     def __init__(
             self,
@@ -920,6 +1038,7 @@ class PathInfo:
 
 
 class RawHeader:
+
     def __init__(self, data: bytes):
         ...
 
@@ -928,6 +1047,19 @@ class RawHeader:
             default: Any = None,
             decode: Optional[bool] = None,
             single: bool = False) -> Any:
+        ...
+
+
+class VirtualMethod:
+
+    def __init__(
+            self,
+            func,
+            name: str,
+            session: Optional[ClientSession] = None):
+        ...
+
+    def __call__(self, *args, **kwds) -> Any:
         ...
 
 
@@ -1101,15 +1233,6 @@ def parse_NVRA(nvra: str) -> Dict[str, Union[str, int]]:
 @overload
 def parse_arches(
         arches: Union[str, List[str]],
-        to_list: bool = False,
-        strict: bool = False,
-        allow_none: bool = False) -> Union[str, List[str]]:
-    ...
-
-
-@overload
-def parse_arches(
-        arches: Union[str, List[str]],
         strict: bool = False,
         allow_none: bool = False) -> str:
     ...
@@ -1133,16 +1256,18 @@ def parse_arches(
     ...
 
 
-def read_config(
-        profile_name: str,
-        user_config: Optional[str] = None) -> Dict[str, Any]:
+@overload
+def parse_arches(
+        arches: Union[str, List[str]],
+        to_list: bool = False,
+        strict: bool = False,
+        allow_none: bool = False) -> Union[str, List[str]]:
     ...
 
 
-@overload
-def read_config_files(
-        config_files: List[Union[str, Tuple[str, bool]]],
-        raw: bool = False) -> Union[RawConfigParser, ConfigParser]:
+def read_config(
+        profile_name: str,
+        user_config: Optional[str] = None) -> Dict[str, Any]:
     ...
 
 
@@ -1166,41 +1291,11 @@ def read_config_files(
     ...
 
 
-# === MultiCallSession ===
-
-VirtualResultType = TypeVar("VirtualResultType")
-
-
-class VirtualCall(Generic[VirtualResultType]):
-    result: VirtualResultType
-
-
-@proxytype(ClientSession, VirtualCall)
-class MultiCallSession:
-    """
-    All of the same methods from a `ClientSession`, but wrapped to
-    return `VirtualCall` instances instead.
-    """
+@overload
+def read_config_files(
+        config_files: List[Union[str, Tuple[str, bool]]],
+        raw: bool = False) -> Union[RawConfigParser, ConfigParser]:
     ...
-
-
-class MultiCallHack:
-
-    def __set__(self, obj: Any, value: bool) -> None:
-        # assignment to bool, eg. `session.multicall = True`
-        ...
-
-    def __bool__(self) -> bool:
-        ...
-
-    def __nonzero__(self) -> bool:
-        ...
-
-    def __call__(
-            self,
-            strict: Optional[bool] = False,
-            batch: Optional[int] = None) -> ContextManager[MultiCallSession]:
-        ...
 
 
 # The end.
