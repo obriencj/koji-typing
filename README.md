@@ -32,7 +32,8 @@ The runtime-available `koji_types` package provides a number of
 `TypedDict` definitions which provide structure for the numerous
 dictionary result types returned by koji's `ClientSession`
 interface. These types can be used to annotate your client code in
-order to later perform anaylsis.
+order to later perform anaylsis. It also provides some Pythonic
+enumerations for some koji constant values.
 
 
 ## Static analysis package `koji-stubs`
@@ -54,6 +55,29 @@ generate accurate analysis of calls made against a `MultiCallSession`
 this plugin will need to be enabled.
 
 [proxytype]: https://github.com/obriencj/python-proxytype
+
+
+## Caveats
+
+As mentioned above, static analysis against a `MultiCallSession` has
+an additional test-time dependency.
+
+In addition, I have not been able to figure out how to provide typing
+annotations to correctly reflect the return type change of
+`ClientSession` calls which support a `queryOpts` in the use case of
+`countOnly = True`. In those calls the return type is actually an
+`int` but I haven't found a way to provide an override annotation that
+shows this.
+
+```python
+# here the return type is List[UserInfo]
+friends = session.listUsers()
+
+# here the return type is actually int, but no annotation support
+# exists for this scenario so static analysis will still think
+# it's a List[UserInfo]
+howmany = session.listUsers(queryOpts={"countOnly": True})
+```
 
 
 ## Contact
