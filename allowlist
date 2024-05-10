@@ -1,4 +1,5 @@
 
+
 # we aren't stubbing these submodules yet
 
 koji.arch
@@ -13,141 +14,13 @@ koji.util
 koji.xmlrpcplus
 
 
-# # none of these are detectable by mypy, as they're virtualized wrappers
-# # that call the remote API endpoints
+# elements of koji module itself
 
-# koji.ClientSession.count
-# koji.ClientSession.createTag
-# koji.ClientSession.disableUser
-# koji.ClientSession.editTag2
-# koji.ClientSession.enableUser
-# koji.ClientSession.getAllPerms
-# koji.ClientSession.getArchive
-# koji.ClientSession.getArchiveType
-# koji.ClientSession.getArchiveTypes
-# koji.ClientSession.getBuild
-# koji.ClientSession.getBuildTarget
-# koji.ClientSession.getBuildTargets
-# koji.ClientSession.getBuildType
-# koji.ClientSession.getBuildroot
-# koji.ClientSession.getChannel
-# koji.ClientSession.getFullInheritance
-# koji.ClientSession.getGroupMembers
-# koji.ClientSession.getHost
-# koji.ClientSession.getInheritanceData
-# koji.ClientSession.getKojiVersion
-# koji.ClientSession.getLastHostUpdate
-# koji.ClientSession.getLatestBuilds
-# koji.ClientSession.getLatestMavenArchives
-# koji.ClientSession.getLatestRPMS
-# koji.ClientSession.getLoggedInUser
-# koji.ClientSession.getPackage
-# koji.ClientSession.getPerms
-# koji.ClientSession.getRPM
-# koji.ClientSession.getRPMHeaders
-# koji.ClientSession.getRepo
-# koji.ClientSession.getTag
-# koji.ClientSession.getTagGroups
-# koji.ClientSession.getTaskChildren
-# koji.ClientSession.getTaskInfo
-# koji.ClientSession.getUser
-# koji.ClientSession.getUserGroups
-# koji.ClientSession.getUserPerms
-# koji.ClientSession.getUserPermsInheritance
-# koji.ClientSession.hasPerm
-# koji.ClientSession.listArchives
-# koji.ClientSession.listBTypes
-# koji.ClientSession.listBuilds
-# koji.ClientSession.listCGs
-# koji.ClientSession.listHosts
-# koji.ClientSession.listPackages
-# koji.ClientSession.listRPMs
-# koji.ClientSession.listTagged
-# koji.ClientSession.listTaggedArchives
-# koji.ClientSession.listTags
-# koji.ClientSession.listTasks
-# koji.ClientSession.listUsers
-# koji.ClientSession.massTag
-# koji.ClientSession.packageListAdd
-# koji.ClientSession.queryHistory
-# koji.ClientSession.queryRPMSigs
-# koji.ClientSession.repoInfo
-# koji.ClientSession.resubmitTask
-# koji.ClientSession.search
-# koji.ClientSession.setInheritanceData
-# koji.ClientSession.tagBuildBypass
-# koji.ClientSession.tagChangedSinceEvent
-# koji.ClientSession.untagBuildBypass
+koji.h
+koji.ClientSession.hub_version
+koji.ClientSession.hub_version_str
+koji.DBHandler
+koji.POMHandler
 
-
-# # same issue as most ClientSession methods
-
-# koji.MultiCallSession.count
-# koji.MultiCallSession.createTag
-# koji.MultiCallSession.disableUser
-# koji.MultiCallSession.editTag2
-# koji.MultiCallSession.enableUser
-# koji.MultiCallSession.exclusiveSession
-# koji.MultiCallSession.getAllPerms
-# koji.MultiCallSession.getArchive
-# koji.MultiCallSession.getArchiveType
-# koji.MultiCallSession.getArchiveTypes
-# koji.MultiCallSession.getBuild
-# koji.MultiCallSession.getBuildTarget
-# koji.MultiCallSession.getBuildTargets
-# koji.MultiCallSession.getBuildType
-# koji.MultiCallSession.getBuildroot
-# koji.MultiCallSession.getChannel
-# koji.MultiCallSession.getFullInheritance
-# koji.MultiCallSession.getGroupMembers
-# koji.MultiCallSession.getHost
-# koji.MultiCallSession.getInheritanceData
-# koji.MultiCallSession.getKojiVersion
-# koji.MultiCallSession.getLastHostUpdate
-# koji.MultiCallSession.getLatestBuilds
-# koji.MultiCallSession.getLatestMavenArchives
-# koji.MultiCallSession.getLatestRPMS
-# koji.MultiCallSession.getLoggedInUser
-# koji.MultiCallSession.getPackage
-# koji.MultiCallSession.getPerms
-# koji.MultiCallSession.getRPM
-# koji.MultiCallSession.getRPMHeaders
-# koji.MultiCallSession.getRepo
-# koji.MultiCallSession.getTag
-# koji.MultiCallSession.getTagGroups
-# koji.MultiCallSession.getTaskChildren
-# koji.MultiCallSession.getTaskInfo
-# koji.MultiCallSession.getUser
-# koji.MultiCallSession.getUserGroups
-# koji.MultiCallSession.getUserPerms
-# koji.MultiCallSession.getUserPermsInheritance
-# koji.MultiCallSession.gssapi_login
-# koji.MultiCallSession.hasPerm
-# koji.MultiCallSession.listArchives
-# koji.MultiCallSession.listBTypes
-# koji.MultiCallSession.listBuilds
-# koji.MultiCallSession.listCGs
-# koji.MultiCallSession.listHosts
-# koji.MultiCallSession.listPackages
-# koji.MultiCallSession.listRPMs
-# koji.MultiCallSession.listTagged
-# koji.MultiCallSession.listTaggedArchives
-# koji.MultiCallSession.listTags
-# koji.MultiCallSession.listTasks
-# koji.MultiCallSession.listUsers
-# koji.MultiCallSession.login
-# koji.MultiCallSession.logout
-# koji.MultiCallSession.massTag
-# koji.MultiCallSession.packageListAdd
-# koji.MultiCallSession.queryHistory
-# koji.MultiCallSession.queryRPMSigs
-# koji.MultiCallSession.repoInfo
-# koji.MultiCallSession.resubmitTask
-# koji.MultiCallSession.search
-# koji.MultiCallSession.setInheritanceData
-# koji.MultiCallSession.ssl_login
-# koji.MultiCallSession.tagBuildBypass
-# koji.MultiCallSession.tagChangedSinceEvent
-# koji.MultiCallSession.untagBuildBypass
 
 # The end.
