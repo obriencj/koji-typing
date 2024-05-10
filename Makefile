@@ -112,7 +112,7 @@ coverage: requires-tox	## Collects coverage report
 
 
 quick-test: requires-tox flake8	## Launches nosetest using the default python
-	@$(TOX) -qe quicktest
+	@$(TOX) -qe stubtest
 
 
 koji-git: requires-tox flake8	## Launches nosetest with koji installed from git
