@@ -1093,6 +1093,9 @@ class MultiCallHack:
     def __init__(self, session: ClientSession):
         ...
 
+    def __set__(self, value: bool) -> None:
+        ...
+
     def __bool__(self) -> bool:
         ...
 

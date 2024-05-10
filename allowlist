@@ -20,6 +20,7 @@ koji.h
 koji.ClientSession.hub_version
 koji.ClientSession.hub_version_str
 koji.DBHandler
+koji.MultiCallHack.__set__
 koji.POMHandler
 
 
