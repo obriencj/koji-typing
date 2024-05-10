@@ -26,6 +26,8 @@ help check that the calls are being used correctly.
 
 from configparser import ConfigParser, RawConfigParser
 from datetime import datetime
+from logging import Logger
+from requests import Session
 from typing import (
     Any, Callable, Dict, Generic, Iterable, List, Literal, Optional,
     Protocol, Tuple, Type, TypeVar, Union, Set, overload, )
@@ -45,6 +47,9 @@ try:
     from typing import Self  # type: ignore
 except ImportError:
     from typing_extensions import Self
+
+
+__version_info__: Tuple[int, ...]
 
 
 API_VERSION: int
@@ -100,6 +105,10 @@ pathinfo: PathInfo
 
 # === Exceptions ===
 
+
+PythonImportError = ImportError
+
+
 class GenericError(Exception):
     faultCode: int
     fromFault: bool
@@ -141,6 +150,14 @@ class ConfigurationError(GenericError):
     ...
 
 
+class FunctionDeprecated(GenericError):
+    ...
+
+
+class ImportError(GenericError):
+    ...
+
+
 class LiveCDError(GenericError):
     ...
 
@@ -153,11 +170,35 @@ class LockError(GenericError):
     ...
 
 
+class MultiCallNotReady(Exception):
+    ...
+
+
 class ParameterError(GenericError):
     ...
 
 
+class PluginError(GenericError):
+    ...
+
+
+class PostBuildError(BuildError):
+    ...
+
+
+class PreBuildError(BuildError):
+    ...
+
+
 class RetryError(AuthError):
+    ...
+
+
+class ServerOffline(GenericError):
+    ...
+
+
+class SequenceError(AuthError):
     ...
 
 
@@ -768,7 +809,16 @@ _VirtualResultType = TypeVar("_VirtualResultType")
 
 
 class VirtualCall(Generic[_VirtualResultType]):
-    result: _VirtualResultType
+
+    def __init__(self, method: str, args, kwargs):
+        ...
+
+    def format(self) -> str:
+        ...
+
+    @property
+    def result(self) -> _VirtualResultType:
+        ...
 
 
 @proxytype(_ClientSessionProtocol, VirtualCall)
@@ -780,9 +830,14 @@ class _MultiCallSessionProtocol:
 
 class ClientSession(_ClientSessionProtocol):
 
+    auth_method: Optional[str]
+    authtype: Optional[str]
     baseurl: str
+    exclusive: bool
+    logger: Logger
     multicall: MultiCallHack
     opts: Dict[str, Any]
+    rsession: Optional[Session]
 
     def __init__(
             self,
@@ -831,6 +886,14 @@ class ClientSession(_ClientSessionProtocol):
             volume: Optional[str] = None) -> None:
         ...
 
+    @property
+    def hub_version(self) -> Tuple[int, ...]:
+        ...
+
+    @property
+    def hub_version_str(self) -> str:
+        ...
+
     def login(
             self,
             opts: Dict[str, Any],
@@ -849,6 +912,13 @@ class ClientSession(_ClientSessionProtocol):
                                                        List[Any]]]:
         ...
 
+    def new_session(self) -> None:
+        ...
+
+    def renew_expired_session(
+            func) -> Callable:
+        ...
+
     def ssl_login(
             self,
             cert: Optional[str] = None,
@@ -857,6 +927,9 @@ class ClientSession(_ClientSessionProtocol):
             proxyuser: Optional[str] = None,
             proxyauthtype: Optional[int] = None,
             renew: bool = False) -> bool:
+        ...
+
+    def subsession(self) -> ClientSession:
         ...
 
     def uploadWrapper(
@@ -879,14 +952,30 @@ class MultiCallSession(_MultiCallSessionProtocol):
             batch: Optional[int] = None):
         ...
 
-    @property
-    def multicall(self) -> bool:
-        ...
-
     def __enter__(self) -> Self:
         ...
 
-    def __exit__(self, _tb, _te, _tt) -> bool:
+    def __exit__(self, _tp, _tv, _tb) -> bool:
+        ...
+
+    def call_all(
+            self,
+            strict: Optional[bool] = None,
+            batch: Optional[int] = None) -> List[Union[FaultInfo,
+                                                       List[Any]]]:
+        ...
+
+    def callMethod(
+            self,
+            name: str,
+            *args,
+            **kwds) -> VirtualCall:
+        ...
+
+    multiCall = call_all
+
+    @property
+    def multicall(self) -> bool:
         ...
 
 
@@ -1093,6 +1182,11 @@ def add_stderr_logger(
     ...
 
 
+def add_sys_logger(
+        logger: str) -> None:
+    ...
+
+
 def buildLabel(
         buildInfo: BuildInfo,
         showEpoch: bool = False) -> str:
@@ -1131,13 +1225,6 @@ def ensuredir(
     ...
 
 
-def fixEncoding(
-        value: Any,
-        fallback: str = 'iso8859-15',
-        remove_nonprintable: bool = False) -> str:
-    ...
-
-
 def fix_encoding(
         value: str,
         fallback: str = 'iso8859-15',
@@ -1145,7 +1232,26 @@ def fix_encoding(
     ...
 
 
+def fixEncoding(
+        value: Optional[str],
+        fallback: str = 'iso8859-15',
+        remove_nonprintable: bool = False) -> str:
+    ...
+
+
+def fixEncodingRecurse(
+        value: Any,
+        fallback: str = 'iso8859015',
+        remove_nonprintable: bool = False) -> str:
+    ...
+
+
 def formatTime(
+        value: Union[int, float, datetime, DateTime]) -> str:
+    ...
+
+
+def formatTimeLong(
         value: Union[int, float, datetime, DateTime]) -> str:
     ...
 
@@ -1157,6 +1263,12 @@ def genMockConfig(
         repoid: Optional[int] = None,
         tag_name: Optional[str] = None,
         **opts) -> str:
+    ...
+
+
+def gen_draft_release(
+        target_release: str,
+        build_id: int) -> str:
     ...
 
 
@@ -1265,6 +1377,11 @@ def parse_arches(
     ...
 
 
+def parse_target_release(
+        draft_release: str) -> str:
+    ...
+
+
 def read_config(
         profile_name: str,
         user_config: Optional[str] = None) -> Dict[str, Any]:
@@ -1295,6 +1412,20 @@ def read_config_files(
 def read_config_files(
         config_files: List[Union[str, Tuple[str, bool]]],
         raw: bool = False) -> Union[RawConfigParser, ConfigParser]:
+    ...
+
+
+def remove_log_handler(
+        logger: str,
+        handler: Any) -> None:
+    ...
+
+
+def removeNonprintable(value: str) -> str:
+    ...
+
+
+def taskLabel(taskInfo: TaskInfo) -> str:
     ...
 
 
