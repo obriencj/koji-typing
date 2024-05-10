@@ -27,7 +27,8 @@ from datetime import datetime
 from enum import IntEnum
 from koji import (
     AUTHTYPES, BR_STATES, BR_TYPES, BUILD_STATES, CHECKSUM_TYPES,
-    REPO_STATES, TASK_STATES, USERTYPES, USER_STATUS,
+    REPO_STATES, RPM_SIGTAG_DSA, RPM_SIGTAG_GPG, RPM_SIGTAG_MD5,
+    RPM_SIGTAG_PGP, RPM_SIGTAG_RSA, TASK_STATES, USERTYPES, USER_STATUS,
     ClientSession, PathInfo, )
 from optparse import Values
 from typing import (
@@ -66,13 +67,16 @@ __all__ = (
     "HistoryEntry",
     "HostInfo",
     "ListTasksOptions",
+    "MavenInfo",
     "PackageInfo",
     "PermInfo",
+    "POMInfo",
     "QueryOptions",
     "RepoInfo",
     "RepoState",
     "RPMInfo",
     "RPMSignature",
+    "RPMSigTag",
     "SearchResult",
     "TagBuildInfo",
     "TagInfo",
@@ -184,6 +188,14 @@ class RepoState(IntEnum):
     READY = REPO_STATES['READY']
     EXPIRED = REPO_STATES['DELETED']
     PROBLEM = REPO_STATES['PROBLEM']
+
+
+class RPMSigTag(IntEnum):
+    DSA = RPM_SIGTAG_DSA
+    GPG = RPM_SIGTAG_GPG
+    MD5 = RPM_SIGTAG_MD5
+    PGP = RPM_SIGTAG_PGP
+    RSA = RPM_SIGTAG_RSA
 
 
 class TaskState(IntEnum):
@@ -1112,6 +1124,18 @@ class ListTasksOptions(TypedDict, total=False):
 class FaultInfo(TypedDict):
     faultCode: int
     faultString: str
+
+
+class MavenInfo(TypedDict):
+    group_id: str
+    artifact_id: str
+    version: str
+
+
+class POMInfo(TypedDict):
+    groupId: str
+    artifactId: str
+    version: str
 
 
 #

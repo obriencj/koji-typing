@@ -26,33 +26,41 @@ help check that the calls are being used correctly.
 
 from configparser import ConfigParser, RawConfigParser
 from datetime import datetime
-from logging import Logger
+from io import BufferedReader, BufferedRWPair, RawIOBase
+from logging import Handler, Logger
+from re import Pattern
 from requests import Session
+from types import ModuleType
 from typing import (
-    Any, Callable, Dict, Generic, Iterable, List, Literal, Optional,
-    Protocol, Tuple, Type, TypeVar, Union, Set, overload, )
+    Any, Callable, Dict, Generic, Iterable, List, Literal,
+    NoReturn, Optional, Tuple, Type, TypeVar, Union, Set, overload, )
 from xmlrpc.client import DateTime
 
 from koji_types import (
     ArchiveInfo, ArchiveTypeInfo, BuildInfo, BuildrootInfo, BuildState,
     BTypeInfo, ChannelInfo, CGInfo, FaultInfo, HostInfo, ListTasksOptions,
-    PackageInfo, PermInfo, QueryOptions, RepoInfo, RepoState, RPMInfo,
-    RPMSignature, SearchResult, TagBuildInfo, TagInfo, TagGroupInfo,
-    TagInheritance, TagPackageInfo, TargetInfo, TaskInfo,
-    UserGroup, UserInfo, UserType, )
+    MavenInfo, PackageInfo, PermInfo, POMInfo, QueryOptions, RepoInfo,
+    RepoState, RPMInfo, RPMSignature, RPMSigTag, SearchResult,
+    TagBuildInfo, TagInfo, TagGroupInfo, TagInheritance, TagPackageInfo,
+    TargetInfo, TaskInfo, UserGroup, UserInfo, UserType, )
 
 from preoccupied.proxytype import proxytype
 
+
 try:
-    from typing import Self  # type: ignore
+    from typing import Protocol, Self, TypeAlias             # type: ignore
 except ImportError:
-    from typing_extensions import Self
+    from typing_extensions import Protocol, Self, TypeAlias  # type: ignore
+
+try:
+    from collections.abc import Buffer    # type: ignore
+except ImportError:
+    from typing_extensions import Buffer  # type: ignore
 
 
 __version_info__: Tuple[int, ...]
 
-
-API_VERSION: int
+pathinfo: PathInfo
 
 # Koji 1.34.0 intentionally broke API compatibility and removed these.
 # https://pagure.io/koji/pull-request/3818
@@ -62,14 +70,24 @@ API_VERSION: int
 # AUTHTYPE_SSL: int
 # AUTHTYPE_GSSAPI: int
 
+API_VERSION: int
 BASEDIR: str
-
 CONTROL_CHARS: List[str]
+DEFAULT_AUTH_TIMEOUT: int
+DEFAULT_REQUEST_TIMEOUT: int
+DEP_CONFLICT: int
+DEP_ENHANCE: int
+DEP_OBSOLETE: int
+DEP_PROVIDE: int
+DEP_RECOMMEND: int
+DEP_REQUIRE: int
+DEP_SUGGEST: int
+DEP_SUPPLEMENT: int
+DRAFT_RELEASE_DELIMITER: str
+DRAFT_RELEASE_FORMAT: str
+ENTITY_RE: Pattern
 NONPRINTABLE_CHARS: str
 NONPRINTABLE_CHARS_TABLE: Dict[int, str]
-
-DRAFT_RELEASE_DELIMITER: str
-
 PRIO_DEFAULT: int
 PROFILE_MODULES: Dict[str, Any]
 
@@ -81,6 +99,10 @@ REPO_READY: int
 
 REPO_MERGE_MODES: Set[str]
 
+RPM_FILEDIGESTALGO_IDS: Dict[Optional[int], str]
+RPM_HEADER_MAGIC: bytes
+
+RPM_SIGTAG_DSA: int
 RPM_SIGTAG_GPG: int
 RPM_SIGTAG_MD5: int
 RPM_SIGTAG_PGP: int
@@ -88,6 +110,15 @@ RPM_SIGTAG_RSA: int
 
 RPM_TAG_FILEDIGESTALGO: int
 RPM_TAG_HEADERSIGNATURES: int
+
+RPMSENSE_EQUAL: int
+RPMSENSE_GREATER: int
+RPMSENSE_LESS: int
+
+SUPPORTED_OPT_DEP_HDRS: Dict[str, bool]
+
+
+# === Enums ===
 
 AUTHTYPES: Enum
 BR_STATES: Enum
@@ -100,13 +131,11 @@ TASK_STATES: Enum
 USERTYPES: Enum
 USER_STATUS: Enum
 
-pathinfo: PathInfo
-
 
 # === Exceptions ===
 
 
-PythonImportError = ImportError
+PythonImportError: TypeAlias = TypeAlias[ImportError]
 
 
 class GenericError(Exception):
@@ -154,6 +183,10 @@ class FunctionDeprecated(GenericError):
     ...
 
 
+class GSSAPIAuthError(AuthError):
+    ...
+
+
 class ImportError(GenericError):
     ...
 
@@ -171,6 +204,10 @@ class LockError(GenericError):
 
 
 class MultiCallNotReady(Exception):
+    ...
+
+
+class NameValidationError(GenericError):
     ...
 
 
@@ -553,14 +590,6 @@ class _ClientSessionProtocol:
         # :since: koji 1.34
         ...
 
-    def gssapi_login(
-            self,
-            principal: Optional[str] = None,
-            keytab: Optional[str] = None,
-            ccache: Optional[str] = None,
-            proxyuser: Optional[str] = None) -> bool:
-        ...
-
     def hasPerm(
             self,
             perm: str,
@@ -835,7 +864,6 @@ class ClientSession(_ClientSessionProtocol):
     baseurl: str
     exclusive: bool
     logger: Logger
-    multicall: MultiCallHack
     opts: Dict[str, Any]
     rsession: Optional[Session]
 
@@ -886,23 +914,43 @@ class ClientSession(_ClientSessionProtocol):
             volume: Optional[str] = None) -> None:
         ...
 
+    def gssapi_login(
+            self,
+            principal: Optional[str] = None,
+            keytab: Optional[str] = None,
+            ccache: Optional[str] = None,
+            proxyuser: Optional[str] = None,
+            proxyauthtype: Optional[str] = None,
+            renew: bool = False) -> bool:
+        ...
+
     @property
     def hub_version(self) -> Tuple[int, ...]:
+        # :since: koji 1.35
         ...
 
     @property
     def hub_version_str(self) -> str:
+        # :since: koji 1.35
         ...
 
     def login(
             self,
-            opts: Dict[str, Any],
+            opts: Optional[Dict[str, Any]] = None,
             renew: bool = False) -> bool:
         ...
 
     def logout(
             self,
             session_id: Optional[int] = None) -> None:
+        ...
+
+    @property
+    def multicall(self) -> MultiCallHack:
+        ...
+
+    @multicall.setter
+    def multicall(self, value: bool) -> None:
         ...
 
     def multiCall(
@@ -917,6 +965,11 @@ class ClientSession(_ClientSessionProtocol):
 
     def renew_expired_session(
             func) -> Callable:
+        ...
+
+    def setSession(
+            self,
+            sinfo: Session) -> None:
         ...
 
     def ssl_login(
@@ -939,7 +992,63 @@ class ClientSession(_ClientSessionProtocol):
             name: Optional[str] = None,
             callback: Optional[Callable[[int, int, int, int, int],
                                         None]] = None,
-            blocksize: Optional[int] = None) -> None:
+            blocksize: Optional[int] = None,
+            overwrite: bool = True,
+            volume: Optional[str] = None) -> None:
+        ...
+
+
+class Enum(dict):
+
+    def __init__(
+            self,
+            args: Iterable[str]):
+        ...
+
+    @overload
+    def get(self,
+            key: int,
+            default: Any = None) -> Optional[str]:
+        ...
+
+    @overload
+    def get(self,
+            key: str,
+            default: Any = None) -> Optional[int]:
+        ...
+
+    def getnum(
+            self,
+            key: Union[str, int],
+            default: Optional[int] = None) -> int:
+        ...
+
+    def clear(self, *args, **opts) -> NoReturn:
+        ...
+
+    def getvalue(self, *args, **opts) -> NoReturn:
+        ...
+
+    def pop(self, *args, **opts) -> NoReturn:
+        ...
+
+    def popitem(self, *args, **opts) -> NoReturn:
+        ...
+
+    def setdefault(self, *args, **opts) -> NoReturn:
+        ...
+
+    def update(self, *args, **opts) -> NoReturn:
+        ...
+
+
+class Fault:
+
+    def __init__(
+            self,
+            faultCode: int,
+            faultString: str,
+            **extra: Dict[str, Any]):
         ...
 
 
@@ -984,54 +1093,29 @@ class MultiCallHack:
     def __init__(self, session: ClientSession):
         ...
 
-    def __set__(self, obj: Any, value: bool) -> None:
-        # assignment to bool, eg. `session.multicall = True`
-        ...
-
     def __bool__(self) -> bool:
         ...
 
     def __nonzero__(self) -> bool:
         ...
 
+    @overload
     def __call__(
             self,
+            *,
             strict: Optional[bool] = False,
             batch: Optional[int] = None) -> MultiCallSession:
         ...
 
-
-class Enum(dict):
-    def __init__(
-            self,
-            args: Iterable[str]):
-        ...
-
     @overload
-    def get(self,
-            key: int,
-            default: Any = None) -> Optional[str]:
-        ...
-
-    @overload
-    def get(self,
-            key: str,
-            default: Any = None) -> Optional[int]:
-        ...
-
-    def getnum(self,
-               key: Union[str, int]) -> int:
-        ...
-
-
-class Fault:
-
-    def __init__(
+    def __call__(
             self,
-            faultCode: int,
-            faultString: str,
-            **extra: Dict[str, Any]):
+            **kw) -> MultiCallSession:
         ...
+
+
+class MultiCallInProgress:
+    ...
 
 
 class PathInfo:
@@ -1076,9 +1160,19 @@ class PathInfo:
             maveninfo: ArchiveInfo) -> str:
         ...
 
+    def mavenrepo(
+            self,
+            maveninfo: ArchiveInfo) -> str:
+        ...
+
     def repo(
             self,
             repo_id: int,
+            tag_str: str) -> str:
+        ...
+
+    def repocache(
+            self,
             tag_str: str) -> str:
         ...
 
@@ -1087,9 +1181,14 @@ class PathInfo:
             rpminfo: RPMInfo) -> str:
         ...
 
+    def scratch(
+            self) -> str:
+        ...
+
+
     def sighdr(
             self,
-            rinfo: RPMInfo,
+            rpminfo: RPMInfo,
             sigkey: str) -> str:
         ...
 
@@ -1099,15 +1198,31 @@ class PathInfo:
             sigkey: str) -> str:
         ...
 
+    def task(
+            self,
+            task_id: int,
+            volume: Optional[str] = None) -> str:
+        ...
+
     def taskrelpath(
             self,
             task_id: int) -> str:
+        ...
+
+    def tmpdir(
+            self,
+            volume: Optional[str] = None) -> str:
         ...
 
     def typedir(
             self,
             build: BuildInfo,
             btype: str) -> str:
+        ...
+
+    def volumedir(
+            self,
+            volume: str) -> str:
         ...
 
     def winbuild(
@@ -1122,13 +1237,31 @@ class PathInfo:
 
     def work(
             self,
-            volume: Optional[str]) -> str:
+            volume: Optional[str] = None) -> str:
         ...
 
 
 class RawHeader:
 
-    def __init__(self, data: bytes):
+    def __init__(
+            self,
+            data: bytes,
+            decode: bool = False):
+        ...
+
+    def __getitem__(
+            self,
+            key: int) -> Any:
+        ...
+
+    def decode_bytes(
+            self,
+            value: str) -> bytes:
+        ...
+
+    def dump(
+            self,
+            sig: Optional[bool] = None) -> None:
         ...
 
     def get(self,
@@ -1136,6 +1269,30 @@ class RawHeader:
             default: Any = None,
             decode: Optional[bool] = None,
             single: bool = False) -> Any:
+        ...
+
+    def version(self) -> int:
+        ...
+
+
+class SplicedSigStreamReader(RawIOBase):
+
+    def __init__(
+            self,
+            path: str,
+            sighdr: bytes,
+            bufsize: int):
+        ...
+
+    def generator(self) -> Iterable[bytes]:
+        ...
+
+    def readable(self) -> bool:
+        ...
+
+    def readinto(
+            self,
+            b: Buffer) -> int:
         ...
 
 
@@ -1204,11 +1361,50 @@ def check_NVR(
     ...
 
 
+def check_NVRA(
+        nvra: Union[str, Dict[str, Union[str, int]]],
+        strict: bool = False) -> bool:
+    ...
+
+
+def check_rpm_file(
+        rpmfile: Union[str, BufferedReader]) -> None:
+    ...
+
+
+def config_directory_contents(
+        dir_name: str,
+        strict: bool = False) -> List[str]:
+    ...
+
+
 def convertFault(fault: Fault) -> GenericError:
     ...
 
 
 def daemonize() -> None:
+    ...
+
+
+def decode_args(*args) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    ...
+
+
+def decode_args2(
+        args: List[Any],
+        names: List[str],
+        strict: bool = True) -> Dict[str, Any]:
+    ...
+
+
+def decode_int(n: Any) -> int:
+    ...
+
+
+def downloadFile(
+        url: str,
+        path: Optional[str] = None,
+        fo: Optional[BufferedRWPair] = None) -> None:
     ...
 
 
@@ -1220,8 +1416,16 @@ def dump_json(
     ...
 
 
+def encode_args(*args, **opts) -> Tuple[Any, ...]:
+    ...
+
+
 def ensuredir(
         directory: str) -> None:
+    ...
+
+
+def find_rpm_sighdr(path: str) -> Tuple[int, int]:
     ...
 
 
@@ -1241,8 +1445,12 @@ def fixEncoding(
 
 def fixEncodingRecurse(
         value: Any,
-        fallback: str = 'iso8859015',
+        fallback: str = 'iso8859-15',
         remove_nonprintable: bool = False) -> str:
+    ...
+
+
+def format_exc_plus() -> str:
     ...
 
 
@@ -1259,7 +1467,7 @@ def formatTimeLong(
 def genMockConfig(
         name: str,
         arch: str,
-        managed: bool = True,
+        managed: bool = False,
         repoid: Optional[int] = None,
         tag_name: Optional[str] = None,
         **opts) -> str:
@@ -1272,6 +1480,12 @@ def gen_draft_release(
     ...
 
 
+def generate_comps(
+        groups: List[TagGroupInfo],
+        expand_groups: bool = False) -> str:
+    ...
+
+
 def get_header_field(
         hdr: bytes,
         name: str,
@@ -1281,8 +1495,14 @@ def get_header_field(
 
 def get_header_fields(
         X: Union[bytes, str],
-        fields: Optional[List[str]],
+        fields: Optional[List[str]] = None,
         src_arch: bool = False) -> Dict[str, Union[str, List[str]]]:
+    ...
+
+
+def get_profile_module(
+        profile_name: str,
+        config: Optional[ConfigParser] = None) -> ModuleType:
     ...
 
 
@@ -1292,9 +1512,7 @@ def get_rpm_header(
     ...
 
 
-def get_rpm_headers(
-        f: Any,
-        ts: Optional[int] = None) -> bytes:
+def get_sighdr_key(sighdr: bytes) -> RPMSigTag:
     ...
 
 
@@ -1312,12 +1530,28 @@ def hex_string(s: str) -> str:
     ...
 
 
+def is_conn_error(e: Exception) -> bool:
+    ...
+
+
 def is_debuginfo(
         name: str) -> bool:
     ...
 
 
+def is_requests_cert_error(
+        e: Exception) -> bool:
+    ...
+
+
 def load_json(filepath: str) -> Any:
+    ...
+
+
+def make_groups_spec(
+        grplist: List[TagGroupInfo],
+        name: str = 'buildsys-build',
+        buildgroup: Optional[str] = None) -> str:
     ...
 
 
@@ -1326,11 +1560,19 @@ def maven_info_to_nvr(
     ...
 
 
+def mavenLabel(maveninfo: MavenInfo) -> str:
+    ...
+
+
+def multibyte(data: bytes) -> int:
+    ...
+
+
 def openRemoteFile(
         relpath: str,
-        topurl: Optional[str],
-        topdir: Optional[str],
-        tempdir: Optional[str]):
+        topurl: Optional[str] = None,
+        topdir: Optional[str] = None,
+        tempdir: Optional[str] = None):
     ...
 
 
@@ -1377,8 +1619,19 @@ def parse_arches(
     ...
 
 
+def parse_pom(
+        path: Optional[str] = None,
+        contents: Optional[str] = None) -> POMInfo:
+    ...
+
+
 def parse_target_release(
         draft_release: str) -> str:
+    ...
+
+
+def pom_to_maven_info(
+        pominfo: POMInfo) -> MavenInfo:
     ...
 
 
@@ -1417,11 +1670,54 @@ def read_config_files(
 
 def remove_log_handler(
         logger: str,
-        handler: Any) -> None:
+        handler: Handler) -> None:
     ...
 
 
 def removeNonprintable(value: str) -> str:
+    ...
+
+
+def request_with_retry(
+        retries: int = 3,
+        backoff_factor: float = 0.3,
+        status_forcelist: Tuple[int, ...] = (500, 502, 504, 408, 429),
+        session: Optional[Session] = None) -> Session:
+    ...
+
+
+def rip_rpm_hdr(src: str) -> bytes:
+    ...
+
+
+def rip_rpm_sighdr(src: str) -> bytes:
+    ...
+
+
+def rpm_hdr_size(
+        f: Union[str, BufferedReader],
+        ofs: Optional[int] = None,
+        pad: bool = False) -> int:
+    ...
+
+
+def safe_xmlrpc_loads(s: str) -> Union[Fault, Any]:
+    ...
+
+
+def splice_rpm_sighdr(
+        sighdr: bytes,
+        src: str,
+        dst: Optional[str] = None,
+        bufsize: int = 8192,
+        callback: Optional[Callable[[bytes], None]] = None) -> str:
+    ...
+
+
+def spliced_sig_reader(
+        path: str,
+        sighdr: bytes,
+        bufsize: int = 8192) -> BufferedReader:
     ...
 
 
