@@ -36,12 +36,8 @@ from typing_extensions import Buffer, Protocol, Self, TypeAlias
 from xmlrpc.client import DateTime
 
 from koji_types import (
-    ArchiveInfo, ArchiveTypeInfo, BuildInfo, BuildrootInfo, BuildState,
-    BTypeInfo, ChannelInfo, CGInfo, FaultInfo, HostInfo, ListTasksOptions,
-    MavenInfo, PackageInfo, PermInfo, POMInfo, QueryOptions, RepoInfo,
-    RepoState, RPMInfo, RPMSignature, RPMSigTag, SearchResult,
-    TagBuildInfo, TagInfo, TagGroupInfo, TagInheritance, TagPackageInfo,
-    TargetInfo, TaskInfo, UserGroup, UserInfo, UserType, )
+    ArchiveInfo, BuildInfo, FaultInfo, MavenInfo, POMInfo, RepoInfo,
+    RPMInfo, RPMSignature, RPMSigTag, TagInfo, TagGroupInfo, TaskInfo,)
 from koji_types.protocols import (
     ClientSessionProtocol, MultiCallSessionProtocol, )
 
