@@ -436,6 +436,9 @@ class MultiCallSession(MultiCallSessionProtocol):
     def __exit__(self, _tp, _tv, _tb) -> bool:
         ...
 
+    def __getattr__(self, name: str) -> VirtualMethod[VirtualCall]:
+        ...
+
     def call_all(
             self,
             strict: Optional[bool] = None,
@@ -684,7 +687,7 @@ class VirtualCall(Generic[_VirtualResultType]):
         ...
 
 
-class VirtualMethod:
+class VirtualMethod(Generic[_VirtualResultType]):
 
     def __init__(
             self,
@@ -693,7 +696,7 @@ class VirtualMethod:
             session: Optional[ClientSession] = None):
         ...
 
-    def __call__(self, *args, **kwds) -> Any:
+    def __call__(self, *args, **kwds) -> _VirtualResultType:
         ...
 
 
