@@ -26,15 +26,13 @@ enumerations
 from . import GOptions
 
 from koji import ClientSession
-from typing import Callable, List, Protocol
+from typing import TYPE_CHECKING, Callable, List
 
 
-try:
-    from typing import Protocol  # noqa
-except ImportError:
-    # Python < 3.8 doesn't have typing.Protocol
-    class Protocol:
-        ...
+if TYPE_CHECKING:
+    from typing_extensions import Protocol
+else:
+    Protocol = object
 
 
 __all__ = (
