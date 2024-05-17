@@ -32,10 +32,10 @@ from typing import (
     Any, Callable, Dict, List, NoReturn, Optional, Tuple, Type, )
 
 
-ARGMAP: Dict[str, Optional[bool]]
-
 categories: Dict[str, str]
 greetings: Tuple[str, ...]
+
+ARGMAP: Dict[str, Optional[bool]]
 
 
 class DatetimeJSONEncoder(JSONEncoder):
