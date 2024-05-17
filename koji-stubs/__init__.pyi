@@ -60,6 +60,7 @@ BASEDIR: str
 CONTROL_CHARS: List[str]
 DEFAULT_AUTH_TIMEOUT: int
 DEFAULT_REQUEST_TIMEOUT: int
+
 DEP_CONFLICT: int
 DEP_ENHANCE: int
 DEP_OBSOLETE: int
@@ -68,6 +69,7 @@ DEP_RECOMMEND: int
 DEP_REQUIRE: int
 DEP_SUGGEST: int
 DEP_SUPPLEMENT: int
+
 DRAFT_RELEASE_DELIMITER: str
 DRAFT_RELEASE_FORMAT: str
 ENTITY_RE: Pattern
@@ -118,7 +120,6 @@ USER_STATUS: Enum
 
 
 # === Exceptions ===
-
 
 PythonImportError: TypeAlias = TypeAlias[ImportError]
 
