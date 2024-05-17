@@ -33,6 +33,7 @@ from typing import (
     Any, Callable, Dict, Generic, Iterable, List, Literal,
     NoReturn, Optional, Tuple, Type, TypeVar, Union, Set, overload, )
 from typing_extensions import Buffer, Protocol, Self, TypeAlias
+from weakref import ReferenceType
 from xmlrpc.client import DateTime
 
 from koji_types import (
@@ -458,7 +459,7 @@ class MultiCallSession(MultiCallSessionProtocol):
 
 class MultiCallHack:
 
-    def __init__(self, session: ClientSession):
+    def __init__(self, session: ReferenceType[ClientSession]):
         ...
 
     def __set__(self, obj: ClientSession, value: bool) -> None:
@@ -667,10 +668,10 @@ class SplicedSigStreamReader(RawIOBase):
         ...
 
 
-_VirtualResultType = TypeVar("_VirtualResultType")
+_VirtualCallResult = TypeVar("_VirtualCallResult")
 
 
-class VirtualCall(Generic[_VirtualResultType]):
+class VirtualCall(Generic[_VirtualCallResult]):
 
     def __init__(self, method: str, args, kwargs):
         ...
@@ -679,20 +680,30 @@ class VirtualCall(Generic[_VirtualResultType]):
         ...
 
     @property
-    def result(self) -> _VirtualResultType:
+    def result(self) -> _VirtualCallResult:
         ...
 
 
-class VirtualMethod(Generic[_VirtualResultType]):
+_VirtualMethodReturn = TypeVar("_VirtualMethodReturn")
+
+
+class VirtualMethod(Generic[_VirtualMethodReturn]):
 
     def __init__(
             self,
-            func,
+            func: Callable[[str, List, Dict], Any],
             name: str,
             session: Optional[ClientSession] = None):
         ...
 
-    def __call__(self, *args, **kwds) -> _VirtualResultType:
+    def __call__(self, *args, **kwds) -> _VirtualMethodReturn:
+        ...
+
+    @property
+    def __doc__(self) -> Optional[str]:  # type: ignore
+        ...
+
+    def __getattr__(self, name: str) -> VirtualMethod[_VirtualMethodReturn]:
         ...
 
 
