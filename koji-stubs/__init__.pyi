@@ -37,8 +37,9 @@ from weakref import ReferenceType
 from xmlrpc.client import DateTime
 
 from koji_types import (
-    ArchiveInfo, BuildInfo, FaultInfo, MavenInfo, POMInfo, RepoInfo,
-    RPMInfo, RPMSignature, RPMSigTag, TagInfo, TagGroupInfo, TaskInfo,)
+    ArchiveInfo, BuildInfo, BuildNVR, FaultInfo, MavenInfo, POMInfo,
+    RepoInfo, RPMInfo, RPMSignature, RPMSigTag, TagInfo, TagGroupInfo,
+    TaskInfo,)
 from koji_types.protocols import (
     ClientSessionProtocol, MultiCallSessionProtocol, )
 
@@ -744,7 +745,7 @@ def add_sys_logger(
 
 
 def buildLabel(
-        buildInfo: BuildInfo,
+        buildInfo: BuildNVR,
         showEpoch: bool = False) -> str:
     ...
 

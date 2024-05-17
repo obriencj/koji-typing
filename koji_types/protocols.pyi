@@ -515,6 +515,44 @@ class ClientSessionProtocol:
             pattern: Optional[str] = None) -> List[TagInfo]:
         ...
 
+    @overload
+    def listTaskOutput(
+            self,
+            task_id: int,
+            *,
+            all_volumes: bool = False,
+            strict: bool = False) -> Dict[str, List[str]]:
+        ...
+
+    @overload
+    def listTaskOutput(
+            self,
+            task_id: int,
+            stat: Literal[False],
+            all_volumes: bool = False,
+            strict: bool = False) -> Dict[str, List[str]]:
+        ...
+
+    @overload
+    def listTaskOutput(
+            self,
+            task_id: int,
+            stat: Literal[True],
+            all_volumes: bool = False,
+            strict: bool = False) -> Dict[str, Dict[str, Dict[str, Any]]]:
+        ...
+
+    @overload
+    def listTaskOutput(
+            self,
+            task_id: int,
+            stat: bool = False,
+            all_volumes: bool = False,
+            strict: bool = False) -> Union[Dict[str, List[str]],
+                                           Dict[str, Dict[str,
+                                                          Dict[str, Any]]]]:
+        ...
+
     def listTasks(
             self,
             opts: Optional[ListTasksOptions] = None,

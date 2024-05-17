@@ -26,7 +26,7 @@ enumerations
 from . import GOptions
 
 from koji import ClientSession
-from typing import TYPE_CHECKING, Callable, List
+from typing import TYPE_CHECKING, Callable, List, Optional
 
 
 if TYPE_CHECKING:
@@ -42,7 +42,7 @@ __all__ = (
 
 
 CLIHandler = Callable[[GOptions, ClientSession, List[str]],
-                      int]
+                      Optional[int]]
 """
 The callable signature used by Koji's CLI command handlers.
 """
@@ -57,7 +57,7 @@ class CLIProtocol(Protocol):
             self,
             goptions: GOptions,
             session: ClientSession,
-            args: List[str]) -> int:
+            args: List[str]) -> Optional[int]:
         ...
 
 
