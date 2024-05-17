@@ -1,7 +1,5 @@
 
 
-# we aren't stubbing these submodules yet
-
 koji.arch
 koji.context
 koji.daemon
@@ -13,16 +11,12 @@ koji.tasks
 koji.util
 koji.xmlrpcplus
 
-
-# elements of koji module itself
-
 koji.h
 koji.ClientSession.hub_version
 koji.ClientSession.hub_version_str
 koji.DBHandler
 koji.MultiCallHack.__set__
 koji.POMHandler
-
 
 koji_cli.lib.OptionParser
 
