@@ -13,14 +13,41 @@
 
 
 """
-Koji CLI - typing stubs
+Koji CLI - commands typing stubs
 
-Typing annotations stub for koji_cli.
+Typing annotations stub for koji_cli.commands
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
 """  # noqa: Y021
 
+
+from koji import ClientSession
+from koji_types import BuildNVR
+from optparse import Option
+from typing import Any, Dict, Optional, Tuple, Type
+
+
+class TimeOption(Option):
+    TYPES: Tuple[str, ...]
+    TYPE_CHECKER: Dict[str, Any]
+
+    @classmethod
+    def get_help(cls: Type) -> str:
+        ...
+
+
+def wait_repo(
+        session: ClientSession,
+        tag_id: int,
+        builds: List[BuildNVR],
+        poll_interval: int = 5,
+        timeout: int = 120):
+    ...
+
+
+def warn(msg: str) -> None:
+    ...
 
 
 # The end.

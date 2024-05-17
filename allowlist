@@ -24,4 +24,8 @@ koji.MultiCallHack.__set__
 koji.POMHandler
 
 
+koji_cli.commands.*
+koji_cli.lib.OptionParser
+
+
 # The end.

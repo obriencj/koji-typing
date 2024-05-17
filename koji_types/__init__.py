@@ -42,17 +42,13 @@ except ImportError:
     # Python < 3.10 doesn't have typing.TypedDict
     from typing_extensions import TypedDict
 
-try:
-    from contextlib import AbstractContextManager as ContextManager
-except ImportError:
-    from typing import ContextManager
-
 
 __all__ = (
     "ArchiveInfo",
     "ArchiveTypeInfo",
     "AuthType",
     "BuildInfo",
+    "BuildNVR",
     "BuildrootInfo",
     "BuildrootState",
     "BuildrootType",
@@ -368,7 +364,22 @@ class BuildrootInfo(TypedDict):
     workdir: str
 
 
-class BuildInfo(TypedDict):
+class BuildNVR(TypedDict):
+
+    name: str
+    """ The name component of the NVR of a build. """
+
+    version: str
+    """ version portion of the NVR for a build """
+
+    release: str
+    """ release portion of the NVR for a build """
+
+    epoch: Optional[str]
+    """ optional epoch, or None """
+
+
+class BuildInfo(BuildNVR):
     """
     Data representing a koji build. These are typically obtained via
     the ``getBuild`` XMLRPC call.
@@ -409,21 +420,12 @@ class BuildInfo(TypedDict):
     :since: koji 1.34.0
     """
 
-    epoch: str
-    """ epoch of this build, or None if unspecified. This field is
-    typically only used for RPM builds which have specified an epoch
-    in their spec. """
-
     extra: dict
     """ flexible additional information for this build, used by content
     generators """
 
     id: int
     """ Same as build_id """
-
-    name: str
-    """ The name component of the NVR of this build. Should match the
-    package_name field. """
 
     nvr: str
     """ The unique NVR of the build, comprised of the name, version, and
@@ -439,10 +441,8 @@ class BuildInfo(TypedDict):
     """ The corresponding package ID for this build. """
 
     package_name: str
-    """ The corresponding package name for this build. Should match the
-    name field. """
+    """ should match the name value """
 
-    release: str
     source: str
     start_time: str
     start_ts: float
@@ -451,9 +451,6 @@ class BuildInfo(TypedDict):
     """ state of the build, see `BuildState` """
 
     task_id: int
-
-    version: str
-    """ version portion of the NVR for the build """
 
     volume_id: int
     """ ID of the storage volume that the archives for this build will be
@@ -500,7 +497,6 @@ class BTypeInfo(TypedDict):
 
     name: str
     """ the name of the btype """
-
 
 
 class RPMInfo(TypedDict):

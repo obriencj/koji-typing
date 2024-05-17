@@ -13,14 +13,26 @@
 
 
 """
-Koji CLI - typing stubs
+Koji CLI - commands typing stubs
 
-Typing annotations stub for koji_cli.
+Typing annotations stub for koji_cli.commands
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
 """  # noqa: Y021
 
+
+from optparse import Option
+from typing import Any, Dict, Tuple, Type
+
+
+class TimeOption(Option):
+    TYPES: Tuple[str, ...]
+    TYPE_CHECKER: Dict[str, Any]
+
+    @classmethod
+    def get_help(cls: Type) -> str:
+        ...
 
 
 # The end.
