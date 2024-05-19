@@ -54,11 +54,13 @@ __all__ = (
     "BuildrootType",
     "BuildState",
     "BTypeInfo",
+    "ChangelogEntry",
     "ChannelInfo",
     "ChecksumType",
     "CGInfo",
     "CLIHandler",
     "CLIProtocol",
+    "EventInfo",
     "GOptions",
     "HistoryEntry",
     "HostInfo",
@@ -1132,6 +1134,18 @@ class POMInfo(TypedDict):
     groupId: str
     artifactId: str
     version: str
+
+
+class ChangelogEntry(TypedDict):
+    author: str
+    date: datetime
+    date_ts: int
+    text: str
+
+
+class EventInfo(TypedDict):
+    id: int
+    ts: int
 
 
 #

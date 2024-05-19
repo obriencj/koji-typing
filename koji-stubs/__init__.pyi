@@ -15,7 +15,7 @@
 """
 Koji - typing stubs
 
-Typing annotations stub for koji.
+Typing annotations stub for koji
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
@@ -42,6 +42,7 @@ from koji_types import (
     TaskInfo,)
 from koji_types.protocols import (
     ClientSessionProtocol, MultiCallSessionProtocol, )
+from koji_types.rpm import RPMHeader
 
 
 __version_info__: Tuple[int, ...]
@@ -887,7 +888,7 @@ def generate_comps(
 
 
 def get_header_field(
-        hdr: bytes,
+        hdr: RPMHeader,
         name: str,
         src_arch: bool = False) -> Union[str, List[str]]:
     ...
@@ -908,7 +909,7 @@ def get_profile_module(
 
 def get_rpm_header(
         f: Union[bytes, str],
-        ts: Optional[int] = None) -> bytes:
+        ts: Optional[int] = None) -> RPMHeader:
     ...
 
 
