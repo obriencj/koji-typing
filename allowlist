@@ -1,5 +1,4 @@
 
-
 koji.arch
 koji.context
 koji.daemon
@@ -8,7 +7,6 @@ koji.policy
 koji.rpmdiff
 koji.server
 koji.tasks
-koji.util
 koji.xmlrpcplus
 
 koji.h
@@ -19,6 +17,11 @@ koji.MultiCallHack.__set__
 koji.POMHandler
 
 koji_cli.lib.OptionParser
+
+
+# these are added or modified in an unreleased koji version
+koji.util.rmtree
+koji.util.SimpleProxyLogger
 
 
 # The end.
