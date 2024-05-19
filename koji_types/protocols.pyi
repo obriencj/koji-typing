@@ -22,12 +22,13 @@ Koji Types - Client Session Protocol method declarations
 
 from . import (
     ArchiveInfo, ArchiveTypeInfo, BuildInfo, BuildrootInfo, BuildState,
-    BTypeInfo, ChannelInfo, CGInfo, FaultInfo, HostInfo, ListTasksOptions,
-    MavenInfo, PackageInfo, PermInfo, POMInfo, QueryOptions, RepoInfo,
-    RepoState, RPMInfo, RPMSignature, RPMSigTag, SearchResult,
-    TagBuildInfo, TagInfo, TagGroupInfo, TagInheritance, TagPackageInfo,
-    TargetInfo, TaskInfo, UserGroup, UserInfo, UserType, )
+    BTypeInfo, ChangelogEntry, ChannelInfo, CGInfo, EventInfo, FaultInfo,
+    HostInfo, ListTasksOptions, MavenInfo, PackageInfo, PermInfo, POMInfo,
+    QueryOptions, RepoInfo, RepoState, RPMInfo, RPMSignature, RPMSigTag,
+    SearchResult, TagBuildInfo, TagInfo, TagGroupInfo, TagInheritance,
+    TagPackageInfo, TargetInfo, TaskInfo, UserGroup, UserInfo, UserType, )
 
+from datetime import datetime
 from koji import VirtualCall
 from typing import (
     Any, Dict, List, Literal, Optional, Tuple, Union, overload, )
@@ -130,10 +131,32 @@ class ClientSessionProtocol:
             strict: bool = False) -> BuildrootInfo:
         ...
 
+    def getChangelogEntries(
+            self,
+            buildID: Optional[int] = None,
+            taskID: Optional[int] = None,
+            filepath: Optional[str] = None,
+            author: Optional[str] = None,
+            before: Union[datetime, str, int, None] = None,
+            after: Union[datetime, str, int, None] = None,
+            queryOpts: Optional[QueryOptions] = None,
+            strict: bool = False) -> List[ChangelogEntry]:
+        ...
+
     def getChannel(
             self,
             channelInfo: Union[int, str],
             strict: bool = False) -> ChannelInfo:
+        ...
+
+    def getEvent(
+            self,
+            id: int) -> EventInfo:
+        ...
+
+    def getLastEvent(
+            self,
+            before: Union[int, float, None] = None) -> EventInfo:
         ...
 
     def getFullInheritance(
