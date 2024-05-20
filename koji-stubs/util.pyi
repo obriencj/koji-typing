@@ -15,7 +15,7 @@
 """
 Koji - typing stubs
 
-Typing annotations stub for koji.arch
+Typing annotations stub for koji.util
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3

@@ -1,0 +1,10 @@
+
+# these are added or modified in an unreleased koji version
+
+koji.policy.MatchAllTest
+koji.policy.MatchAnyTest
+koji.util.rmtree
+koji.util.SimpleProxyLogger
+
+
+# The end.
