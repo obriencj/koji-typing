@@ -46,6 +46,7 @@ anon_handle_list_tagged: CLIHandler
 anon_handle_list_tags: CLIHandler
 anon_handle_list_targets: CLIHandler
 anon_handle_list_untagged: CLIHandler
+anon_handle_list_users: CLIHandler
 anon_handle_list_volumes: CLIHandler
 anon_handle_mock_config: CLIHandler
 anon_handle_repoinfo: CLIHandler

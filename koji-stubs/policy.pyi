@@ -67,11 +67,13 @@ class HasTest(BaseSimpleTest):
 
 
 class MatchAllTest(BaseSimpleTest):
-    ...
+
+    field: Optional[str]
 
 
 class MatchAnyTest(BaseSimpleTest):
-    ...
+
+    field: Optional[str]
 
 
 class MatchTest(BaseSimpleTest):
