@@ -610,7 +610,7 @@ class ClientSessionProtocol:
         # :since: koji 1.34
         ...
 
-    @overload
+    @overload  # type: ignore
     def queryHistory(
             self,
             tables: Optional[List[str]] = None,

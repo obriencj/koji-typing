@@ -15,6 +15,7 @@ VERSION := $(shell $(PYTHON) ./setup.py --version)
 ARCHIVE := $(PROJECT)-$(VERSION).tar.gz
 
 
+
 # for hosting local docs preview
 PORT ?= 8900
 
@@ -29,7 +30,7 @@ endef
 
 ##@ Basic Targets
 
-default: quick-test	## Runs the quick-test target
+default: mypy	## Runs the flake8 and mypy targets
 
 
 help:  ## Display this help
@@ -103,7 +104,7 @@ flake8:	requires-tox	## Launches flake8 via tox
 	@$(TOX) -qe flake8
 
 
-mypy:	requires-tox	## Launches mypy via tox
+mypy:	requires-tox flake8	## Launches mypy stubtest via tox
 	@$(TOX) -qe mypy
 
 
@@ -111,11 +112,7 @@ coverage: requires-tox	## Collects coverage report
 	@$(TOX) -qe coverage
 
 
-quick-test: requires-tox flake8	## Launches nosetest using the default python
-	@$(TOX) -qe stubtest
-
-
-koji-git: requires-tox flake8	## Launches nosetest with koji installed from git
+koji-git: requires-tox flake8	## Launches mypy stubtest with koji installed from git
 	@$(TOX) -qe koji-git
 
 
