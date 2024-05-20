@@ -1,13 +1,6 @@
 
-koji.arch
-koji.context
-koji.daemon
-koji.plugin
-koji.policy
-koji.rpmdiff
-koji.server
-koji.tasks
-koji.xmlrpcplus
+
+# values we want to omit
 
 koji.h
 koji.ClientSession.hub_version
@@ -15,13 +8,19 @@ koji.ClientSession.hub_version_str
 koji.DBHandler
 koji.MultiCallHack.__set__
 koji.POMHandler
-
 koji_cli.lib.OptionParser
 
 
-# these are added or modified in an unreleased koji version
-koji.util.rmtree
-koji.util.SimpleProxyLogger
+# TODO, as-yet un-stubbed
+
+koji.arch
+koji.context
+koji.daemon
+koji.plugin
+koji.rpmdiff
+koji.server
+koji.tasks
+koji.xmlrpcplus
 
 
 # The end.
