@@ -1056,19 +1056,19 @@ class GOptions(Values):
     """
 
     authtype: str
-    cert: str = None
-    debug: bool = False
-    force_auth: bool = False
-    keytab: str = None
-    noauth: bool = False
-    password: str = None
-    plugin_paths: str = None
-    principal: str = None
+    cert: Optional[str]
+    debug: bool
+    force_auth: bool
+    keytab: Optional[str]
+    noauth: bool
+    password: Optional[str]
+    plugin_paths: Optional[str]
+    principal: Optional[str]
     profile: str
-    quiet: bool = False
-    runas: str = None
+    quiet: bool
+    runas: Optional[str]
     server: str
-    skip_main: bool = False
+    skip_main: bool
     topdir: str
     topurl: str
     user: str
