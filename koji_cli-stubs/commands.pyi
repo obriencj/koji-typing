@@ -162,6 +162,7 @@ handle_write_signed_rpm: CLIHandler
 def print_group_list_req_group(group: str) -> None:
     ...
 
+
 def print_group_list_req_package(pkg: str) -> None:
     ...
 
