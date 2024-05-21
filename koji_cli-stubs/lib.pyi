@@ -27,7 +27,7 @@ from koji import ClientSession
 from koji_types import (
     ArchiveInfo, BuildInfo, BuildNVR, GOptions, TagInheritanceEntry,
     RPMInfo, TaskInfo, )
-from optparse import Option, Values
+from optparse import Option, OptionParser, Values
 from typing import (
     Any, Callable, Dict, List, NoReturn, Optional, Tuple, Type, )
 
