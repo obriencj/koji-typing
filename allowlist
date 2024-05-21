@@ -11,9 +11,13 @@ koji.POMHandler
 koji_cli.lib.OptionParser
 
 
-# TODO, as-yet un-stubbed
+# has an rpm dependency
 
 koji.arch
+
+
+# TODO, as-yet un-stubbed
+
 koji.context
 koji.daemon
 koji.plugin
