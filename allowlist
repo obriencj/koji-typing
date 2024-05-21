@@ -3,20 +3,17 @@
 # values we want to omit
 
 koji.h
-koji.ClientSession.hub_version
-koji.ClientSession.hub_version_str
 koji.DBHandler
-koji.MultiCallHack.__set__
 koji.POMHandler
 
-koji.arch.getMultiArchInfo
+# this one has a default at runtime which depends on the system
+# architecture, but our stub just declares it as 'noarch'
 
-koji_cli.lib.OptionParser
+koji.arch.getMultiArchInfo
 
 
 # TODO, as-yet un-stubbed
 
-koji.context
 koji.daemon
 koji.plugin
 koji.server

@@ -1,10 +1,14 @@
 
 # these are added or modified in an unreleased koji version
 
+koji.ClientSession.hub_version
+koji.ClientSession.hub_version_str
+
 koji.policy.MatchAllTest
 koji.policy.MatchAnyTest
 koji.util.rmtree
 koji.util.SimpleProxyLogger
+
 koji_cli.commands.anon_handle_list_users
 
 
