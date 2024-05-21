@@ -19,7 +19,6 @@ koji_cli.lib.OptionParser
 koji.context
 koji.daemon
 koji.plugin
-koji.rpmdiff
 koji.server
 koji.tasks
 koji.xmlrpcplus
