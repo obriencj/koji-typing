@@ -23,11 +23,47 @@ Typing annotations stub for koji.arch
 
 
 from koji_types.arch import Arch
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, overload
 
 
 arches: Dict[Arch, Arch]
+canonArch: Optional[Arch]
 multilibArches: Dict[Arch, Tuple[Arch, ...]]
+
+
+class ArchStorage:
+
+    archlist: Arch
+    basearch: Arch
+    bestarch: Arch
+    canonarch: Arch
+    compatarches: Optional[List[Arch]]
+    multilib: bool
+
+    def __init__(self):
+        ...
+
+    def get_arch_list(
+            self,
+            arch: Arch) -> List[Arch]:
+        ...
+
+    def get_best_arch_from_list(
+            self,
+            archlist: List[Arch],
+            fromarch: Optional[Arch] = None) -> Arch:
+        ...
+
+    def score(
+            self,
+            arch: Arch) -> int:
+        ...
+
+    def setup_arch(
+            self,
+            arch: Optional[Arch] = None,
+            archlist_includes_compat_arch: bool = True) -> None:
+        ...
 
 
 def archDifference(
@@ -47,9 +83,61 @@ def getArchList(
     ...
 
 
+def getBaseArch(
+        myarch: Optional[Arch] = None) -> Arch:
+    ...
+
+
+def getBestArch(
+        myarch: Optional[Arch] = None) -> Arch:
+    ...
+
+
 def getBestArchFromList(
         archlist: List[Arch],
         myarch: Optional[Arch] = None) -> Arch:
+    ...
+
+
+@overload
+def getCanonArch(
+        skipRpmPlatform: bool = False) -> Arch:
+    ...
+
+
+@overload
+def getCanonArch(
+        skipRpmPlatform: int = 0) -> Arch:
+    ...
+
+
+def getCanonARMArch(
+        arch: Arch) -> Arch:
+    ...
+
+
+def getCanonPPCArch(
+        arch: Arch) -> Arch:
+    ...
+
+
+def getCanonSPARCArch(
+        arch: Arch) -> Arch:
+    ...
+
+
+def getCanonX86_64Arch(
+        arch: Arch) -> Arch:
+    ...
+
+
+def getCanonX86Arch(
+        arch: Arch) -> Arch:
+    ...
+
+
+def getMultiArchInfo(
+        arch: Optional[Arch] = None) -> Optional[List[Arch]]:
     ...
 
 
@@ -59,7 +147,7 @@ def isMultiLibArch(
 
 
 def legitMultiArchesInSameLib(
-        arch: Arch) -> List[Arch]:
+        arch: Optional[Arch] = None) -> List[Arch]:
     ...
 
 
