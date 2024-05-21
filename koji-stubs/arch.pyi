@@ -19,7 +19,7 @@ Typing annotations stub for koji.arch
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
-"""  # noqa: Y021
+"""
 
 
 from koji_types.arch import Arch
@@ -137,7 +137,7 @@ def getCanonX86Arch(
 
 
 def getMultiArchInfo(
-        arch: Optional[Arch] = None) -> Optional[List[Arch]]:
+        arch: Arch = 'noarch') -> Optional[List[Arch]]:
     ...
 
 
