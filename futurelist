@@ -1,11 +1,20 @@
 
-# these are added or modified in an unreleased koji version
+# these are added, removed, or modified in an unreleased koji
+# version. Generally we will be targeting the most recently released
+# version of koji, which will need these added to the allowlist. But
+# when comparing to upstream git of koji, we won't use this list.
+
 
 koji.ClientSession.hub_version
 koji.ClientSession.hub_version_str
+koji.DBHandler
+
+koji.daemon.TaskManager.checkAvailDelay
+koji.daemon.TaskManager.cleanDelayTimes
 
 koji.policy.MatchAllTest
 koji.policy.MatchAnyTest
+
 koji.util.rmtree
 koji.util.SimpleProxyLogger
 

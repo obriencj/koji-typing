@@ -13,17 +13,14 @@
 
 
 """
-Koji CLI Types - typing declatations for koji data structures
+Koji Plugin Types - typing declatations for koji data structures
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
 """
 
 
-from . import GOptions
-
-from koji import ClientSession
-from typing import TYPE_CHECKING, Callable, List, Optional
+from typing import TYPE_CHECKING, Callable
 
 
 if TYPE_CHECKING:
@@ -33,28 +30,20 @@ else:
 
 
 __all__ = (
-    "CLIHandler",
-    "CLIProtocol",
+    "CallbackHandler",
+    "CallbackProtocol",
 )
 
 
-CLIHandler = Callable[[GOptions, ClientSession, List[str]],
-                      Optional[int]]
-"""
-The callable signature used by Koji's CLI command handlers.
-"""
+CallbackHandler = Callable[[str, ...], None]
 
 
-class CLIProtocol(Protocol):
-    """
-    A Protocol variation on the `CLIHandler` callable definition.
-    """
+class CallbackProtocol(Protocol):
 
     def __call__(
             self,
-            goptions: GOptions,
-            session: ClientSession,
-            args: List[str]) -> Optional[int]:
+            cbtype: str,
+            *args, **kwargs) -> None:
         ...
 
 
