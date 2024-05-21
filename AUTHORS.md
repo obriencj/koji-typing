@@ -2,9 +2,8 @@
 # Original Author
 
 Christopher O'Brien <obriencj@gmail.com>
-https://obriencj.preoccupied.net/
+  https://obriencj.preoccupied.net/
 
 
-# Contributors
-
+## Contributors
 ...
