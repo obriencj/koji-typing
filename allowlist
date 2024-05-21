@@ -8,12 +8,10 @@ koji.ClientSession.hub_version_str
 koji.DBHandler
 koji.MultiCallHack.__set__
 koji.POMHandler
+
+koji.arch.getMultiArchInfo
+
 koji_cli.lib.OptionParser
-
-
-# has an rpm dependency
-
-koji.arch
 
 
 # TODO, as-yet un-stubbed
