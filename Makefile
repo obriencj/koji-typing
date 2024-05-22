@@ -107,29 +107,6 @@ twine:	requires-tox build	## Launches twine via tox
 	@$(TOX) -qe twine
 
 
-##@ Documentation
-
-docs: clean-docs requires-tox docs/overview.rst	## Build sphinx docs
-	@$(TOX) -qe sphinx
-
-
-overview: docs/overview.rst  ## rebuilds the overview from README.md
-
-
-docs/overview.rst: README.md
-	@$(call checkfor,pandoc)
-	@pandoc --from=markdown --to=rst -o $@ $<
-
-
-clean-docs:	## Remove built docs
-	@rm -rf build/sphinx
-
-
-preview-docs: docs	## Build and hosts docs locally
-	@$(PYTHON) -B -m http.server -d build/sphinx \
-	  -b 127.0.0.1 $(PORT)
-
-
 ##@ Workflow Features
 
 project:	## project name
@@ -141,20 +118,11 @@ version:	## project version
 python:		## detected python executable
 	@echo $(PYTHON)
 
-release-notes:	## markdown variation of current version release notes
-	@$(call checkfor,pandoc)
-	@pandoc --from=rst --to=markdown -o - \
-		docs/release_notes/v$(VERSION).rst
-
-
-requires-git:
-	@$(call checkfor,git)
-
 requires-tox:
 	@$(call checkfor,$(TOX))
 
 
-.PHONY: build clean clean-built clean-docs default deploy-docs docs flake8 help koji-git mypy overview project python quick-test release-notes report-python requires-git requires-tox stage-docs test tidy version
+.PHONY: build clean clean-built default flake8 help koji-git mypy project purge python report-python requires-tox tidy twine version
 
 
 # The end.
