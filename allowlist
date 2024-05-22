@@ -16,7 +16,6 @@ koji.arch.getMultiArchInfo
 
 koji.server
 koji.tasks
-koji.xmlrpcplus
 
 
 # The end.
