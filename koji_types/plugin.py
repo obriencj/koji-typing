@@ -20,6 +20,7 @@ Koji Plugin Types - typing declatations for koji data structures
 """
 
 
+from enum import StrEnum, auto
 from typing import TYPE_CHECKING, Callable
 
 
@@ -30,21 +31,59 @@ else:
 
 
 __all__ = (
+    "CallbackDecorator",
     "CallbackHandler",
     "CallbackProtocol",
+    "CallbackType",
 )
 
 
-CallbackHandler = Callable[[str, ...], None]
+class CallbackType(StrEnum):
+
+    # hub
+    postBuildPromote = 'postBuildPromote'
+    postBuildStateChange = 'postBuildStateChange'
+    postCommit = 'postCommit'
+    postImport = 'postImport'
+    postPackageListChange = 'postPackageListChange'
+    postRPMSign = 'postRPMSign'
+    postRepoDone = 'postRepoDone'
+    postRepoInit = 'postRepoInit'
+    postTag = 'postTag'
+    postTaskStateChange = 'postTaskStateChange'
+    postUntag = 'postUntag'
+    preBuildPromote = 'preBuildPromote'
+    preBuildStateChange = 'preBuildStateChange'
+    preCommit = 'preCommit'
+    preImport = 'preImport'
+    prePackageListChange = 'prePackageListChange'
+    preRPMSign = 'preRPMSign'
+    preRepoDone = 'preRepoDone'
+    preRepoInit = 'preRepoInit'
+    preTag = 'preTag'
+    preTaskStateChange = 'preTaskStateChange'
+    preUntag = 'preUntag'
+
+    # builder
+    postCreateDistRepo = 'postCreateDistRepo'
+    postCreateRepo = 'postCreateRepo'
+    postSCMCheckout = 'postSCMCheckout'
+    preSCMCheckout = 'preSCMCheckout'
+
+
+CallbackHandler = Callable[[CallbackType, ...], None]
 
 
 class CallbackProtocol(Protocol):
 
     def __call__(
             self,
-            cbtype: str,
+            cbtype: CallbackType,
             *args, **kwargs) -> None:
         ...
+
+
+CallbackDecorator = Callable[[CallbackHandler], CallbackHandler]
 
 
 # The end.

@@ -14,7 +14,6 @@ koji.arch.getMultiArchInfo
 
 # TODO, as-yet un-stubbed
 
-koji.plugin
 koji.server
 koji.tasks
 koji.xmlrpcplus
