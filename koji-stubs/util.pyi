@@ -19,7 +19,7 @@ Typing annotations stub for koji.util
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
-"""  # noqa: Y021
+"""
 
 
 from . import ClientSession
