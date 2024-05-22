@@ -12,12 +12,10 @@ TOX := $(TOX)
 PROJECT := $(shell $(PYTHON) ./setup.py --name)
 VERSION := $(shell $(PYTHON) ./setup.py --version)
 
-ARCHIVE := $(PROJECT)-$(VERSION).tar.gz
+WHEEL := dist/$(subst -,_,$(PROJECT))-$(VERSION)-py3-none-any.whl
 
-
-
-# for hosting local docs preview
-PORT ?= 8900
+DIRS := koji-stubs koji_cli-stubs koji_types
+SOURCES := setup.cfg $(foreach d,$(DIRS),$(wildcard $(d)/*.py $(d)/*.pyi))
 
 
 define checkfor
@@ -44,19 +42,22 @@ report-python:
 
 ##@ Local Build and Install
 
-build: clean-built report-python flake8	## Produces a wheel using the default system python
-	@$(TOX) -qe build
+$(WHEEL): $(SOURCES)
+	@$(TOX) -qe flake8 && $(TOX) -qe build
+
+build: $(WHEEL)	## Produces a wheel using the default system python
 
 
-install: build	## Installs using the default python for the current user
+install: $(WHEEL)	## Installs using the default python for the current user
 ifeq ($(UID),"0")
 	@$(PYTHON) -B -m pip.__main__ \
 		install -IU --no-deps \
-		dist/$(PROJECT)-$(VERSION)-py3-none-any.whl
+		$(WHEEL)
 else
 	$(PYTHON) -B -m pip.__main__ \
 		install -IU --no-deps --user \
-		dist/$(PROJECT)-$(VERSION)-py3-none-any.whl
+		$(WHEEL)
+
 endif
 
 
@@ -82,7 +83,6 @@ tidy:	## Removes stray eggs and .pyc files
 
 clean-built:
 	@rm -rf build/* dist/*
-	@if [ -f ./"$(ARCHIVE)" ] ; then rm -f ./"$(ARCHIVE)" ; fi
 
 
 clean: clean-built tidy	## Removes built content, test logs, coverage reports
@@ -91,29 +91,20 @@ clean: clean-built tidy	## Removes built content, test logs, coverage reports
 
 ##@ Testing
 
-
-test: clean requires-tox	## Launches tox
-	@$(TOX) -q
-
-
-bandit:	requires-tox	## Launches bandit via tox
-	@$(TOX) -qe bandit
-
-
 flake8:	requires-tox	## Launches flake8 via tox
 	@$(TOX) -qe flake8
 
 
-mypy:	requires-tox flake8	## Launches mypy stubtest via tox
+mypy:	requires-tox flake8	## Launches stubtest via tox
 	@$(TOX) -qe mypy
 
 
-coverage: requires-tox	## Collects coverage report
-	@$(TOX) -qe coverage
-
-
-koji-git: requires-tox flake8	## Launches mypy stubtest with koji installed from git
+koji-git: requires-tox flake8	## Launches stubtest via tox with koji from git
 	@$(TOX) -qe koji-git
+
+
+twine:	requires-tox build	## Launches twine via tox
+	@$(TOX) -qe twine
 
 
 ##@ Documentation
@@ -163,7 +154,7 @@ requires-tox:
 	@$(call checkfor,$(TOX))
 
 
-.PHONY: archive build clean clean-built clean-docs default deploy-docs docs flake8 help koji-git mypy overview project python quick-test release-notes report-python requires-git requires-tox stage-docs test tidy version
+.PHONY: build clean clean-built clean-docs default deploy-docs docs flake8 help koji-git mypy overview project python quick-test release-notes report-python requires-git requires-tox stage-docs test tidy version
 
 
 # The end.
