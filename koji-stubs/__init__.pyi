@@ -41,7 +41,8 @@ from koji_types import (
     RepoInfo, RPMInfo, RPMSignature, RPMSigTag, TagInfo, TagGroupInfo,
     TaskInfo,)
 from koji_types.protocols import (
-    ClientSessionProtocol, MultiCallSessionProtocol, )
+    ClientSession as ClientSessionProtocol,
+    MultiCallSession as MultiCallSessionProtocol, )
 from koji_types.rpm import RPMHeader
 
 

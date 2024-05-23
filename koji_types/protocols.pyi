@@ -36,15 +36,6 @@ from typing_extensions import Protocol, TypeAlias
 from preoccupied.proxytype import proxytype
 
 
-ClientSessionProtocol: TypeAlias = TypeAlias[ClientSession]
-
-HostProtocol: TypeAlias = TypeAlias[Host]
-
-MultiCallHostProtocol: TypeAlias = TypeAlias[MultiCallHost]
-
-MultiCallSessionProtocol: TypeAlias = TypeAlias[MultiCallSession]
-
-
 class ClientSession(Protocol):
     # This is non-runtime class which presents the interfaces for the
     # baseline koji hub API calls.

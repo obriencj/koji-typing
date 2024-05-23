@@ -21,26 +21,26 @@ Koji Types - Client Session Protocols
 
 
 __all__ = (
-    "ClientSessionProtocol",
-    "HostProtocol",
-    "MultiCallHostProtocol",
-    "MultiCallSessionProtocol",
+    "ClientSession",
+    "Host",
+    "MultiCallHost",
+    "MultiCallSession",
 )
 
 
-class ClientSessionProtocol:
+class ClientSession:
     pass
 
 
-class HostProtocol:
+class Host:
     pass
 
 
-class MultiCallSessionProtocol:
+class MultiCallSession:
     pass
 
 
-class MultiCallHostProtocol:
+class MultiCallHost:
     pass
 
 
