@@ -12,10 +12,15 @@ koji.POMHandler
 koji.arch.getMultiArchInfo
 
 
+# this one confuses stubtest because it uses double-underscore
+# argument names, which is interpreted as positional-only in older
+# typing styles
+koji.tasks.BaseTaskHandler.subtask2
+
+
 # TODO, as-yet un-stubbed
 
 koji.server
-koji.tasks
 
 
 # The end.
