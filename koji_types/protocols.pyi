@@ -32,11 +32,20 @@ from datetime import datetime
 from koji import VirtualCall
 from typing import (
     Any, Dict, List, Literal, Optional, Tuple, Union, overload, )
-from typing_extensions import Protocol
+from typing_extensions import Protocol, TypeAlias
 from preoccupied.proxytype import proxytype
 
 
-class ClientSessionProtocol(Protocol):
+ClientSessionProtocol: TypeAlias = TypeAlias[ClientSession]
+
+HostProtocol: TypeAlias = TypeAlias[Host]
+
+MultiCallHostProtocol: TypeAlias = TypeAlias[MultiCallHost]
+
+MultiCallSessionProtocol: TypeAlias = TypeAlias[MultiCallSession]
+
+
+class ClientSession(Protocol):
     # This is non-runtime class which presents the interfaces for the
     # baseline koji hub API calls.
 
@@ -408,7 +417,7 @@ class ClientSessionProtocol(Protocol):
         ...
 
     @property
-    def host(self) -> HostProtocol:
+    def host(self) -> Host:
         ...
 
     def listArchives(
@@ -687,7 +696,7 @@ class ClientSessionProtocol(Protocol):
         ...
 
 
-class HostProtocol(Protocol):
+class Host(Protocol):
 
     def taskSetWait(
             self,
@@ -704,16 +713,16 @@ class HostProtocol(Protocol):
         ...
 
 
-@proxytype(HostProtocol, VirtualCall)
-class MultiCallHostProtocol(Protocol):
+@proxytype(Host, VirtualCall)
+class MultiCallHost(Protocol):
     ...
 
 
-@proxytype(ClientSessionProtocol, VirtualCall)
-class MultiCallSessionProtocol(Protocol):
+@proxytype(ClientSession, VirtualCall)
+class MultiCallSession(Protocol):
 
     @property
-    def host(self) -> MultiCallHostProtocol:
+    def host(self) -> MultiCallHost:
         ...
 
 
