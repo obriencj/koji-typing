@@ -32,10 +32,11 @@ from datetime import datetime
 from koji import VirtualCall
 from typing import (
     Any, Dict, List, Literal, Optional, Tuple, Union, overload, )
+from typing_extensions import Protocol
 from preoccupied.proxytype import proxytype
 
 
-class ClientSessionProtocol:
+class ClientSessionProtocol(Protocol):
     # This is non-runtime class which presents the interfaces for the
     # baseline koji hub API calls.
 
@@ -406,6 +407,10 @@ class ClientSessionProtocol:
             strict: bool = False) -> bool:
         ...
 
+    @property
+    def host(self) -> HostProtocol:
+        ...
+
     def listArchives(
             self,
             buildID: Optional[int] = None,
@@ -682,9 +687,34 @@ class ClientSessionProtocol:
         ...
 
 
-@proxytype(ClientSessionProtocol, VirtualCall)
-class MultiCallSessionProtocol:
+class HostProtocol(Protocol):
+
+    def taskSetWait(
+            self,
+            parent: int,
+            tasks: Optional[List[int]]) -> None:
+        ...
+
+    def taskUnwait(
+            self,
+            parent: int) -> None:
+        ...
+
+    def verify(self) -> bool:
+        ...
+
+
+@proxytype(HostProtocol, VirtualCall)
+class MultiCallHostProtocol(Protocol):
     ...
+
+
+@proxytype(ClientSessionProtocol, VirtualCall)
+class MultiCallSessionProtocol(Protocol):
+
+    @property
+    def host(self) -> MultiCallHostProtocol:
+        ...
 
 
 # The end.
