@@ -115,7 +115,7 @@ class BaseTaskHandler:
 
     def setManager(
             self,
-            manager: TaskManager):
+            manager: TaskManager) -> None:
         ...
 
     def subtask(
@@ -123,7 +123,6 @@ class BaseTaskHandler:
             method: str,
             arglist: List,
             **opts) -> Any:
-        # TODO
         ...
 
     def subtask2(  # type: ignore
@@ -132,7 +131,6 @@ class BaseTaskHandler:
             __method: str,
             *args,
             **kwargs) -> Any:
-        # TODO
         ...
 
     @property
