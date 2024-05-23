@@ -240,6 +240,7 @@ class ClientSession(ClientSessionProtocol):
     baseurl: str
     exclusive: bool
     logger: Logger
+    multicall: MultiCallHack
     opts: Dict[str, Any]
     rsession: Optional[Session]
 
@@ -319,11 +320,6 @@ class ClientSession(ClientSessionProtocol):
     def logout(
             self,
             session_id: Optional[int] = None) -> None:
-        ...
-
-    @property
-    def multicall(
-            self) -> MultiCallHack:
         ...
 
     def multiCall(
