@@ -326,11 +326,6 @@ class ClientSession(ClientSessionProtocol):
             self) -> MultiCallHack:
         ...
 
-    @multicall.setter
-    def multicall(
-            self, value: bool) -> None:
-        ...
-
     def multiCall(
             self,
             strict: bool = False,
@@ -474,8 +469,9 @@ class MultiCallHack:
     def __init__(self, session: ReferenceType[ClientSession]):
         ...
 
-    # def __set__(self, obj: ClientSession, value: bool) -> None:
-    #     ...
+    def __set__(self, obj: ClientSession, value: bool) -> None:
+        # not present at runtime, but used to fix assignments
+        ...
 
     def __bool__(self) -> bool:
         ...
