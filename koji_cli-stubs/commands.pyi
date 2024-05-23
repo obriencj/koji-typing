@@ -19,10 +19,15 @@ Typing annotations stub for koji_cli.commands
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
-"""  # noqa: Y021
+"""
 
 
+from koji_types import HistoryEntry
 from koji_types.cli import CLIHandler
+from typing import Dict, List
+
+
+_table_keys: Dict[str, List[str]]
 
 
 anon_handle_buildinfo: CLIHandler
@@ -158,6 +163,10 @@ handle_version: CLIHandler
 handle_win_build: CLIHandler
 handle_wrapper_rpm: CLIHandler
 handle_write_signed_rpm: CLIHandler
+
+
+def _print_histline(entry: HistoryEntry, **kwargs) -> None:
+    ...
 
 
 def print_group_list_req_group(group: str) -> None:
