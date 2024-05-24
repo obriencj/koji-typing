@@ -1148,5 +1148,4 @@ class EventInfo(TypedDict):
     ts: int
 
 
-#
 # The end.

@@ -689,6 +689,52 @@ class ClientSession(Protocol):
 
 class Host(Protocol):
 
+    def failTask(
+            self,
+            task_id: int,
+            response: Any) -> None:
+        ...
+
+    def freeTasks(
+            self,
+            tasks: List[int]) -> None:
+        ...
+
+    def getID(self) -> int:
+        ...
+
+    def getHostTasks(
+            self) -> List[TaskInfo]:
+        ...
+
+    def getLoadData(
+            self) -> Tuple[Tuple[HostInfo], List[TaskInfo]]:
+        ...
+
+    def getTasks(
+            self) -> List[TaskInfo]:
+        ...
+
+    def refuseTask(
+            self,
+            task_id: int,
+            soft: bool = True,
+            msg: str = '') -> None:
+        ...
+
+    def setHostData(
+            self,
+            hostdata: Dict) -> None:
+        ...
+
+    def subtask(
+            self,
+            method: str,
+            arglist: List,
+            parent: int,
+            **opts) -> int:
+        ...
+
     def taskSetWait(
             self,
             parent: int,
@@ -698,6 +744,29 @@ class Host(Protocol):
     def taskUnwait(
             self,
             parent: int) -> None:
+        ...
+
+    def taskWait(
+            self,
+            parent: int) -> Tuple[List[int], List[int]]:
+        ...
+
+    def taskWaitCheck(
+            self,
+            parent: int) -> Tuple[List[int], List[int]]:
+        ...
+
+    def taskWaitResults(
+            self,
+            parent: int,
+            tasks: Optional[List[int]],
+            canfail: Optional[List[int]]) -> List[Tuple[int, Any]]:
+        ...
+
+    def updateHost(
+            self,
+            task_load: float,
+            ready: bool) -> None:
         ...
 
     def verify(self) -> bool:
