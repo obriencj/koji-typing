@@ -13,13 +13,26 @@
 
 
 """
-Koji CLI - typing stubs
-
-Typing annotations stub for koji_cli.
+Koji Types
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
 """
+
+
+from typing_extensions import TypedDict
+
+
+__all__ = (
+    "SessionInfo",
+)
+
+
+SessionInfo = TypedDict("SessionInfo", {
+    "session-id": int,
+    "session-key": str,
+    "header-auth": bool,
+})
 
 
 # The end.
