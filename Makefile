@@ -69,7 +69,7 @@ uninstall:	## Uninstalls using the default python for the current user
 ##@ Cleanup
 
 purge:	clean
-	@rm -rf .eggs .tox .mypy_cache
+	@rm -rf .eggs .tox .mypy_cache tools/koji/
 
 
 tidy:	## Removes stray eggs and .pyc files
@@ -99,12 +99,24 @@ mypy:	requires-tox flake8	## Launches stubtest via tox
 	@$(TOX) -qe mypy
 
 
-koji-git: requires-tox flake8	## Launches stubtest via tox with koji from git
+koji-git: requires-tox flake8 tools/koji	## Launches stubtest via tox with koji from git
 	@$(TOX) -qe koji-git
 
 
 twine:	requires-tox build	## Launches twine via tox
 	@$(TOX) -qe twine
+
+
+tools/koji:	requires-git
+	@if [ ! -d tools/koji ] ; then \
+		git clone https://pagure.io/koji.git tools/koji ; \
+	else \
+		git -C tools/koji pull ; \
+	fi
+
+
+kojihub: requires-tox tools/koji
+	@$(TOX) -qe kojihub
 
 
 ##@ Workflow Features
@@ -122,7 +134,7 @@ requires-tox:
 	@$(call checkfor,$(TOX))
 
 
-.PHONY: build clean clean-built default flake8 help koji-git mypy project purge python report-python requires-tox tidy twine version
+.PHONY: build clean clean-built default flake8 help koji-git kojihub mypy project purge python report-python requires-git requires-tox tidy twine version
 
 
 # The end.

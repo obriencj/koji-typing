@@ -81,6 +81,7 @@ __all__ = (
     "TargetInfo",
     "TaskInfo",
     "TaskState",
+    "UserData",
     "UserGroup",
     "UserInfo",
     "UserStatus",
@@ -621,7 +622,19 @@ class UserGroup(TypedDict):
     """ the name of the group """
 
 
-class UserInfo(TypedDict):
+class UserData(TypedDict):
+    name: str
+    """ the username """
+
+    status: UserStatus
+    """ status of the account. not present for members from the
+    ``getGroupMembers`` call. """
+
+    usertype: UserType
+    """ type of the account """
+
+
+class UserInfo(UserData):
     """
     Data representing a koji user account. These are typically
     obtained via the ``getUser`` or ``getLoggedInUser`` XMLRPC call
@@ -643,16 +656,6 @@ class UserInfo(TypedDict):
     krb_principals: List[str]
     """ list of kerberos principals associated with the user. Used in koji
     from 1.19 onwards. """
-
-    name: str
-    """ the username """
-
-    status: UserStatus
-    """ status of the account. not present for members from the
-    ``getGroupMembers`` call. """
-
-    usertype: UserType
-    """ type of the account """
 
 
 class CGInfo(TypedDict):

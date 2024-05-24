@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
@@ -13,13 +15,16 @@
 
 
 """
-Koji CLI - typing stubs
-
-Typing annotations stub for koji_cli.
-
-:author: Christopher O'Brien <obriencj@gmail.com>
-:license: GPL v3
+:author: Christopher O'Brien  <obriencj@gmail.com>
+:license: GPL version 3
 """
 
 
+from setuptools import setup
+
+if __name__ == "__main__":
+    setup()
+
+
+#
 # The end.
