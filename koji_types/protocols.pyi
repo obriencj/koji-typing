@@ -17,7 +17,7 @@ Koji Types - Client Session Protocol method declarations
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
-"""  # noqa: Y021
+"""
 
 
 from . import (
@@ -32,13 +32,11 @@ from datetime import datetime
 from koji import VirtualCall
 from typing import (
     Any, Dict, List, Literal, Optional, Tuple, Union, overload, )
-from typing_extensions import Protocol, TypeAlias
+from typing_extensions import Protocol
 from preoccupied.proxytype import proxytype
 
 
 class ClientSession(Protocol):
-    # This is non-runtime class which presents the interfaces for the
-    # baseline koji hub API calls.
 
     def count(
             self,
@@ -708,7 +706,7 @@ class Host(Protocol):
         ...
 
     def getLoadData(
-            self) -> Tuple[Tuple[HostInfo], List[TaskInfo]]:
+            self) -> Tuple[List[HostInfo], List[TaskInfo]]:
         ...
 
     def getTasks(
@@ -724,7 +722,7 @@ class Host(Protocol):
 
     def setHostData(
             self,
-            hostdata: Dict) -> None:
+            hostdata: Dict[str, Any]) -> None:
         ...
 
     def subtask(
