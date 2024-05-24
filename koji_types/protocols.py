@@ -15,16 +15,37 @@
 """
 Koji Types - Client Session Protocols
 
+The majority of definitions are in the typing stub for this module,
+where they can be used for static analysis without impacting
+runtime. During analysis these definitions will become Protocols, with
+all of the various methods listed. However, we don't want the abstract
+definitions of a Protocol to prevent subclass instantiation, so at
+runtime these are just empty classes.
+
 :author: Christopher O'Brien  <obriencj@gmail.com>
 :license: GPL v3
 """
 
 
-class ClientSessionProtocol:
+__all__ = (
+    "ClientSession",
+    "MultiCallSession",
+)
+
+
+class ClientSession:
     pass
 
 
-class MultiCallSessionProtocol:
+class Host:
+    pass
+
+
+class MultiCallSession:
+    pass
+
+
+class MultiCallHost:
     pass
 
 

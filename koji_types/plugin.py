@@ -20,14 +20,18 @@ Koji Plugin Types - typing declatations for koji data structures
 """
 
 
-from enum import StrEnum, auto
 from typing import TYPE_CHECKING, Callable
+from typing_extensions import Protocol, TypeAlias
 
 
 if TYPE_CHECKING:
-    from typing_extensions import Protocol
+    from enum import Enum as StrEnum
+
 else:
-    Protocol = object
+    try:
+        from enum import StrEnum
+    except ImportError:
+        from enum import Enum as StrEnum
 
 
 __all__ = (
@@ -41,37 +45,38 @@ __all__ = (
 class CallbackType(StrEnum):
 
     # hub
-    postBuildPromote = 'postBuildPromote'
-    postBuildStateChange = 'postBuildStateChange'
-    postCommit = 'postCommit'
-    postImport = 'postImport'
-    postPackageListChange = 'postPackageListChange'
-    postRPMSign = 'postRPMSign'
-    postRepoDone = 'postRepoDone'
-    postRepoInit = 'postRepoInit'
-    postTag = 'postTag'
-    postTaskStateChange = 'postTaskStateChange'
-    postUntag = 'postUntag'
-    preBuildPromote = 'preBuildPromote'
-    preBuildStateChange = 'preBuildStateChange'
-    preCommit = 'preCommit'
-    preImport = 'preImport'
-    prePackageListChange = 'prePackageListChange'
-    preRPMSign = 'preRPMSign'
-    preRepoDone = 'preRepoDone'
-    preRepoInit = 'preRepoInit'
-    preTag = 'preTag'
-    preTaskStateChange = 'preTaskStateChange'
-    preUntag = 'preUntag'
+    postBuildPromote: str = 'postBuildPromote'
+    postBuildStateChange: str = 'postBuildStateChange'
+    postCommit: str = 'postCommit'
+    postImport: str = 'postImport'
+    postPackageListChange: str = 'postPackageListChange'
+    postRPMSign: str = 'postRPMSign'
+    postRepoDone: str = 'postRepoDone'
+    postRepoInit: str = 'postRepoInit'
+    postTag: str = 'postTag'
+    postTaskStateChange: str = 'postTaskStateChange'
+    postUntag: str = 'postUntag'
+    preBuildPromote: str = 'preBuildPromote'
+    preBuildStateChange: str = 'preBuildStateChange'
+    preCommit: str = 'preCommit'
+    preImport: str = 'preImport'
+    prePackageListChange: str = 'prePackageListChange'
+    preRPMSign: str = 'preRPMSign'
+    preRepoDone: str = 'preRepoDone'
+    preRepoInit: str = 'preRepoInit'
+    preTag: str = 'preTag'
+    preTaskStateChange: str = 'preTaskStateChange'
+    preUntag: str = 'preUntag'
 
     # builder
-    postCreateDistRepo = 'postCreateDistRepo'
-    postCreateRepo = 'postCreateRepo'
-    postSCMCheckout = 'postSCMCheckout'
-    preSCMCheckout = 'preSCMCheckout'
+    postCreateDistRepo: str = 'postCreateDistRepo'
+    postCreateRepo: str = 'postCreateRepo'
+    postSCMCheckout: str = 'postSCMCheckout'
+    preSCMCheckout: str = 'preSCMCheckout'
 
 
-CallbackHandler = Callable[[CallbackType, ...], None]
+CallbackHandler: TypeAlias = \
+    Callable[[CallbackType, ...], None]  # type: ignore[misc]
 
 
 class CallbackProtocol(Protocol):
@@ -83,7 +88,8 @@ class CallbackProtocol(Protocol):
         ...
 
 
-CallbackDecorator = Callable[[CallbackHandler], CallbackHandler]
+CallbackDecorator: TypeAlias = \
+    Callable[[CallbackHandler], CallbackHandler]
 
 
 # The end.

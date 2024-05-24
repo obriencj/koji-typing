@@ -17,7 +17,7 @@ Koji Types - Client Session Protocol method declarations
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
-"""  # noqa: Y021
+"""
 
 
 from . import (
@@ -32,12 +32,11 @@ from datetime import datetime
 from koji import VirtualCall
 from typing import (
     Any, Dict, List, Literal, Optional, Tuple, Union, overload, )
+from typing_extensions import Protocol
 from preoccupied.proxytype import proxytype
 
 
-class ClientSessionProtocol:
-    # This is non-runtime class which presents the interfaces for the
-    # baseline koji hub API calls.
+class ClientSession(Protocol):
 
     def count(
             self,
@@ -406,6 +405,10 @@ class ClientSessionProtocol:
             strict: bool = False) -> bool:
         ...
 
+    @property
+    def host(self) -> Host:
+        ...
+
     def listArchives(
             self,
             buildID: Optional[int] = None,
@@ -682,9 +685,103 @@ class ClientSessionProtocol:
         ...
 
 
-@proxytype(ClientSessionProtocol, VirtualCall)
-class MultiCallSessionProtocol:
+class Host(Protocol):
+
+    def failTask(
+            self,
+            task_id: int,
+            response: Any) -> None:
+        ...
+
+    def freeTasks(
+            self,
+            tasks: List[int]) -> None:
+        ...
+
+    def getID(self) -> int:
+        ...
+
+    def getHostTasks(
+            self) -> List[TaskInfo]:
+        ...
+
+    def getLoadData(
+            self) -> Tuple[List[HostInfo], List[TaskInfo]]:
+        ...
+
+    def getTasks(
+            self) -> List[TaskInfo]:
+        ...
+
+    def refuseTask(
+            self,
+            task_id: int,
+            soft: bool = True,
+            msg: str = '') -> None:
+        ...
+
+    def setHostData(
+            self,
+            hostdata: Dict[str, Any]) -> None:
+        ...
+
+    def subtask(
+            self,
+            method: str,
+            arglist: List,
+            parent: int,
+            **opts) -> int:
+        ...
+
+    def taskSetWait(
+            self,
+            parent: int,
+            tasks: Optional[List[int]]) -> None:
+        ...
+
+    def taskUnwait(
+            self,
+            parent: int) -> None:
+        ...
+
+    def taskWait(
+            self,
+            parent: int) -> Tuple[List[int], List[int]]:
+        ...
+
+    def taskWaitCheck(
+            self,
+            parent: int) -> Tuple[List[int], List[int]]:
+        ...
+
+    def taskWaitResults(
+            self,
+            parent: int,
+            tasks: Optional[List[int]],
+            canfail: Optional[List[int]]) -> List[Tuple[int, Any]]:
+        ...
+
+    def updateHost(
+            self,
+            task_load: float,
+            ready: bool) -> None:
+        ...
+
+    def verify(self) -> bool:
+        ...
+
+
+@proxytype(Host, VirtualCall)
+class MultiCallHost(Protocol):
     ...
+
+
+@proxytype(ClientSession, VirtualCall)
+class MultiCallSession(Protocol):
+
+    @property
+    def host(self) -> MultiCallHost:
+        ...
 
 
 # The end.

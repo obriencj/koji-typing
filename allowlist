@@ -6,6 +6,13 @@ koji.h
 koji.POMHandler
 
 
+# the hack needs a hack in order for static analysis to pass. It's
+# permissible to assign the `ClientSession.multicall` property to a
+# bool, but mypy doesn't like that, so we'll give the `MultiCallHack`
+# class a fake setter that accepts a bool instead.
+koji.MultiCallHack.__set__
+
+
 # this one has a default at runtime which depends on the system
 # architecture, but our stub just declares it as 'noarch'
 

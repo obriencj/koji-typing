@@ -20,13 +20,13 @@ Koji Types - policy
 """
 
 
-from typing import List, NewType, Tuple, Union
+from typing import TYPE_CHECKING, Any, List, NewType, Tuple, Union
 from typing_extensions import TypeAlias
 
 
-PolicyRule = TypeAlias[Tuple[List[str],
-                             bool,
-                             Union[str, List["PolicyRule"]]]]
+PolicyRule: TypeAlias = Tuple[List[str],
+                              bool,
+                              Union[str, List["PolicyRule"]]]
 
 
 # The end.

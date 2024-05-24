@@ -34,13 +34,7 @@ from optparse import Values
 from typing import (
     Any, Callable, Dict, Generic, Iterable, List, Optional,
     Tuple, TypeVar, Union, )
-
-
-try:
-    from typing import TypedDict  # type: ignore
-except ImportError:
-    # Python < 3.10 doesn't have typing.TypedDict
-    from typing_extensions import TypedDict
+from typing_extensions import TypedDict
 
 
 __all__ = (
@@ -367,7 +361,6 @@ class BuildrootInfo(TypedDict):
 
 
 class BuildNVR(TypedDict):
-
     name: str
     """ The name component of the NVR of a build. """
 
@@ -1148,5 +1141,4 @@ class EventInfo(TypedDict):
     ts: int
 
 
-#
 # The end.

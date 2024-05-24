@@ -41,7 +41,8 @@ from koji_types import (
     RepoInfo, RPMInfo, RPMSignature, RPMSigTag, TagInfo, TagGroupInfo,
     TaskInfo,)
 from koji_types.protocols import (
-    ClientSessionProtocol, MultiCallSessionProtocol, )
+    ClientSession as ClientSessionProtocol,
+    MultiCallSession as MultiCallSessionProtocol, )
 from koji_types.rpm import RPMHeader
 
 
@@ -240,6 +241,7 @@ class ClientSession(ClientSessionProtocol):
     baseurl: str
     exclusive: bool
     logger: Logger
+    multicall: MultiCallHack
     opts: Dict[str, Any]
     rsession: Optional[Session]
 
@@ -319,16 +321,6 @@ class ClientSession(ClientSessionProtocol):
     def logout(
             self,
             session_id: Optional[int] = None) -> None:
-        ...
-
-    @property
-    def multicall(
-            self) -> MultiCallHack:
-        ...
-
-    @multicall.setter
-    def multicall(
-            self, value: bool) -> None:
         ...
 
     def multiCall(
@@ -474,8 +466,9 @@ class MultiCallHack:
     def __init__(self, session: ReferenceType[ClientSession]):
         ...
 
-    # def __set__(self, obj: ClientSession, value: bool) -> None:
-    #     ...
+    def __set__(self, obj: ClientSession, value: bool) -> None:
+        # not present at runtime, but used to fix assignments
+        ...
 
     def __bool__(self) -> bool:
         ...
