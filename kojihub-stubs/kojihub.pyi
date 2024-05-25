@@ -127,6 +127,17 @@ class Task:
 
 # === functions ===
 
+
+def _delete_event_id() -> None:
+    ...
+
+
+def _promote_build(
+        build: Union[str, int],
+        force: bool = False) -> BuildInfo:
+    ...
+
+
 def _scan_sighdr(
         sighdr: bytes,
         fn: str) -> Tuple[str, str]:
@@ -228,6 +239,13 @@ def handle_upload(
     ...
 
 
+def importImageInternal(
+        task_id: int,
+        build_info: BuildInfo,
+        imgdata: Dict[str, Any]) -> None:
+    ...
+
+
 def list_cgs() -> Dict[str, CGInfo]:
     ...
 
@@ -285,6 +303,13 @@ def remove_host_from_channel(
 def rename_channel(
         old: str,
         new: str) -> None:
+    ...
+
+
+def rpmdiff(
+        basepath: str,
+        rpmlist: List[str],
+        hashes: Dict[int, Dict[str, str]]) -> None:
     ...
 
 

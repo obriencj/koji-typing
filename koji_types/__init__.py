@@ -71,6 +71,7 @@ __all__ = (
     "RPMSignature",
     "RPMSigTag",
     "SearchResult",
+    "SessionInfo",
     "TagBuildInfo",
     "TagInfo",
     "TagInheritance",
@@ -1146,6 +1147,18 @@ class ChangelogEntry(TypedDict):
 class EventInfo(TypedDict):
     id: int
     ts: int
+
+
+class SessionInfo(TypedDict):
+    # TODO: incomplete
+
+    user_id: int
+    expired: bool
+    master: int
+    authtype: AuthType
+    callnum: Optional[int]
+    exclusive: bool
+
 
 
 # The end.

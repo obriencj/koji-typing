@@ -25,15 +25,16 @@ from . import (
     BuildState, BTypeInfo, ChangelogEntry, ChannelInfo, CGInfo, EventInfo,
     FaultInfo, HostInfo, ListTasksOptions, MavenInfo, PackageInfo,
     PermInfo, POMInfo, QueryOptions, RepoInfo, RepoState, RPMInfo,
-    RPMSignature, RPMSigTag, SearchResult, TagBuildInfo, TagInfo,
-    TagGroupInfo, TagInheritance, TagPackageInfo, TargetInfo, TaskInfo,
-    UserGroup, UserInfo, UserType, )
+    RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
+    TagInfo, TagGroupInfo, TagInheritance, TagPackageInfo, TargetInfo,
+    TaskInfo, UserGroup, UserInfo, UserType, )
 from .arch import Arch
 
 from datetime import datetime
 from koji import VirtualCall
 from typing import (
-    Any, Dict, List, Literal, Optional, Tuple, Union, overload, )
+    Any, Dict, List, Literal, NoReturn, Optional, Tuple,
+    Union, overload, )
 from typing_extensions import Protocol
 from preoccupied.proxytype import proxytype
 
@@ -103,6 +104,9 @@ class ClientSession(Protocol):
             username: Union[int, str]) -> None:
         ...
 
+    def echo(self, *args) -> List:
+        ...
+
     def editTag2(
             self,
             taginfo: Union[int, str],
@@ -114,13 +118,22 @@ class ClientSession(Protocol):
             username: Union[int, str]) -> None:
         ...
 
+    def error(self) -> NoReturn:
+        ...
+
     def exclusiveSession(self, *args, **kwargs) -> None:
         ...
 
     def failBuild(self, task_id: int, build_id: int) -> None:
         ...
 
+    def fault(self) -> NoReturn:
+        ...
+
     def getAllPerms(self) -> List[PermInfo]:
+        ...
+
+    def getAPIVersion(self) -> int:
         ...
 
     def getArchive(
@@ -364,6 +377,13 @@ class ClientSession(Protocol):
         # :since: koji 1.29.0
         ...
 
+    def getSessionInfo(
+            self,
+            details: bool = False,
+            user_id: Optional[int] = None) -> Union[None, SessionInfo,
+                                                    List[SessionInfo]]:
+        ...
+
     def getTag(
             self,
             taginfo: Union[int, str],
@@ -447,6 +467,11 @@ class ClientSession(Protocol):
             self,
             perm: str,
             strict: bool = False) -> bool:
+        ...
+
+    def hello(
+            self,
+            *args) -> str:
         ...
 
     @property
@@ -652,6 +677,9 @@ class ClientSession(Protocol):
             channel: str = 'maven') -> int:
         ...
 
+    def mavenEnabled(self) -> bool:
+        ...
+
     def packageListAdd(
             self,
             taginfo: Union[int, str],
@@ -769,6 +797,9 @@ class ClientSession(Protocol):
             opts: Optional[Dict[str, Any]] = None,
             priority: Optional[int] = None,
             channel: str = 'vm') -> int:
+        ...
+
+    def winEnabled(self) -> bool:
         ...
 
     def wrapperRPM(
