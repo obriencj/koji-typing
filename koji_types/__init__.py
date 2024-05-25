@@ -66,6 +66,7 @@ __all__ = (
     "QueryOptions",
     "RepoInfo",
     "RepoState",
+    "RPMNVRA",
     "RPMInfo",
     "RPMSignature",
     "RPMSigTag",
@@ -495,14 +496,26 @@ class BTypeInfo(TypedDict):
     """ the name of the btype """
 
 
-class RPMInfo(TypedDict):
+class RPMNVRA(TypedDict):
+
+    arch: str
+    """ The RPM's architecture, eg. 'src' or 'x86_64' """
+
+    name: str
+    """ The RPM's name field """
+
+    release: str
+    """ The RPM's release field """
+
+    version: str
+    """ The RPM's version field """
+
+
+class RPMInfo(RPMNVRA):
     """
     Data representing a koji RPM. These are typically obtained via the
     ``listRPMs`` XMLRPC call.
     """
-
-    arch: str
-    """ The RPM's architecture, eg. 'src' or 'x86_64' """
 
     build_id: int
     """ The ID of the build owning this RPM """
@@ -533,9 +546,6 @@ class RPMInfo(TypedDict):
 
     metadata_only: bool
 
-    name: str
-    """ The RPM's name field """
-
     nvr: str
     """ The NVR (Name Version and Release) of the RPM """
 
@@ -543,14 +553,8 @@ class RPMInfo(TypedDict):
     """ The MD5 in hex of the RPM's payload (the content past the
     headers) """
 
-    release: str
-    """ The RPM's release field """
-
     size: int
     """ The file size of the unsigned copy of the RPM """
-
-    version: str
-    """ The RPM's version field """
 
 
 class RPMSignature(TypedDict):

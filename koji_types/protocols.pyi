@@ -21,12 +21,14 @@ Koji Types - Client Session Protocol method declarations
 
 
 from . import (
-    ArchiveInfo, ArchiveTypeInfo, BuildInfo, BuildrootInfo, BuildState,
-    BTypeInfo, ChangelogEntry, ChannelInfo, CGInfo, EventInfo, FaultInfo,
-    HostInfo, ListTasksOptions, MavenInfo, PackageInfo, PermInfo, POMInfo,
-    QueryOptions, RepoInfo, RepoState, RPMInfo, RPMSignature, RPMSigTag,
-    SearchResult, TagBuildInfo, TagInfo, TagGroupInfo, TagInheritance,
-    TagPackageInfo, TargetInfo, TaskInfo, UserGroup, UserInfo, UserType, )
+    ArchiveInfo, ArchiveTypeInfo, BuildInfo, BuildNVR, BuildrootInfo,
+    BuildState, BTypeInfo, ChangelogEntry, ChannelInfo, CGInfo, EventInfo,
+    FaultInfo, HostInfo, ListTasksOptions, MavenInfo, PackageInfo,
+    PermInfo, POMInfo, QueryOptions, RepoInfo, RepoState, RPMInfo,
+    RPMSignature, RPMSigTag, SearchResult, TagBuildInfo, TagInfo,
+    TagGroupInfo, TagInheritance, TagPackageInfo, TargetInfo, TaskInfo,
+    UserGroup, UserInfo, UserType, )
+from .arch import Arch
 
 from datetime import datetime
 from koji import VirtualCall
@@ -37,6 +39,45 @@ from preoccupied.proxytype import proxytype
 
 
 class ClientSession(Protocol):
+
+    def build(
+            self,
+            src: str,
+            target: str,
+            opts: Optional[Dict[str, Any]] = None,
+            priority: Optional[int] = None,
+            channel: Optional[str] = None) -> int:
+        ...
+
+    def buildImage(
+            self,
+            name: str,
+            version: str,
+            arch: Arch,
+            target: str,
+            ksfile: str,
+            img_type: str,
+            opts: Optional[Dict[str, Any]] = None,
+            priority: Optional[int] = None) -> int:
+        ...
+
+    def chainBuild(
+            self,
+            srcs: List[str],
+            target: str,
+            opts: Optional[Dict[str, Any]] = None,
+            priority: Optional[int] = None,
+            channel: Optional[str] = None) -> int:
+        ...
+
+    def chainMaven(
+            self,
+            builds: List[Dict[str, Any]],
+            target: str,
+            opts: Optional[Dict[str, Any]] = None,
+            priority: Optional[int] = None,
+            channel: str = 'maven') -> int:
+        ...
 
     def count(
             self,
@@ -74,6 +115,9 @@ class ClientSession(Protocol):
         ...
 
     def exclusiveSession(self, *args, **kwargs) -> None:
+        ...
+
+    def failBuild(self, task_id: int, build_id: int) -> None:
         ...
 
     def getAllPerms(self) -> List[PermInfo]:
@@ -409,6 +453,13 @@ class ClientSession(Protocol):
     def host(self) -> Host:
         ...
 
+    def initWinBuild(
+            self,
+            task_id: int,
+            build_info: BuildNVR,
+            win_info: Dict[str, Any]) -> None:
+        ...
+
     def listArchives(
             self,
             buildID: Optional[int] = None,
@@ -592,6 +643,15 @@ class ClientSession(Protocol):
         # :since: koji 1.30
         ...
 
+    def mavenBuild(
+            self,
+            url: str,
+            target: str,
+            opts: Optional[Dict[str, Any]] = None,
+            priority: Optional[int] = None,
+            channel: str = 'maven') -> int:
+        ...
+
     def packageListAdd(
             self,
             taginfo: Union[int, str],
@@ -661,6 +721,15 @@ class ClientSession(Protocol):
             proxyuser: Optional[str] = None) -> bool:
         ...
 
+    def tagBuild(
+            self,
+            task_id: int,
+            tag: Union[int, str],
+            build: Union[int, str],
+            force: bool = False,
+            notify: bool = False) -> None:
+        ...
+
     def tagBuildBypass(
             self,
             tag: Union[int, str],
@@ -675,6 +744,14 @@ class ClientSession(Protocol):
             taglist: List[int]) -> bool:
         ...
 
+    def untagBuild(
+            self,
+            tag: Union[int, str],
+            build: Union[int, str],
+            strict: bool = True,
+            force: bool = False) -> None:
+        ...
+
     def untagBuildBypass(
             self,
             tag: Union[int, str],
@@ -682,6 +759,26 @@ class ClientSession(Protocol):
             strict: bool = True,
             force: bool = False,
             notify: bool = False) -> None:
+        ...
+
+    def winBuild(
+            self,
+            vm: str,
+            url: str,
+            target: str,
+            opts: Optional[Dict[str, Any]] = None,
+            priority: Optional[int] = None,
+            channel: str = 'vm') -> int:
+        ...
+
+    def wrapperRPM(
+            self,
+            build: Union[int, str],
+            url: str,
+            target: str,
+            priority: Optional[int] = None,
+            channel: str = 'maven',
+            opts: Optional[Dict[str, Any]] = None) -> int:
         ...
 
 
