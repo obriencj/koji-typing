@@ -25,8 +25,10 @@ Typing annotations stub for kojihub
 from koji import ParameterError
 from koji_types import (
     BuildInfo, BuildNVR, CGInfo, ChecksumType, QueryOptions, RepoInfo,
-    RPMInfo, RPMNVRA, RPMSignature, TagGroupInfo, TagInheritance,
-    TaskState, UserInfo, UserStatus, )
+    RPMInfo, RPMNVRA, RPMSignature, TagGroupInfo, TagFullInheritance,
+    TagFullInheritanceEntry, TagInheritance, TaskState, UserInfo,
+    UserStatus, )
+from koji_types.arch import Arch
 from koji_types.protocols import ClientSession
 from logging import Logger
 from typing import (
@@ -171,6 +173,13 @@ def calculate_chsum(
     ...
 
 
+def check_noarch_rpms(
+        basepath: str,
+        rpms: List[str],
+        logs: Optional[Dict[Arch, List[str]]]) -> List[str]:
+    ...
+
+
 def check_rpm_sig(
         an_rpm: str,
         sigkey: str,
@@ -259,6 +268,33 @@ def query_rpm_sigs(
         rpm_id: Union[int, str, BuildNVR, None] = None,
         sigkey: Optional[str] = None,
         queryOpts: Optional[QueryOptions] = None) -> List[RPMSignature]:
+    ...
+
+
+def readFullInheritance(
+        tag_id: int,
+        event: Optional[int] = None,
+        reverse: bool = False) -> TagFullInheritance:
+    ...
+
+
+def readFullInheritanceRecurse(
+        tag_id: int,
+        event: int,
+        order: TagFullInheritance,
+        top: TagFullInheritanceEntry,
+        hist: Dict[int, TagFullInheritance],
+        currdepth: int,
+        maxdepth: int,
+        noconfig: bool,
+        pfilter: List[str],
+        reverse: bool) -> TagFullInheritance:
+    ...
+
+
+def recycle_build(
+        old: BuildInfo,
+        data: BuildInfo) -> None:
     ...
 
 
