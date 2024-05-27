@@ -167,6 +167,12 @@ def add_rpm_sig(
     ...
 
 
+def assert_cg(
+        cg: str,
+        user: Union[int, str, None] = None) -> None:
+    ...
+
+
 def calculate_chsum(
         path: str,
         checksum_types: List[ChecksumType]) -> Dict[ChecksumType, str]:
@@ -234,6 +240,13 @@ def get_active_repos() -> List[RepoInfo]:
     ...
 
 
+def get_maven_build(
+        buildInfo: Union[int, str],
+        strict: bool = False) -> Dict[str, Any]:
+    # TODO: need a return typedict
+    ...
+
+
 def get_tag_groups(
         tag: Union[int, str],
         event: Optional[int] = None,
@@ -243,8 +256,23 @@ def get_tag_groups(
     ...
 
 
+def get_user(
+        userInfo: Union[int, str, None],
+        strict: bool = False,
+        krb_princs: bool = True,
+        groups: bool = False) -> UserInfo:
+    ...
+
+
 def get_verify_class(
         verify: Optional[ChecksumType]) -> Optional[Callable]:
+    ...
+
+
+def get_win_build(
+        buildInfo: Union[int, str],
+        strict: bool = False) -> Dict[str, Any]:
+    # TODO: need a return typedict
     ...
 
 
@@ -312,6 +340,13 @@ def new_image_build(
 def new_typed_build(
         build_info: BuildInfo,
         btype: str) -> None:
+    ...
+
+
+def parse_json(
+        value: Optional[str],
+        desc: Optional[str] = None,
+        errstr: Optional[str] = None) -> Any:
     ...
 
 
