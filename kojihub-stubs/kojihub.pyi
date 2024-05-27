@@ -24,10 +24,10 @@ Typing annotations stub for kojihub
 
 from koji import ParameterError
 from koji_types import (
-    BuildInfo, BuildNVR, CGInfo, ChecksumType, QueryOptions, RepoInfo,
-    RPMInfo, RPMNVRA, RPMSignature, TagGroupInfo, TagFullInheritance,
-    TagFullInheritanceEntry, TagInheritance, TaskState, UserInfo,
-    UserStatus, )
+    ArchiveInfo, BuildInfo, BuildNVR, CGInfo, ChecksumType, QueryOptions,
+    RepoInfo, RPMInfo, RPMNVRA, RPMSignature, TagGroupInfo,
+    TagFullInheritance, TagFullInheritanceEntry, TagInheritance,
+    TaskState, UserInfo, UserStatus, )
 from koji_types.arch import Arch
 from koji_types.protocols import ClientSession
 from logging import Logger
@@ -225,6 +225,11 @@ def edit_channel(
     ...
 
 
+def generate_token(
+        nbytes: int = 32) -> str:
+    ...
+
+
 def get_active_repos() -> List[RepoInfo]:
     ...
 
@@ -248,6 +253,41 @@ def handle_upload(
     ...
 
 
+def import_archive(
+        filepath: str,
+        buildinfo: BuildInfo,
+        type: str,
+        typeInfo: Dict[str, Any],
+        buildroot_id: Optional[int] = None) -> ArchiveInfo:
+    ...
+
+
+def import_archive_internal(
+        filepath: str,
+        buildinfo: BuildInfo,
+        type: str,
+        typeInfo: Dict[str, Any],
+        buildroot_id: Optional[int] = None,
+        fileinfo: Optional[Dict[str, Any]] = None) -> ArchiveInfo:
+    ...
+
+
+def import_build_log(
+        fn: str,
+        buildinfo: Optional[BuildInfo] = None,
+        subdir: Optional[str] = None) -> None:
+    ...
+
+
+def import_rpm(
+        fn: str,
+        buildinfo: Optional[BuildInfo] = None,
+        brootid: Optional[int] = None,
+        wrapper: bool = False,
+        fileinfo: Optional[Dict[str, Any]] = None) -> RPMInfo:
+    ...
+
+
 def importImageInternal(
         task_id: int,
         build_info: BuildInfo,
@@ -261,6 +301,17 @@ def list_cgs() -> Dict[str, CGInfo]:
 
 def log_error(
         msg: str) -> None:
+    ...
+
+
+def new_image_build(
+        build_info: BuildInfo) -> None:
+    ...
+
+
+def new_typed_build(
+        build_info: BuildInfo,
+        btype: str) -> None:
     ...
 
 
