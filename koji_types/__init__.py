@@ -44,6 +44,7 @@ __all__ = (
     "BuildInfo",
     "BuildNVR",
     "BuildrootInfo",
+    "BuildrootReference",
     "BuildrootState",
     "BuildrootType",
     "BuildState",
@@ -317,6 +318,13 @@ class ArchiveTypeInfo(TypedDict):
 
     name: str
     """ the name of the archive type """
+
+
+class BuildrootReference(TypedDict):
+    create_event: int
+    host_id: int
+    id: int
+    state: BuildrootState
 
 
 class BuildrootInfo(TypedDict):

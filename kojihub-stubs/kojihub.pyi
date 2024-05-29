@@ -24,10 +24,10 @@ Typing annotations stub for kojihub
 
 from koji import ParameterError
 from koji_types import (
-    ArchiveInfo, BuildInfo, BuildNVR, CGInfo, ChecksumType, QueryOptions,
-    RepoInfo, RPMInfo, RPMNVRA, RPMSignature, TagGroupInfo,
-    TagFullInheritance, TagFullInheritanceEntry, TagInheritance,
-    TaskState, UserInfo, UserStatus, )
+    ArchiveInfo, BuildInfo, BuildNVR, BuildrootReference, CGInfo,
+    ChecksumType, QueryOptions, RepoInfo, RepoState, RPMInfo, RPMNVRA,
+    RPMSignature, TagGroupInfo, TagFullInheritance, TagFullInheritanceEntry,
+    TagInfo, TagInheritance, TargetInfo, TaskState, UserInfo, UserStatus, )
 from koji_types.arch import Arch
 from koji_types.protocols import ClientSession
 from logging import Logger
@@ -134,6 +134,19 @@ def _delete_event_id() -> None:
     ...
 
 
+def _edit_build_target(
+        buildTargetInfo: Union[str, int],
+        name: str,
+        build_tag: Union[str, int],
+        dest_tag: Union[str, int]) -> None:
+    ...
+
+
+def _get_build_target(
+        task_id: int) -> Optional[TargetInfo]:
+    ...
+
+
 def _promote_build(
         build: Union[str, int],
         force: bool = False) -> BuildInfo:
@@ -176,6 +189,12 @@ def assert_cg(
 def calculate_chsum(
         path: str,
         checksum_types: List[ChecksumType]) -> Dict[ChecksumType, str]:
+    ...
+
+
+def cancel_build(
+        build_id: Union[str, int],
+        cancel_task: bool = True) -> bool:
     ...
 
 
@@ -225,6 +244,14 @@ def draft_clause(
     ...
 
 
+def edit_build_target(
+        buildTargetInfo: Union[str, int],
+        name: str,
+        build_tag: Union[str, int],
+        dest_tag: Union[str, int]) -> None:
+    ...
+
+
 def edit_channel(
         channelInfo: Union[int, str],
         **kw) -> bool:
@@ -237,6 +264,26 @@ def generate_token(
 
 
 def get_active_repos() -> List[RepoInfo]:
+    ...
+
+
+def get_all_arches() -> List[Arch]:
+    ...
+
+
+def get_build_target(
+        info: Union[str, int],
+        event: Optional[int] = None,
+        strict: bool = False) -> TargetInfo:
+    ...
+
+
+def get_build_targets(
+        info: Union[str, int, None] = None,
+        event: Optional[int] = None,
+        buildTagID: Union[str, int, TagInfo, None] = None,
+        destTagID: Union[str, int, TagInfo, None] = None,
+        queryOpts: Optional[QueryOptions] = None) -> List[TargetInfo]:
     ...
 
 
@@ -273,6 +320,37 @@ def get_win_build(
         buildInfo: Union[int, str],
         strict: bool = False) -> Dict[str, Any]:
     # TODO: need a return typedict
+    ...
+
+
+@overload
+def grant_cg_access(
+        user: Union[str, int],
+        cg: Union[str, int]) -> None:
+    ...
+
+
+@overload
+def grant_cg_access(
+        user: Union[str, int],
+        cg: Union[str, int],
+        create: Literal[False]) -> None:
+    ...
+
+
+@overload
+def grant_cg_access(
+        user: Union[str, int],
+        cg: str,
+        create: Literal[True]) -> None:
+    ...
+
+
+@overload
+def grant_cg_access(
+        user: Union[str, int],
+        cg: Union[str, int],
+        create: bool = False) -> None:
     ...
 
 
@@ -428,10 +506,73 @@ def rename_channel(
     ...
 
 
+def repo_delete(
+        repo_id: int) -> int:
+    ...
+
+
+def repo_expire(
+        repo_id: int) -> None:
+    ...
+
+
+def repo_expire_older(
+        tag_id: int,
+        event_id: int,
+        dist: Optional[bool] = None) -> None:
+    ...
+
+
+def repo_info(
+        repo_id: int,
+        strict: bool = False) -> RepoInfo:
+    ...
+
+
+def repo_problem(
+        repo_id: int) -> None:
+    ...
+
+
+def repo_ready(
+        repo_id: int) -> None:
+    ...
+
+
+def repo_references(
+        repo_id: int) -> List[BuildrootReference]:
+    ...
+
+
+def repo_set_state(
+        repo_id: int,
+        state: RepoState,
+        check: bool = True) -> None:
+    ...
+
+
+def reset_build(
+        build: Union[str, int]) -> None:
+    ...
+
+
+def revoke_cg_access(
+        user: Union[str, int],
+        cg: Union[str, int]) -> None:
+    ...
+
+
 def rpmdiff(
         basepath: str,
         rpmlist: List[str],
         hashes: Dict[int, Dict[str, str]]) -> None:
+    ...
+
+
+def set_channel_enabled(
+        channelname: str,
+        enabled: bool = True,
+        comment: Optional[str] = None) -> None:
     ...
 
 
