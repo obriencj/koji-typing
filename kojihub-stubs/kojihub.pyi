@@ -25,11 +25,15 @@ Typing annotations stub for kojihub
 from koji import ParameterError
 from koji_types import (
     ArchiveID, ArchiveInfo, BuildID, BuildInfo, BuildNVR,
-    BuildrootReference, CGInfo,
-    ChannelID, ChecksumType, EventID, NamedID, PackageID, PermID,
+    BuildrootReference, CGID, CGInfo,
+    ChannelID, ChecksumType, ExternalRepoID, ExternalRepoInfo,
+    EventID, NamedID, PackageID, PermID,
     QueryOptions,
-    RepoInfo, RepoState, RPMInfo, RPMNVRA, RPMSignature, TagGroupInfo,
-    TagFullInheritance, TagFullInheritanceEntry, TagID, TagInfo,
+    RepoID, RepoInfo, RepoState, RPMID, RPMInfo, RPMNVRA, RPMSignature,
+    TagExternalRepos,
+    TagFullInheritance, TagFullInheritanceEntry,
+    TagGroupInfo,
+    TagID, TagInfo,
     TagInheritance, TargetID, TargetInfo, TaskID, TaskState,
     UserID, UserInfo,
     UserStatus, )
@@ -269,8 +273,13 @@ def create_rpm_checksum(
     ...
 
 
+def delete_external_repo(
+        info: Union[str, ExternalRepoID]) -> None:
+    ...
+
+
 def delete_rpm_sig(
-        rpminfo: Union[int, str, RPMNVRA],
+        rpminfo: Union[str, RPMID, RPMNVRA],
         sigkey: Optional[str],
         all_sigs: bool = False) -> None:
     ...
@@ -317,18 +326,46 @@ def get_all_arches() -> List[Arch]:
 
 
 def get_build_target(
-        info: Union[str, int],
-        event: Optional[int] = None,
-        strict: bool = False) -> TargetInfo:
+        info: Union[str, TargetID],
+        event: Optional[EventID] = None,
+        strict: bool = False) -> Optional[TargetInfo]:
     ...
 
 
 def get_build_targets(
-        info: Union[str, int, None] = None,
-        event: Optional[int] = None,
+        info: Union[str, TargetID, None] = None,
+        event: Optional[EventID] = None,
         buildTagID: Union[str, int, TagInfo, None] = None,
         destTagID: Union[str, int, TagInfo, None] = None,
         queryOpts: Optional[QueryOptions] = None) -> List[TargetInfo]:
+    ...
+
+
+def get_external_repo(
+        info: Union[str, ExternalRepoID],
+        strict: bool = False,
+        event: Optional[EventID] = None) -> ExternalRepoInfo:
+    ...
+
+
+def get_external_repo_id(
+        info: Union[str, ExternalRepoID, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[ExternalRepoID]:
+    ...
+
+
+def get_external_repo_list(
+        tag_info: Union[str, TagID],
+        event: Optional[EventID] = None) -> TagExternalRepos:
+    ...
+
+
+def get_external_repos(
+        info: Union[str, ExternalRepoID, None] = None,
+        url: Optional[str] = None,
+        event: Optional[EventID] = None,
+        queryOpts: Optional[QueryOptions] = None) -> List[ExternalRepoInfo]:
     ...
 
 
@@ -350,20 +387,49 @@ def get_maven_build(
 def get_package_id(
         info: Union[str, PackageID, Dict[str, Any]],
         strict: bool = False,
-        create: bool = False) -> Optional[int]:
+        create: bool = False) -> Optional[PackageID]:
     ...
 
 
 def get_perm_id(
         info: Union[str, PermID, Dict[str, Any]],
         strict: bool = False,
-        create: bool = False) -> Optional[int]:
+        create: bool = False) -> Optional[PermID]:
+    ...
+
+
+def get_rpm(
+        rpminfo: Union[str, RPMID, RPMNVRA],
+        strict: bool = False,
+        multi: bool = False) -> Optional[RPMInfo]:
+    ...
+
+
+def get_tag(
+        tagInfo: Union[str, TagID],
+        strict: bool = False,
+        event: Optional[EventID] = None,
+        blocked: bool = False) -> Optional[TagInfo]:
+    ...
+
+
+def get_tag_external_repos(
+        tag_info: Union[str, TagID, None] = None,
+        repo_info: Union[str, ExternalRepoID, None] = None,
+        event: Optional[EventID] = None) -> TagExternalRepos:
+    ...
+
+
+def get_tag_extra(
+        tagInfo: Union[TagInfo, NamedID],
+        event: Optional[EventID] = None,
+        blocked: bool = False) -> Dict[str, Union[str, Tuple[bool, str]]]:
     ...
 
 
 def get_tag_groups(
-        tag: Union[int, str],
-        event: Optional[int] = None,
+        tag: Union[str, TagID],
+        event: Optional[EventID] = None,
         inherit: bool = True,
         incl_pkgs: bool = True,
         incl_reqs: bool = True) -> TagGroupInfo:
@@ -371,9 +437,9 @@ def get_tag_groups(
 
 
 def get_tag_id(
-        info: Union[int, str, Dict[str, Any]],
+        info: Union[str, TagID, Dict[str, Any]],
         strict: bool = False,
-        create: bool = False) -> Optional[int]:
+        create: bool = False) -> Optional[TagID]:
     ...
 
 
@@ -386,10 +452,10 @@ def get_upload_path(
 
 
 def get_user(
-        userInfo: Union[int, str, None],
+        userInfo: Union[str, UserID, None] = None,
         strict: bool = False,
         krb_princs: bool = True,
-        groups: bool = False) -> UserInfo:
+        groups: bool = False) -> Optional[UserInfo]:
     ...
 
 
@@ -399,7 +465,7 @@ def get_verify_class(
 
 
 def get_win_build(
-        buildInfo: Union[int, str],
+        buildInfo: Union[str, BuildID],
         strict: bool = False) -> Dict[str, Any]:
     # TODO: need a return typedict
     ...
@@ -407,8 +473,8 @@ def get_win_build(
 
 @overload
 def grant_cg_access(
-        user: Union[str, int],
-        cg: Union[str, int]) -> None:
+        user: Union[str, UserID],
+        cg: Union[str, CGID]) -> None:
     ...
 
 

@@ -54,9 +54,12 @@ __all__ = (
     "ChannelID",
     "ChannelInfo",
     "ChecksumType",
+    "CGID",
     "CGInfo",
     "CLIHandler",
     "CLIProtocol",
+    "ExternalRepoID",
+    "ExternalRepoInfo",
     "EventID",
     "EventInfo",
     "GOptions",
@@ -71,15 +74,19 @@ __all__ = (
     "PermInfo",
     "POMInfo",
     "QueryOptions",
+    "RepoID",
     "RepoInfo",
     "RepoState",
-    "RPMNVRA",
+    "RPMID",
     "RPMInfo",
+    "RPMNVRA",
     "RPMSignature",
     "RPMSigTag",
     "SearchResult",
     "SessionInfo",
     "TagBuildInfo",
+    "TagExternalRepoEntry",
+    "TagExternalRepos",
     "TagID",
     "TagInfo",
     "TagInheritance",
@@ -104,10 +111,14 @@ __all__ = (
 
 ArchiveID = NewType("ArchiveID", int)
 BuildID = NewType("BuildID", int)
+CGID = NewType("CGID", int)
 ChannelID = NewType("ChannelID", int)
+ExternalRepoID = NewType("ExternalRepoID", int)
 EventID = NewType("EventID", int)
 PackageID = NewType("PackageID", int)
 PermID = NewType("PermID", int)
+RepoID = NewType("RepoID", int)
+RPMID = NewType("RPMID", int)
 TagID = NewType("TagID", int)
 TargetID = NewType("TargetID", int)
 TaskID = NewType("TaskID", int)
@@ -705,7 +716,7 @@ class CGInfo(TypedDict):
     friendly names to the CGInfo structure
     """
 
-    id: int
+    id: CGID
     """ internal identifier """
 
     users: List[str]
@@ -725,7 +736,7 @@ class RepoInfo(TypedDict):
     calls
     """
 
-    create_event: int
+    create_event: EventID
     """ koji event ID representing the point that the repo's tag
     configuration was snapshot from. Note that this doesn't always
     correlate to the creation time of the repo -- koji has the ability to
@@ -741,13 +752,13 @@ class RepoInfo(TypedDict):
     dist: bool
     """ whether this is a dist-repo or not """
 
-    id: int
+    id: RepoID
     """ internal ID for this repository """
 
     state: RepoState
     """ the current state of this repository """
 
-    tag_id: int
+    tag_id: TagID
     """ ID of the tag from which this repo was generated. This value is not
     present in the output of the ``getRepo`` XMLRPC call as it is presumed
     that the caller already knows the tag's identity """
@@ -757,8 +768,35 @@ class RepoInfo(TypedDict):
     not present in the output of the ``getRepo`` XMLRPC call as it is
     presumed that the caller already knows the tag's identity """
 
-    task_id: int
+    task_id: TaskID
     """ ID of the task which generated this repository """
+
+
+class ExternalRepoInfo(TypedDict):
+
+    id: ExternalRepoID
+
+    name: str
+
+    url: str
+
+
+class TagExternalRepoEntry(TypedDict):
+
+    arches: Optional[str]
+
+    external_repo_id: ExternalRepoID
+    external_repo_name: str
+
+    tag_id: TagID
+    tag_name: str
+
+    merge_mode: int
+    priority: int
+    url: str
+
+
+TagExternalRepos: TypeAlias = List[TagExternalRepoEntry]
 
 
 class TargetInfo(TypedDict):
