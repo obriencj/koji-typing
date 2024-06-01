@@ -24,8 +24,8 @@ Typing annotations stub for kojihub
 
 from koji import ParameterError
 from koji_types import (
-    ArchiveID, ArchiveInfo, BuildID, BuildInfo, BuildNVR,
-    BuildrootReference, CGID, CGInfo,
+    ArchiveID, ArchiveInfo, BuildID, BuildInfo, BuildNVR, BuildState,
+    BuildrootReference, BTypeInfo, CGID, CGInfo,
     ChannelID, ChecksumType, ExternalRepoID, ExternalRepoInfo,
     EventID, NamedID, PackageID, PermID,
     QueryOptions,
@@ -34,7 +34,8 @@ from koji_types import (
     TagFullInheritance, TagFullInheritanceEntry,
     TagGroupInfo,
     TagID, TagInfo,
-    TagInheritance, TargetID, TargetInfo, TaskID, TaskState,
+    TagInheritance, TagPackageInfo,
+    TargetID, TargetInfo, TaskID, TaskState,
     UserID, UserInfo,
     UserStatus, )
 from koji_types.arch import Arch
@@ -240,10 +241,38 @@ def cancel_build(
     ...
 
 
+def cg_import(
+        metadata: Union[str, Dict[str, Any]],
+        directory: str,
+        token: Optional[str] = None) -> BuildInfo:
+    ...
+
+
+def cg_init_build(
+        cg: str,
+        data: Dict[str, Any]) -> CGInitInfo:
+    ...
+
+
+def cg_refund_build(
+        cg: str,
+        build_id: BuildID,
+        token: str,
+        state: BuildState = BuildState.FAILED) -> None:
+    ...
+
+
+def change_build_volume(
+        build: Union[str, BuildID],
+        volume: str,
+        strict: bool = True) -> None:
+    ...
+
+
 def check_noarch_rpms(
         basepath: str,
         rpms: List[str],
-        logs: Optional[Dict[Arch, List[str]]]) -> List[str]:
+        logs: Optional[Dict[Arch, List[str]]] = None) -> List[str]:
     ...
 
 
@@ -549,7 +578,28 @@ def importImageInternal(
     ...
 
 
+def list_btypes(
+        query: Optional[NamedID] = None,
+        queryOpts: Optional[QueryOptions] = None) -> List[BTypeInfo]:
+    ...
+
+
 def list_cgs() -> Dict[str, CGInfo]:
+    ...
+
+
+def list_tags(
+        build: Union[str, BuildID, None] = None,
+        package: Union[str, PackageID, None] = None,
+        perms: bool = True,
+        queryOpts: Optional[QueryOptions] = None,
+        pattern: Optional[str] = None) -> List[TagInfo]:
+    # TODO: this can optionally be a slightly modified TagInfo if
+    # package is specified
+    ...
+
+
+def list_volumes() -> List[NamedID]:
     ...
 
 
@@ -629,6 +679,12 @@ def new_image_build(
     ...
 
 
+def new_package(
+        name: str,
+        strict: bool = True) -> PackageID:
+    ...
+
+
 def new_typed_build(
         build_info: BuildInfo,
         btype: str) -> None:
@@ -639,6 +695,53 @@ def parse_json(
         value: Optional[str],
         desc: Optional[str] = None,
         errstr: Optional[str] = None) -> Any:
+    ...
+
+
+def pkglist_add(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        owner: Union[str, UserID, None] = None,
+        block: Optional[bool] = None,
+        extra_arches: Optional[str] = None,
+        force: bool = False) -> None:
+    ...
+
+
+def pkglist_block(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        force: bool = False) -> None:
+    ...
+
+
+def pkglist_setarches(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        arches: str,
+        force: bool = False) -> None:
+    ...
+
+
+def pkglist_setowner(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        owner: Union[str, UserID],
+        force: bool = False) -> None:
+    ...
+
+
+def pkglist_remove(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        force: bool = False) -> None:
+    ...
+
+
+def pkglist_unblock(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        force: bool = False) -> None:
     ...
 
 
@@ -667,6 +770,31 @@ def readFullInheritanceRecurse(
         noconfig: bool,
         pfilter: List[str],
         reverse: bool) -> TagFullInheritance:
+    ...
+
+
+def readPackageList(
+        tagID: Optional[TagID] = None,
+        userID: Optional[UserID] = None,
+        pkgID: Optional[PackageID] = None,
+        event: Optional[EventID] = None,
+        inherit: bool = False,
+        with_dups: bool = False,
+        with_owners: bool = True,
+        with_blocked: bool = True) -> Dict[PackageID, TagPackageInfo]:
+    ...
+
+
+def readTaggedBuilds(
+        tag: TagID,
+        event: Optional[EventID] = None,
+        inherit: bool = False,
+        latest: bool = False,
+        package: Optional[str] = None,
+        owner: Optional[str] = None,
+        type: Optional[str] = None,
+        extra: bool = False,
+        draft: Optional[bool] = None) -> List[BuildInfo]:
     ...
 
 

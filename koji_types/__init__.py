@@ -44,11 +44,13 @@ __all__ = (
     "BuildID",
     "BuildInfo",
     "BuildNVR",
+    "BuildrootID",
     "BuildrootInfo",
     "BuildrootReference",
     "BuildrootState",
     "BuildrootType",
     "BuildState",
+    "BTypeID",
     "BTypeInfo",
     "ChangelogEntry",
     "ChannelID",
@@ -56,6 +58,7 @@ __all__ = (
     "ChecksumType",
     "CGID",
     "CGInfo",
+    "CGInitInfo",
     "CLIHandler",
     "CLIProtocol",
     "ExternalRepoID",
@@ -111,6 +114,8 @@ __all__ = (
 
 ArchiveID = NewType("ArchiveID", int)
 BuildID = NewType("BuildID", int)
+BuildrootID = NewType("BuildrootID", int)
+BTypeID = NewType("BTypeID", int)
 CGID = NewType("CGID", int)
 ChannelID = NewType("ChannelID", int)
 ExternalRepoID = NewType("ExternalRepoID", int)
@@ -280,13 +285,13 @@ class ArchiveInfo(TypedDict):
     btype: str
     """ Name of this archive's koji BType. eg. 'maven' or 'image' """
 
-    btype_id: int
+    btype_id: BTypeID
     """ ID of this archive's koji BType """
 
     build_id: BuildID
     """ ID of koji build owning this archive """
 
-    buildroot_id: int
+    buildroot_id: BuildrootID
     """ ID of the koji buildroot used to produce this archive """
 
     checksum: str
@@ -359,9 +364,9 @@ class ArchiveTypeInfo(TypedDict):
 
 
 class BuildrootReference(TypedDict):
-    create_event: int
+    create_event: EventID
     host_id: int
-    id: int
+    id: BuildrootID
     state: BuildrootState
 
 
@@ -369,14 +374,14 @@ class BuildrootInfo(TypedDict):
     arch: str
     br_type: BuildrootType
 
-    cg_id: Optional[int]
+    cg_id: Optional[CGID]
     cg_name: Optional[str]
     cg_version: Optional[str]
 
     container_arch: str
     container_type: str
 
-    create_event_id: int
+    create_event_id: EventID
     create_event_time: str
     create_ts: float
 
@@ -387,15 +392,15 @@ class BuildrootInfo(TypedDict):
     host_name: str
     host_os: Optional[str]
 
-    id: int
+    id: BuildrootID
 
-    repo_create_event_id: int
+    repo_create_event_id: EventID
     repo_create_event_time: str
 
-    repo_id: int
+    repo_id: RepoID
     repo_state: RepoState
 
-    retire_event_id: int
+    retire_event_id: EventID
     retire_event_time: str
     retire_ts: float
 
@@ -536,7 +541,7 @@ class TagBuildInfo(BuildInfo):
 
 
 class BTypeInfo(TypedDict):
-    id: int
+    id: BTypeID
     """ the internal ID of the btype """
 
     name: str
@@ -567,7 +572,7 @@ class RPMInfo(RPMNVRA):
     build_id: BuildID
     """ The ID of the build owning this RPM """
 
-    buildroot_id: int
+    buildroot_id: BuildrootID
     """ The buildroot used by the task which produced this RPM """
 
     buildtime: int
@@ -724,6 +729,15 @@ class CGInfo(TypedDict):
     this content generator """
 
 
+class CGInitInfo(TypedDict):
+    """
+    see ``CGInitBuild`` XMLRPC call
+    """
+
+    build_id: BuildID
+    token: str
+
+
 class PermInfo(TypedDict):
     id: PermID
     name: str
@@ -796,7 +810,10 @@ class TagExternalRepoEntry(TypedDict):
     url: str
 
 
-TagExternalRepos: TypeAlias = List[TagExternalRepoEntry]
+TagExternalRepos = List[TagExternalRepoEntry]
+"""
+The external repos associated with a tag.
+"""
 
 
 class TargetInfo(TypedDict):
