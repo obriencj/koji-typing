@@ -32,7 +32,7 @@ from koji import (
     ClientSession, PathInfo, )
 from optparse import Values
 from typing import (
-    Any, Callable, Dict, Generic, Iterable, List, Optional,
+    Any, Callable, Dict, Generic, Iterable, List, NewType, Optional,
     Tuple, TypeVar, Union, )
 from typing_extensions import TypedDict
 
@@ -41,6 +41,7 @@ __all__ = (
     "ArchiveInfo",
     "ArchiveTypeInfo",
     "AuthType",
+    "BuildID",
     "BuildInfo",
     "BuildNVR",
     "BuildrootInfo",
@@ -50,18 +51,23 @@ __all__ = (
     "BuildState",
     "BTypeInfo",
     "ChangelogEntry",
+    "ChannelID",
     "ChannelInfo",
     "ChecksumType",
     "CGInfo",
     "CLIHandler",
     "CLIProtocol",
+    "EventID",
     "EventInfo",
     "GOptions",
     "HistoryEntry",
     "HostInfo",
     "ListTasksOptions",
     "MavenInfo",
+    "NamedID",
+    "PackageID",
     "PackageInfo",
+    "PermID",
     "PermInfo",
     "POMInfo",
     "QueryOptions",
@@ -74,6 +80,7 @@ __all__ = (
     "SearchResult",
     "SessionInfo",
     "TagBuildInfo",
+    "TagID",
     "TagInfo",
     "TagInheritance",
     "TagInheritanceEntry",
@@ -81,15 +88,35 @@ __all__ = (
     "TagGroupPackage",
     "TagGroupReq",
     "TagPackageInfo",
+    "TargetID",
     "TargetInfo",
+    "TaskID",
     "TaskInfo",
     "TaskState",
     "UserData",
     "UserGroup",
+    "UserID",
     "UserInfo",
     "UserStatus",
     "UserType",
 )
+
+
+ArchiveID = NewType("ArchiveID", int)
+BuildID = NewType("BuildID", int)
+ChannelID = NewType("ChannelID", int)
+EventID = NewType("EventID", int)
+PackageID = NewType("PackageID", int)
+PermID = NewType("PermID", int)
+TagID = NewType("TagID", int)
+TargetID = NewType("TargetID", int)
+TaskID = NewType("TaskID", int)
+UserID = NewType("UserID", int)
+
+
+class NamedID(TypedDict):
+    id: int
+    name: str
 
 
 class AuthType(IntEnum):
@@ -245,7 +272,7 @@ class ArchiveInfo(TypedDict):
     btype_id: int
     """ ID of this archive's koji BType """
 
-    build_id: int
+    build_id: BuildID
     """ ID of koji build owning this archive """
 
     buildroot_id: int
@@ -263,7 +290,7 @@ class ArchiveInfo(TypedDict):
     filename: str
     """ base filename for this archive """
 
-    id: int
+    id: ArchiveID
     """ internal ID """
 
     metadata_only: bool
@@ -363,10 +390,10 @@ class BuildrootInfo(TypedDict):
 
     state: BuildrootState
 
-    tag_id: int
+    tag_id: TagID
     tag_name: str
 
-    task_id: int
+    task_id: TaskID
 
     workdir: str
 
@@ -391,7 +418,7 @@ class BuildInfo(BuildNVR):
     the ``getBuild`` XMLRPC call.
     """
 
-    build_id: int
+    build_id: BuildID
     """ The internal ID for the build record """
 
     cg_id: int
@@ -430,7 +457,7 @@ class BuildInfo(BuildNVR):
     """ flexible additional information for this build, used by content
     generators """
 
-    id: int
+    id: BuildID
     """ Same as build_id """
 
     nvr: str
@@ -453,10 +480,10 @@ class BuildInfo(BuildNVR):
     start_time: str
     start_ts: float
 
-    state: int
+    state: BuildState
     """ state of the build, see `BuildState` """
 
-    task_id: int
+    task_id: Optional[TaskID]
 
     volume_id: int
     """ ID of the storage volume that the archives for this build will be
@@ -490,7 +517,7 @@ class TagBuildInfo(BuildInfo):
     :since: 2.1
     """
 
-    tag_id: int
+    tag_id: TagID
     """ the ID of the tag this build was found in """
 
     tag_name: str
@@ -526,7 +553,7 @@ class RPMInfo(RPMNVRA):
     ``listRPMs`` XMLRPC call.
     """
 
-    build_id: int
+    build_id: BuildID
     """ The ID of the build owning this RPM """
 
     buildroot_id: int
@@ -659,7 +686,7 @@ class UserInfo(UserData):
     groups: Optional[List[str]]
     """ names of groups that this user is a member of """
 
-    id: int
+    id: UserID
     """ internal identifer """
 
     krb_principal: str
@@ -687,7 +714,7 @@ class CGInfo(TypedDict):
 
 
 class PermInfo(TypedDict):
-    id: int
+    id: PermID
     name: str
 
 
@@ -740,19 +767,19 @@ class TargetInfo(TypedDict):
     the ``getBuildTarget`` or ``getBuildTargets`` XMLRPC calls
     """
 
-    build_tag: int
+    build_tag: TagID
     """ internal ID of the target's build tag """
 
     build_tag_name: str
     """ name of the target's build tag """
 
-    dest_tag: int
+    dest_tag: TagID
     """ internal ID of the target's destination tag """
 
     dest_tag_name: str
     """ name of the target's destination tag """
 
-    id: int
+    id: TargetID
     """ internal ID of this build target """
 
     name: str
@@ -771,7 +798,7 @@ class TagInfo(TypedDict):
     extra: Dict[str, str]
     """ inheritable additional configuration data """
 
-    id: int
+    id: TagID
     """ internal ID of this tag """
 
     locked: bool
@@ -805,7 +832,7 @@ class TagInheritanceEntry(TypedDict):
     the ``getInheritanceData`` XMLRPC call.
     """
 
-    child_id: int
+    child_id: TagID
     """ the ID of the child tag in the inheritance link. The child tag
     inherits from the parent tag """
 
@@ -829,7 +856,7 @@ class TagInheritanceEntry(TypedDict):
     """ if True then this inheritance link does not include tag
     configuration data, such as extras and groups """
 
-    parent_id: int
+    parent_id: TagID
     """ the parent tag's internal ID """
 
     pkg_filter: str
@@ -873,7 +900,7 @@ class PackageInfo(TypedDict):
     ``getPackage`` XMLRPC call.
     """
 
-    id: int
+    id: PackageID
     """
     the internal ID for this package
     """
@@ -901,13 +928,13 @@ class TagPackageInfo(TypedDict):
     owner_name: str
     """ name of the user who is the owner of the package for this tag """
 
-    package_id: int
+    package_id: PackageID
     """ ID of the package """
 
     package_name: str
     """ name of the package """
 
-    tag_id: int
+    tag_id: TagID
     """ ID of the package listing's tag """
 
     tag_name: str
@@ -920,7 +947,7 @@ class TagGroupPackage(TypedDict):
     group_id: int
     package: str
     requires: str
-    tag_id: int
+    tag_id: TagID
     type: str
 
 
@@ -930,7 +957,7 @@ class TagGroupReq(TypedDict):
     is_metapkg: bool
     name: str
     req_id: int
-    tag_id: int
+    tag_id: TagID
     type: str
 
 
@@ -950,7 +977,7 @@ class TagGroupInfo(TypedDict):
     langonly: str
     name: str
     packagelist: List[TagGroupPackage]
-    tag_id: int
+    tag_id: TagID
     uservisible: bool
 
 
@@ -989,7 +1016,7 @@ class TaskInfo(TypedDict):
     host_id: int
     """ host which has taken this task, or None """
 
-    id: int
+    id: TaskID
     """ internal task ID """
 
     label: str
@@ -1001,7 +1028,7 @@ class TaskInfo(TypedDict):
     owner: int
     """ ID of the user that initiated this task """
 
-    parent: int
+    parent: Optional[TaskID]
     """ ID of the parent task, or None """
 
     priority: int
@@ -1153,20 +1180,19 @@ class ChangelogEntry(TypedDict):
 
 
 class EventInfo(TypedDict):
-    id: int
+    id: EventID
     ts: int
 
 
 class SessionInfo(TypedDict):
     # TODO: incomplete
 
-    user_id: int
+    user_id: UserID
     expired: bool
     master: int
     authtype: AuthType
     callnum: Optional[int]
     exclusive: bool
-
 
 
 # The end.

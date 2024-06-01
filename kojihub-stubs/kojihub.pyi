@@ -24,15 +24,20 @@ Typing annotations stub for kojihub
 
 from koji import ParameterError
 from koji_types import (
-    ArchiveInfo, BuildInfo, BuildNVR, BuildrootReference, CGInfo,
-    ChecksumType, QueryOptions, RepoInfo, RepoState, RPMInfo, RPMNVRA,
-    RPMSignature, TagGroupInfo, TagFullInheritance, TagFullInheritanceEntry,
-    TagInfo, TagInheritance, TargetInfo, TaskState, UserInfo, UserStatus, )
+    ArchiveID, ArchiveInfo, BuildID, BuildInfo, BuildNVR,
+    BuildrootReference, CGInfo,
+    ChannelID, ChecksumType, EventID, NamedID, PackageID, PermID,
+    QueryOptions,
+    RepoInfo, RepoState, RPMInfo, RPMNVRA, RPMSignature, TagGroupInfo,
+    TagFullInheritance, TagFullInheritanceEntry, TagID, TagInfo,
+    TagInheritance, TargetID, TargetInfo, TaskID, TaskState,
+    UserID, UserInfo,
+    UserStatus, )
 from koji_types.arch import Arch
 from koji_types.protocols import ClientSession
 from logging import Logger
 from typing import (
-    Any, Callable, Dict, List, Literal, Optional, Tuple, Type,
+    Any, Callable, Dict, Iterator, List, Literal, Optional, Tuple, Type,
     TypeVar, Union, overload, )
 
 
@@ -143,7 +148,7 @@ def _edit_build_target(
 
 
 def _get_build_target(
-        task_id: int) -> Optional[TargetInfo]:
+        task_id: TaskID) -> Optional[TargetInfo]:
     ...
 
 
@@ -160,7 +165,7 @@ def _scan_sighdr(
 
 
 def _writeInheritanceData(
-        tag_id: int,
+        tag_id: TagID,
         changes: TagInheritance,
         clear: bool = False) -> None:
     ...
@@ -177,6 +182,39 @@ def add_host_to_channel(
 def add_rpm_sig(
         an_rpm: str,
         sighdr: bytes) -> None:
+    ...
+
+
+@overload
+def apply_volume_policy(
+        build: BuildInfo,
+        strict: bool = False) -> None:
+    ...
+
+
+@overload
+def apply_volume_policy(
+        build: BuildInfo,
+        strict: bool = False,
+        *,
+        dry_run: Literal[False]) -> None:
+    ...
+
+
+@overload
+def apply_volume_policy(
+        build: BuildInfo,
+        strict: bool = False,
+        *,
+        dry_run: Literal[True]) -> str:
+    ...
+
+
+@overload
+def apply_volume_policy(
+        build: BuildInfo,
+        strict: bool = False,
+        dry_run: bool = False) -> Optional[str]:
     ...
 
 
@@ -238,6 +276,13 @@ def delete_rpm_sig(
     ...
 
 
+def dist_repo_init(
+        tag: Union[int, str],
+        keys: List[str],
+        task_opts: Dict[str, Any]) -> Tuple[int, int]:
+    ...
+
+
 def draft_clause(
         draft: bool,
         table: Optional[str] = None) -> str:
@@ -287,10 +332,32 @@ def get_build_targets(
     ...
 
 
+def get_id(
+        table: str,
+        info: Union[str, int, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[int]:
+    ...
+
+
 def get_maven_build(
         buildInfo: Union[int, str],
         strict: bool = False) -> Dict[str, Any]:
     # TODO: need a return typedict
+    ...
+
+
+def get_package_id(
+        info: Union[str, PackageID, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[int]:
+    ...
+
+
+def get_perm_id(
+        info: Union[str, PermID, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[int]:
     ...
 
 
@@ -300,6 +367,21 @@ def get_tag_groups(
         inherit: bool = True,
         incl_pkgs: bool = True,
         incl_reqs: bool = True) -> TagGroupInfo:
+    ...
+
+
+def get_tag_id(
+        info: Union[int, str, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[int]:
+    ...
+
+
+def get_upload_path(
+        reldir: str,
+        name: str,
+        create: bool = False,
+        volume: Optional[str] = None) -> str:
     ...
 
 
@@ -395,7 +477,7 @@ def import_rpm(
 
 
 def importImageInternal(
-        task_id: int,
+        task_id: TaskID,
         build_info: BuildInfo,
         imgdata: Dict[str, Any]) -> None:
     ...
@@ -407,6 +489,72 @@ def list_cgs() -> Dict[str, CGInfo]:
 
 def log_error(
         msg: str) -> None:
+    ...
+
+
+def lookup_channel(
+        info: Union[str, ChannelID, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[NamedID]:
+    ...
+
+
+def lookup_name(
+        table: str,
+        info: Union[str, int, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[NamedID]:
+    ...
+
+
+def lookup_package(
+        info: Union[str, PackageID, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[NamedID]:
+    ...
+
+
+def lookup_perm(
+        info: Union[str, PermID, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[NamedID]:
+    ...
+
+
+def lookup_tag(
+        info: Union[str, TaskID, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[NamedID]:
+    ...
+
+
+def maven_tag_archives(
+        tag_id: TagID,
+        event_id: Optional[EventID] = None,
+        inherit: bool = True) -> Iterator[ArchiveInfo]:
+    ...
+
+
+NameOrID = TypeVar("NameOrID", str, int)
+
+
+@overload
+def name_or_id_clause(
+        table: str,
+        info: NameOrID) -> Tuple[str, Dict[str, NameOrID]]:
+    ...
+
+
+@overload
+def name_or_id_clause(
+        table: str,
+        info: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
+    ...
+
+
+def new_build(
+        data: Dict[str, Any],
+        strict: bool = False) -> BuildID:
     ...
 
 
@@ -436,15 +584,15 @@ def query_rpm_sigs(
 
 
 def readFullInheritance(
-        tag_id: int,
-        event: Optional[int] = None,
+        tag_id: TagID,
+        event: Optional[EventID] = None,
         reverse: bool = False) -> TagFullInheritance:
     ...
 
 
 def readFullInheritanceRecurse(
-        tag_id: int,
-        event: int,
+        tag_id: TagID,
+        event: EventID,
         order: TagFullInheritance,
         top: TagFullInheritanceEntry,
         hist: Dict[int, TagFullInheritance],
@@ -494,9 +642,20 @@ def reject_draft(
     ...
 
 
+def remove_external_repo_from_tag(
+        tag_info: Union[str, TagID],
+        repo_info: int) -> None:
+    ...
+
+
 def remove_host_from_channel(
         hostname: str,
         channel_name: str) -> None:
+    ...
+
+
+def remove_volume(
+        volume: str) -> None:
     ...
 
 
@@ -517,8 +676,8 @@ def repo_expire(
 
 
 def repo_expire_older(
-        tag_id: int,
-        event_id: int,
+        tag_id: TagID,
+        event_id: EventID,
         dist: Optional[bool] = None) -> None:
     ...
 
@@ -526,6 +685,16 @@ def repo_expire_older(
 def repo_info(
         repo_id: int,
         strict: bool = False) -> RepoInfo:
+    ...
+
+
+def repo_init(
+        tag: Union[str, TagID],
+        task_id: Optional[TaskID] = None,
+        with_src: bool = False,
+        with_debuginfo: bool = False,
+        event: Optional[EventID] = None,
+        with_separate_src: bool = False) -> Tuple[int, int]:
     ...
 
 
@@ -552,12 +721,12 @@ def repo_set_state(
 
 
 def reset_build(
-        build: Union[str, int]) -> None:
+        build: Union[str, BuildID]) -> None:
     ...
 
 
 def revoke_cg_access(
-        user: Union[str, int],
+        user: Union[str, UserID],
         cg: Union[str, int]) -> None:
     ...
 
@@ -583,10 +752,10 @@ def set_host_enabled(
 
 
 def set_tag_update(
-        tag_id: int,
+        tag_id: TagID,
         utype: int,
-        event_id: Optional[int] = None,
-        user_id: Optional[int] = None) -> None:
+        event_id: Optional[EventID] = None,
+        user_id: Optional[UserID] = None) -> None:
     ...
 
 
@@ -597,17 +766,17 @@ def set_user_status(
 
 
 def tag_changed_since_event(
-        event: int,
+        event: EventID,
         taglist: List[int]) -> bool:
     ...
 
 
 def tag_notification(
         is_successful: bool,
-        tag_id: int,
+        tag_id: TagID,
         from_id: int,
-        build_id: int,
-        user_id: int,
+        build_id: BuildID,
+        user_id: UserID,
         ignore_success: bool = False,
         failure_msg: str = '') -> None:
     ...
@@ -644,7 +813,7 @@ def write_signed_rpm(
 
 
 def writeInheritanceData(
-        tag_id: int,
+        tag_id: TagID,
         changes: TagInheritance,
         clear: bool = False) -> None:
     ...
