@@ -25,7 +25,7 @@ Typing annotations stub for kojihub
 from koji import ParameterError
 from koji_types import (
     ArchiveID, ArchiveInfo, BuildID, BuildInfo, BuildNVR, BuildState,
-    BuildrootReference, BTypeInfo, CGID, CGInfo,
+    BuildrootReference, BTypeInfo, CGID, CGInfo, CGInitInfo,
     ChannelID, ChecksumType, ExternalRepoID, ExternalRepoInfo,
     EventID, NamedID, PackageID, PermID,
     QueryOptions,
@@ -138,6 +138,13 @@ class Task:
 
 
 # === functions ===
+
+
+def _create_build_target(
+        name: str,
+        build_tag: Union[str, TagID],
+        dest_tag: Union[str, TagID]) -> None:
+    ...
 
 
 def _delete_event_id() -> None:
@@ -285,6 +292,8 @@ def check_rpm_sig(
 
 _CVT = TypeVar("_CVT")
 
+
+@overload
 def convert_value(
         value: Any,
         cast: _CVT,
@@ -295,10 +304,33 @@ def convert_value(
     ...
 
 
+@overload
+def convert_value(
+        value: Any,
+        *,
+        message: Optional[str] = None,
+        exc_type: Type[BaseException] = ParameterError,
+        none_allowed: bool = False,
+        check_only: bool = False) -> Any:
+    ...
+
+
+def create_build_target(
+        name: str,
+        build_tag: Union[str, TagID],
+        dest_tag: Union[str, TagID]) -> None:
+    ...
+
+
 def create_rpm_checksum(
         rpm_id: int,
         sigkey: str,
         chsum_dict: Dict[ChecksumType, str]) -> None:
+    ...
+
+
+def delete_build_target(
+        buildTargetInfo: Union[str, TargetID]) -> None:
     ...
 
 
@@ -309,7 +341,7 @@ def delete_external_repo(
 
 def delete_rpm_sig(
         rpminfo: Union[str, RPMID, RPMNVRA],
-        sigkey: Optional[str],
+        sigkey: Optional[str] = None,
         all_sigs: bool = False) -> None:
     ...
 
@@ -370,6 +402,13 @@ def get_build_targets(
     ...
 
 
+def get_channel_id(
+        info: Union[str, int, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[int]:
+    ...
+
+
 def get_external_repo(
         info: Union[str, ExternalRepoID],
         strict: bool = False,
@@ -395,6 +434,11 @@ def get_external_repos(
         url: Optional[str] = None,
         event: Optional[EventID] = None,
         queryOpts: Optional[QueryOptions] = None) -> List[ExternalRepoInfo]:
+    ...
+
+
+def get_group_id(
+        info: Union[str, int, Dict[str, Any]]) -> int:
     ...
 
 
@@ -615,6 +659,13 @@ def lookup_channel(
     ...
 
 
+def lookup_group(
+        info: str,
+        strict: bool = False,
+        create: bool = False) -> Optional[NamedID]:
+    ...
+
+
 def lookup_name(
         table: str,
         info: Union[str, int, Dict[str, Any]],
@@ -644,6 +695,13 @@ def lookup_tag(
     ...
 
 
+def make_task(
+        method: str,
+        arglist: List,
+        **opts) -> TaskID:
+    ...
+
+
 def maven_tag_archives(
         tag_id: TagID,
         event_id: Optional[EventID] = None,
@@ -651,13 +709,13 @@ def maven_tag_archives(
     ...
 
 
-NameOrID = TypeVar("NameOrID", str, int)
+_NameOrID = TypeVar("_NameOrID", str, int)
 
 
 @overload
 def name_or_id_clause(
         table: str,
-        info: NameOrID) -> Tuple[str, Dict[str, NameOrID]]:
+        info: _NameOrID) -> Tuple[str, Dict[str, _NameOrID]]:
     ...
 
 
@@ -704,7 +762,8 @@ def pkglist_add(
         owner: Union[str, UserID, None] = None,
         block: Optional[bool] = None,
         extra_arches: Optional[str] = None,
-        force: bool = False) -> None:
+        force: bool = False,
+        update: bool = False) -> None:
     ...
 
 

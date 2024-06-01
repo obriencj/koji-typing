@@ -21,13 +21,18 @@ Koji Types - Client Session Protocol method declarations
 
 
 from . import (
-    ArchiveInfo, ArchiveTypeInfo, BuildInfo, BuildNVR, BuildrootInfo,
-    BuildState, BTypeInfo, ChangelogEntry, ChannelInfo, CGInfo, EventInfo,
-    FaultInfo, HostInfo, ListTasksOptions, MavenInfo, PackageInfo,
+    ArchiveInfo, ArchiveTypeInfo, BuildID, BuildInfo, BuildNVR,
+    BuildrootID, BuildrootInfo,
+    BuildState, BTypeInfo, ChangelogEntry, ChannelInfo,
+    CGID, CGInfo, CGInitInfo,
+    EventID, EventInfo,
+    FaultInfo, HostInfo, ListTasksOptions, MavenInfo,
+    PackageID, PackageInfo,
     PermInfo, POMInfo, QueryOptions, RepoInfo, RepoState, RPMInfo,
     RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
-    TagInfo, TagGroupInfo, TagInheritance, TagPackageInfo, TargetInfo,
-    TaskInfo, UserGroup, UserInfo, UserType, )
+    TagID, TagInfo, TagGroupInfo, TagInheritance, TagPackageInfo,
+    TargetID, TargetInfo,
+    TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserType, )
 from .arch import Arch
 
 from datetime import datetime
@@ -361,7 +366,7 @@ class ClientSession(Protocol):
     def getRPMHeaders(
             self,
             rpmID: Optional[int] = None,
-            taskID: Optional[int] = None,
+            taskID: Optional[TaskID] = None,
             filepath: Optional[str] = None,
             headers: Optional[List[str]] = None) -> Dict[str, Any]:
         ...
@@ -370,7 +375,7 @@ class ClientSession(Protocol):
     def getRPMHeaders(
             self,
             rpmID: Optional[int] = None,
-            taskID: Optional[int] = None,
+            taskID: Optional[TaskID] = None,
             filepath: Optional[str] = None,
             headers: Optional[List[str]] = None,
             strict: Optional[bool] = False) -> Dict[str, Any]:
@@ -380,13 +385,13 @@ class ClientSession(Protocol):
     def getSessionInfo(
             self,
             details: bool = False,
-            user_id: Optional[int] = None) -> Union[None, SessionInfo,
-                                                    List[SessionInfo]]:
+            user_id: Optional[UserID] = None) -> Union[None, SessionInfo,
+                                                       List[SessionInfo]]:
         ...
 
     def getTag(
             self,
-            taginfo: Union[int, str],
+            taginfo: Union[str, TagID],
             strict: bool = False,
             event: Optional[int] = None,
             blocked: bool = False) -> TagInfo:
@@ -394,8 +399,8 @@ class ClientSession(Protocol):
 
     def getTagGroups(
             self,
-            tag: Union[int, str],
-            event: Optional[int] = None,
+            tag: Union[str, TagID],
+            event: Optional[EventID] = None,
             inherit: bool = True,
             incl_pkgs: bool = True,
             incl_reqs: bool = True,
@@ -404,7 +409,7 @@ class ClientSession(Protocol):
 
     def getTaskChildren(
             self,
-            task_id: int,
+            task_id: TaskID,
             request: Optional[bool] = False,
             strict: Optional[bool] = False) -> List[TaskInfo]:
         ...
@@ -412,23 +417,23 @@ class ClientSession(Protocol):
     @overload
     def getTaskInfo(
             self,
-            task_id: int,
-            request: bool = False,
-            strict: bool = False) -> TaskInfo:
-        ...
-
-    @overload
-    def getTaskInfo(
-            self,
-            task_id: List[int],
+            task_id: List[TaskID],
             request: bool = False,
             strict: bool = False) -> List[TaskInfo]:
         ...
 
     @overload
+    def getTaskInfo(
+            self,
+            task_id: TaskID,
+            request: bool = False,
+            strict: bool = False) -> TaskInfo:
+        ...
+
+    @overload
     def getUser(
             self,
-            userInfo: Optional[Union[int, str]] = None,
+            userInfo: Union[str, UserID, None] = None,
             strict: bool = False,
             krb_princs: bool = True) -> UserInfo:
         ...
@@ -436,7 +441,7 @@ class ClientSession(Protocol):
     @overload
     def getUser(
             self,
-            userInfo: Optional[Union[int, str]] = None,
+            userInfo: Union[str, UserID, None] = None,
             strict: bool = False,
             krb_princs: bool = True,
             groups: bool = False) -> UserInfo:
@@ -446,20 +451,20 @@ class ClientSession(Protocol):
     @overload
     def getUserPerms(
             self,
-            userID: Optional[Union[int, str]] = None) -> List[str]:
+            userID: Union[str, UserID, None] = None) -> List[str]:
         ...
 
     @overload
     def getUserPerms(
             self,
-            userID: Optional[Union[int, str]] = None,
+            userID: Union[str, UserID, None] = None,
             with_groups: bool = True) -> List[str]:
         # :since: koji 1.34
         ...
 
     def getUserPermsInheritance(
             self,
-            userID: Union[int, str]) -> Dict[str, List[str]]:
+            userID: Union[str, UserID]) -> Dict[str, List[str]]:
         # :since: koji 1.34
         ...
 
@@ -480,16 +485,16 @@ class ClientSession(Protocol):
 
     def initWinBuild(
             self,
-            task_id: int,
+            task_id: TaskID,
             build_info: BuildNVR,
             win_info: Dict[str, Any]) -> None:
         ...
 
     def listArchives(
             self,
-            buildID: Optional[int] = None,
-            buildrootID: Optional[int] = None,
-            componentBuildrootID: Optional[int] = None,
+            buildID: Optional[BuildID] = None,
+            buildrootID: Optional[BuildrootID] = None,
+            componentBuildrootID: Optional[BuildrootID] = None,
             hostID: Optional[int] = None,
             type: Optional[str] = None,
             filename: Optional[str] = None,
@@ -510,9 +515,9 @@ class ClientSession(Protocol):
 
     def listBuilds(
             self,
-            packageID: Optional[int] = None,
-            userID: Optional[int] = None,
-            taskID: Optional[int] = None,
+            packageID: Optional[PackageID] = None,
+            userID: Optional[UserID] = None,
+            taskID: Optional[TaskID] = None,
             prefix: Optional[str] = None,
             state: Optional[BuildState] = None,
             volumeID: Optional[int] = None,
@@ -525,7 +530,7 @@ class ClientSession(Protocol):
             typeInfo: Optional[Dict] = None,
             queryOpts: Optional[QueryOptions] = None,
             pattern: Optional[str] = None,
-            cgID: Optional[int] = None,
+            cgID: Optional[CGID] = None,
             draft: Optional[bool] = None) -> List[BuildInfo]:
         ...
 
@@ -538,27 +543,27 @@ class ClientSession(Protocol):
             channelID: Optional[int] = None,
             ready: Optional[bool] = None,
             enabled: Optional[bool] = None,
-            userID: Optional[int] = None,
+            userID: Optional[UserID] = None,
             queryOpts: Optional[QueryOptions] = None) -> List[HostInfo]:
         ...
 
     def listPackages(
             self,
-            tagID: Optional[int] = None,
-            userID: Optional[int] = None,
-            pkgID: Optional[int] = None,
+            tagID: Optional[TagID] = None,
+            userID: Optional[UserID] = None,
+            pkgID: Optional[PackageID] = None,
             prefix: Optional[str] = None,
             inherited: bool = False,
             with_dups: bool = False,
-            event: Optional[int] = None,
-            queryOpts: Optional[dict] = None,
+            event: Optional[EventID] = None,
+            queryOpts: Optional[QueryOptions] = None,
             with_owners: bool = True) -> List[TagPackageInfo]:
         ...
 
     def listRPMs(
             self,
-            buildID: Optional[int] = None,
-            buildrootID: Optional[int] = None,
+            buildID: Optional[BuildID] = None,
+            buildrootID: Optional[BuildrootID] = None,
             imageID: Optional[int] = None,
             componentBuildrootID: Optional[int] = None,
             hostID: Optional[int] = None,
@@ -736,7 +741,7 @@ class ClientSession(Protocol):
 
     def setInheritanceData(
             self,
-            tag: Union[int, str],
+            tag: Union[str, TagID],
             data: TagInheritance,
             clear: bool = False) -> None:
         ...
@@ -751,39 +756,38 @@ class ClientSession(Protocol):
 
     def tagBuild(
             self,
-            task_id: int,
-            tag: Union[int, str],
-            build: Union[int, str],
+            tag: Union[str, TagID],
+            build: Union[str, BuildID],
             force: bool = False,
-            notify: bool = False) -> None:
+            fromtag: Union[str, TagID, None] = None) -> None:
         ...
 
     def tagBuildBypass(
             self,
-            tag: Union[int, str],
-            build: Union[int, str],
+            tag: Union[str, TagID],
+            build: Union[str, BuildID],
             force: bool = False,
             notify: bool = False) -> None:
         ...
 
     def tagChangedSinceEvent(
             self,
-            event: int,
-            taglist: List[int]) -> bool:
+            event: EventID,
+            taglist: List[TagID]) -> bool:
         ...
 
     def untagBuild(
             self,
-            tag: Union[int, str],
-            build: Union[int, str],
+            tag: Union[str, TagID],
+            build: Union[str, BuildID],
             strict: bool = True,
             force: bool = False) -> None:
         ...
 
     def untagBuildBypass(
             self,
-            tag: Union[int, str],
-            build: Union[int, str],
+            tag: Union[str, TagID],
+            build: Union[str, BuildID],
             strict: bool = True,
             force: bool = False,
             notify: bool = False) -> None:
