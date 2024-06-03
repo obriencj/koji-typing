@@ -65,8 +65,8 @@ class MultiSum:
         ...
 
 
-class RootExports(ClientSession):
-    ...
+# class RootExports(ClientSession):
+#     ...
 
 
 class Task:
@@ -473,7 +473,14 @@ def get_external_repos(
 
 
 def get_group_id(
-        info: Union[str, int, Dict[str, Any]]) -> int:
+        info: Union[str, UserID, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> int:
+    ...
+
+
+def get_group_members(
+        group: Union[str, UserID]) -> List[UserInfo]:
     ...
 
 
