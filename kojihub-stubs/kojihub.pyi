@@ -25,9 +25,9 @@ Typing annotations stub for kojihub
 from koji import ParameterError
 from koji_types import (
     ArchiveID, ArchiveInfo, BuildID, BuildInfo, BuildNVR, BuildState,
-    BuildrootReference, BTypeInfo, CGID, CGInfo, CGInitInfo,
+    BuildrootID, BuildrootReference, BTypeInfo, CGID, CGInfo, CGInitInfo,
     ChannelID, ChecksumType, ExternalRepoID, ExternalRepoInfo,
-    EventID, NamedID, PackageID, PermID,
+    EventID, NamedID, PackageID, PackageInfo, PermID,
     QueryOptions,
     RepoID, RepoInfo, RepoState, RPMID, RPMInfo, RPMNVRA, RPMSignature,
     TagExternalRepos,
@@ -42,8 +42,8 @@ from koji_types.arch import Arch
 from koji_types.protocols import ClientSession
 from logging import Logger
 from typing import (
-    Any, Callable, Dict, Iterator, List, Literal, Optional, Tuple, Type,
-    TypeVar, Union, overload, )
+    Any, Callable, Dict, Iterator, List, Literal, Optional, Set,
+    Tuple, Type, TypeVar, Union, overload, )
 
 
 NUMERIC_TYPES: Tuple[Type, ...]
@@ -236,6 +236,14 @@ def assert_cg(
     ...
 
 
+def assert_policy(
+        name: str,
+        data: Dict[str, Any],
+        default: str = 'deny',
+        force: bool = False) -> None:
+    ...
+
+
 def calculate_chsum(
         path: str,
         checksum_types: List[ChecksumType]) -> Dict[ChecksumType, str]:
@@ -283,10 +291,24 @@ def check_noarch_rpms(
     ...
 
 
+def check_policy(
+        name: str,
+        data: Dict[str, Any],
+        default: str = 'deny',
+        strict: bool = False,
+        force: bool = False) -> Tuple[bool, str]:
+    ...
+
+
 def check_rpm_sig(
         an_rpm: str,
         sigkey: str,
         sighdr: bytes) -> None:
+    ...
+
+
+def clear_reservation(
+        build_id: BuildID) -> None:
     ...
 
 
@@ -373,6 +395,12 @@ def edit_channel(
     ...
 
 
+def eval_policy(
+        name: str,
+        data: Dict[str, Any]) -> str:
+    ...
+
+
 def generate_token(
         nbytes: int = 32) -> str:
     ...
@@ -390,6 +418,13 @@ def get_build_target(
         info: Union[str, TargetID],
         event: Optional[EventID] = None,
         strict: bool = False) -> Optional[TargetInfo]:
+    ...
+
+
+def get_build_target_id(
+        info: str,
+        strict: bool = False,
+        create: bool = False) -> Optional[TargetID]:
     ...
 
 
@@ -468,6 +503,11 @@ def get_perm_id(
         info: Union[str, PermID, Dict[str, Any]],
         strict: bool = False,
         create: bool = False) -> Optional[PermID]:
+    ...
+
+
+def get_reservation_token(
+        build_id: BuildID) -> Optional[str]:
     ...
 
 
@@ -599,9 +639,19 @@ def import_archive_internal(
     ...
 
 
+def import_build(
+        srpm: str,
+        rpms: List[str],
+        brmap: Optional[Dict[str, BuildrootID]] = None,
+        task_id: Optional[TaskID] = None,
+        build_id: Optional[BuildID] = None,
+        logs: Optional[Dict[Arch, List[str]]] = None) -> BuildInfo:
+    ...
+
+
 def import_build_log(
         fn: str,
-        buildinfo: Optional[BuildInfo] = None,
+        buildinfo: BuildInfo,
         subdir: Optional[str] = None) -> None:
     ...
 
@@ -643,12 +693,24 @@ def list_tags(
     ...
 
 
+def list_user_krb_principals(
+        user_info: Union[str, UserID, None] = None) -> List[str]:
+    ...
+
+
 def list_volumes() -> List[NamedID]:
     ...
 
 
 def log_error(
         msg: str) -> None:
+    ...
+
+
+def lookup_build_target(
+        info: str,
+        strict: bool = False,
+        create: bool = False) -> Optional[NamedID]:
     ...
 
 
@@ -801,6 +863,79 @@ def pkglist_unblock(
         taginfo: Union[str, TagID],
         pkginfo: Union[str, PackageID],
         force: bool = False) -> None:
+    ...
+
+
+def policy_data_from_task(
+        task_id: TaskID) -> Dict[str, Any]:
+    ...
+
+
+def policy_data_from_task_args(
+        method: str,
+        arglist: List) -> Dict[str, Any]:
+    ...
+
+
+def policy_get_brs(
+        data: Dict[str, Any]) -> Set[Optional[BuildrootID]]:
+    ...
+
+
+@overload
+def policy_get_build_tags(
+        data: Dict[str, Any]) -> List[str]:
+    ...
+
+
+@overload
+def policy_get_build_tags(
+        data: Dict[str, Any],
+        taginfo: Literal[False]) -> List[str]:
+    ...
+
+
+@overload
+def policy_get_build_tags(
+        data: Dict[str, Any],
+        taginfo: Literal[True]) -> List[TagInfo]:
+    ...
+
+
+@overload
+def policy_get_build_tags(
+        data: Dict[str, Any],
+        taginfo: bool = False) -> Union[List[TagInfo], List[str]]:
+    ...
+
+
+def policy_get_build_types(
+        data: Dict[str, Any]) -> Set[str]:
+    ...
+
+
+def policy_get_cgs(
+        data: Dict[str, Any]) -> Set[Optional[str]]:
+    ...
+
+
+def policy_get_pkg(
+        data: Dict[str, Any]) -> PackageInfo:
+    ...
+
+
+def policy_get_release(
+        data: Dict[str, Any]) -> str:
+    ...
+
+
+def policy_get_user(
+        data: Dict[str, Any]) -> Optional[UserInfo]:
+    ...
+
+
+def policy_get_version(
+        data: Dict[str, Any]) -> str:
     ...
 
 
