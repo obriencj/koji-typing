@@ -43,6 +43,8 @@ __all__ = (
     "AuthType",
     "BuildID",
     "BuildInfo",
+    "BuildLogEntry",
+    "BuildLogs",
     "BuildNVR",
     "BuildrootID",
     "BuildrootInfo",
@@ -50,6 +52,7 @@ __all__ = (
     "BuildrootState",
     "BuildrootType",
     "BuildState",
+    "BuildSpecifier",
     "BTypeID",
     "BTypeInfo",
     "ChangelogEntry",
@@ -67,6 +70,7 @@ __all__ = (
     "EventInfo",
     "GOptions",
     "HistoryEntry",
+    "HostID",
     "HostInfo",
     "ListTasksOptions",
     "MavenInfo",
@@ -94,6 +98,7 @@ __all__ = (
     "TagInfo",
     "TagInheritance",
     "TagInheritanceEntry",
+    "TagGroupID",
     "TagGroupInfo",
     "TagGroupPackage",
     "TagGroupReq",
@@ -109,6 +114,7 @@ __all__ = (
     "UserInfo",
     "UserStatus",
     "UserType",
+    "WinInfo",
 )
 
 
@@ -120,6 +126,7 @@ CGID = NewType("CGID", int)
 ChannelID = NewType("ChannelID", int)
 ExternalRepoID = NewType("ExternalRepoID", int)
 EventID = NewType("EventID", int)
+HostID = NewType("HostID", int)
 PackageID = NewType("PackageID", int)
 PermID = NewType("PermID", int)
 RepoID = NewType("RepoID", int)
@@ -365,7 +372,7 @@ class ArchiveTypeInfo(TypedDict):
 
 class BuildrootReference(TypedDict):
     create_event: EventID
-    host_id: int
+    host_id: HostID
     id: BuildrootID
     state: BuildrootState
 
@@ -388,7 +395,7 @@ class BuildrootInfo(TypedDict):
     extra: Optional[dict]
 
     host_arch: Optional[str]
-    host_id: int
+    host_id: HostID
     host_name: str
     host_os: Optional[str]
 
@@ -437,11 +444,11 @@ class BuildInfo(BuildNVR):
     build_id: BuildID
     """ The internal ID for the build record """
 
-    cg_id: int
+    cg_id: Optional[CGID]
     """ The ID of the content generator which has reserved or produced
     this build """
 
-    cg_name: str
+    cg_name: Optional[str]
     """ The name of the content generator which has reserved or produced
     this build """
 
@@ -480,13 +487,13 @@ class BuildInfo(BuildNVR):
     """ The unique NVR of the build, comprised of the name, version, and
     release separated by hyphens """
 
-    owner_id: int
+    owner_id: UserID
     """ ID of the koji user that owns this build """
 
     owner_name: str
     """ name of the koji user that owns this build """
 
-    package_id: int
+    package_id: PackageID
     """ The corresponding package ID for this build. """
 
     package_name: str
@@ -524,6 +531,23 @@ class BuildInfo(BuildNVR):
     platform: Optional[str]
     """ only present on Windows builds which have been loaded with type
     information """
+
+
+class BuildLogEntry(TypedDict):
+    dir: str
+    """ log's immediate parent subdir """
+
+    name: str
+    """ log's file name """
+
+    path: str
+    """ log's path under topdir """
+
+
+BuildLogs = List[BuildLogEntry]
+
+
+BuildSpecifier = Union[str, BuildID, BuildNVR]
 
 
 class TagBuildInfo(BuildInfo):
@@ -593,7 +617,7 @@ class RPMInfo(RPMNVRA):
     extra: dict
     """ Optional extra data """
 
-    id: int
+    id: RPMID
     """ The internal ID for this RPM """
 
     metadata_only: bool
@@ -644,7 +668,7 @@ class HostInfo(TypedDict):
     enabled: bool
     """ whether this host is configured by the hub to take tasks """
 
-    id: int
+    id: HostID
     """ internal identifier """
 
     name: str
@@ -659,7 +683,7 @@ class HostInfo(TypedDict):
     capacity and a given task's weight, this can determine whether a
     task will 'fit' on the host """
 
-    user_id: int
+    user_id: UserID
     """ the user ID of this host's account. Hosts have a user account of
     type HOST, which is how they authenticate with the hub """
 
@@ -671,7 +695,7 @@ class UserGroup(TypedDict):
     :since: 2.2.0
     """
 
-    group_id: int
+    group_id: UserID
     """ the ID of the group """
 
     name: str
@@ -1026,7 +1050,7 @@ class TagGroupInfo(TypedDict):
     description: str
     display_name: str
     exported: bool
-    group_id: int
+    group_id: TagGroupID
     grouplist: List[TagGroupReq]
     is_default: bool
     langonly: str
@@ -1049,7 +1073,7 @@ class TaskInfo(TypedDict):
     task.  False if this task is no longer being waited-for. None if
     the task was never waited-for. """
 
-    channel_id: int
+    channel_id: ChannelID
     """ internal ID of the channel from which a host will be selected to
     take this task """
 
@@ -1116,7 +1140,7 @@ class TaskInfo(TypedDict):
 
 
 class ChannelInfo(TypedDict):
-    id: int
+    id: ChannelID
     """ internal channel ID """
 
     name: str
@@ -1219,6 +1243,10 @@ class MavenInfo(TypedDict):
     group_id: str
     artifact_id: str
     version: str
+
+
+class WinInfo(TypedDict):
+    platform: str
 
 
 class POMInfo(TypedDict):

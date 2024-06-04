@@ -24,20 +24,24 @@ Typing annotations stub for kojihub
 
 from koji import ParameterError
 from koji_types import (
-    ArchiveID, ArchiveInfo, BuildID, BuildInfo, BuildNVR, BuildState,
-    BuildrootID, BuildrootReference, BTypeInfo, CGID, CGInfo, CGInitInfo,
-    ChannelID, ChecksumType, ExternalRepoID, ExternalRepoInfo,
-    EventID, NamedID, PackageID, PackageInfo, PermID,
+    ArchiveID, ArchiveInfo, BuildID, BuildInfo, BuildLogs,
+    BuildNVR, BuildState, BuildSpecifier,
+    BuildrootID, BuildrootInfo, BuildrootReference, BuildrootState,
+    BTypeInfo, CGID, CGInfo, CGInitInfo,
+    ChannelID, ChannelInfo, ChecksumType,
+    ExternalRepoID, ExternalRepoInfo,
+    EventID, HistoryEntry, HostID, HostInfo,
+    MavenInfo, NamedID, PackageID, PackageInfo, PermID,
     QueryOptions,
     RepoID, RepoInfo, RepoState, RPMID, RPMInfo, RPMNVRA, RPMSignature,
     TagExternalRepos,
     TagFullInheritance, TagFullInheritanceEntry,
-    TagGroupInfo,
+    TagGroupID, TagGroupInfo,
     TagID, TagInfo,
     TagInheritance, TagPackageInfo,
     TargetID, TargetInfo, TaskID, TaskState,
     UserID, UserInfo,
-    UserStatus, )
+    UserStatus, WinInfo, )
 from koji_types.arch import Arch
 from koji_types.protocols import ClientSession
 from logging import Logger
@@ -147,6 +151,16 @@ def _create_build_target(
     ...
 
 
+def _delete_build(
+        binfo: BuildInfo) -> None:
+    ...
+
+
+def _delete_build_symlinks(
+        binfo: BuildInfo) -> None:
+    ...
+
+
 def _delete_event_id() -> None:
     ...
 
@@ -180,6 +194,14 @@ def _writeInheritanceData(
         tag_id: TagID,
         changes: TagInheritance,
         clear: bool = False) -> None:
+    ...
+
+
+def add_archive_type(
+        name: str,
+        description: str,
+        extensions: str,
+        compression_type: Optional[str] = None) -> None:
     ...
 
 
@@ -241,6 +263,20 @@ def assert_policy(
         data: Dict[str, Any],
         default: str = 'deny',
         force: bool = False) -> None:
+    ...
+
+
+def build_notification(
+        task_id: TaskID,
+        build_id: BuildID) -> None:
+    ...
+
+
+def build_references(
+        build_id: BuildID,
+        limit: Optional[int] = None,
+        lazy: bool = False) -> Dict[str, Any]:
+    # TODO: create a TypedDict
     ...
 
 
@@ -351,6 +387,26 @@ def create_rpm_checksum(
     ...
 
 
+def create_tag(
+        name: str,
+        parent: Union[str, TagID, None] = None,
+        arches: Optional[str] = None,
+        perm: Union[str, PermID, None] = None,
+        locked: bool = False,
+        maven_support: bool = False,
+        maven_include_all: bool = False,
+        extra: Optional[Dict[str, str]] = None) -> TagID:
+    ...
+
+
+
+def delete_build(
+        build: BuildSpecifier,
+        strict: bool = True,
+        min_ref_age: int = 604800) -> bool:
+    ...
+
+
 def delete_build_target(
         buildTargetInfo: Union[str, TargetID]) -> None:
     ...
@@ -368,6 +424,11 @@ def delete_rpm_sig(
     ...
 
 
+def delete_tag(
+        tagInfo: Union[str, TagID]) -> None:
+    ...
+
+
 def dist_repo_init(
         tag: Union[int, str],
         keys: List[str],
@@ -381,11 +442,24 @@ def draft_clause(
     ...
 
 
+def drop_group_member(
+        group: Union[str, UserID],
+        user: Union[str, UserID]) -> None:
+    ...
+
+
 def edit_build_target(
         buildTargetInfo: Union[str, int],
         name: str,
         build_tag: Union[str, int],
         dest_tag: Union[str, int]) -> None:
+    ...
+
+
+def edit_external_repo(
+        info: Union[str, ExternalRepoID],
+        name: Optional[str] = None,
+        url: Optional[str] = None) -> None:
     ...
 
 
@@ -401,6 +475,12 @@ def eval_policy(
     ...
 
 
+def find_build_id(
+        X: BuildSpecifier,
+        strict: bool = False) -> BuildID:
+    ...
+
+
 def generate_token(
         nbytes: int = 32) -> str:
     ...
@@ -411,6 +491,23 @@ def get_active_repos() -> List[RepoInfo]:
 
 
 def get_all_arches() -> List[Arch]:
+    ...
+
+
+def get_archive(
+        archive_id: ArchiveID,
+        strict: bool = False) -> Optional[ArchiveInfo]:
+    ...
+
+
+def get_build(
+        buildInfo: BuildSpecifier,
+        strict: bool = False) -> BuildInfo:
+    ...
+
+
+def get_build_logs(
+        build: BuildSpecifier) -> BuildLogs:
     ...
 
 
@@ -434,6 +531,18 @@ def get_build_targets(
         buildTagID: Union[str, int, TagInfo, None] = None,
         destTagID: Union[str, int, TagInfo, None] = None,
         queryOpts: Optional[QueryOptions] = None) -> List[TargetInfo]:
+    ...
+
+
+def get_buildroot(
+        buildrootID: BuildrootID,
+        strict: bool = False) -> BuildrootInfo:
+    ...
+
+
+def get_channel(
+        channelInfo: Union[str, ChannelID],
+        strict: bool = False) -> ChannelInfo:
     ...
 
 
@@ -484,6 +593,13 @@ def get_group_members(
     ...
 
 
+def get_host(
+        hostInfo: Union[str, HostID],
+        strict: bool = False,
+        event: Optional[EventID] = None) -> HostInfo:
+    ...
+
+
 def get_id(
         table: str,
         info: Union[str, int, Dict[str, Any]],
@@ -492,10 +608,40 @@ def get_id(
     ...
 
 
+def get_image_archive(
+        archive_id: ArchiveID,
+        strict: bool = False) -> ArchiveInfo:
+    ...
+
+
+def get_maven_archive(
+        archive_id: ArchiveID,
+        strict: bool = False) -> ArchiveInfo:
+    ...
+
+
 def get_maven_build(
         buildInfo: Union[int, str],
         strict: bool = False) -> Dict[str, Any]:
     # TODO: need a return typedict
+    ...
+
+
+def get_next_build(
+        build_info: BuildNVR) -> BuildID:
+    ...
+
+
+def get_next_release(
+        build_info: BuildNVR,
+        incr: int = 1) -> str:
+    ...
+
+
+def get_notification_recipients(
+        build: Optional[BuildInfo],
+        tag_id: Optional[TagID],
+        state: BuildState) -> List[str]:
     ...
 
 
@@ -584,6 +730,12 @@ def get_verify_class(
     ...
 
 
+def get_win_archive(
+        archive_id: ArchiveID,
+        strict: bool = False) -> ArchiveInfo:
+    ...
+
+
 def get_win_build(
         buildInfo: Union[str, BuildID],
         strict: bool = False) -> Dict[str, Any]:
@@ -619,6 +771,69 @@ def grant_cg_access(
         user: Union[str, int],
         cg: Union[str, int],
         create: bool = False) -> None:
+    ...
+
+
+def grp_pkg_add(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        pkg_name: str,
+        block: bool = False,
+        force: bool = False,
+        **opts) -> None:
+    ...
+
+
+def grp_pkg_block(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        pkg_name: str) -> None:
+    ...
+
+
+def grp_pkg_remove(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        pkg_name: str) -> None:
+    ...
+
+
+def grp_pkg_unblock(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        pkg_name: str) -> None:
+    ...
+
+
+def grp_req_add(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        reqinfo: str,
+        block: bool = False,
+        force: bool = False,
+        **opts) -> None:
+    ...
+
+
+def grp_req_block(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        reqinfo: str) -> None:
+    ...
+
+
+def grp_req_remove(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        reqinfo: str,
+        force: Optional[bool] = None) -> None:
+    ...
+
+
+def grp_req_unblock(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        reqinfo: str) -> None:
     ...
 
 
@@ -689,14 +904,38 @@ def list_cgs() -> Dict[str, CGInfo]:
     ...
 
 
+def list_rpms(
+        buildID: Optional[BuildID] = None,
+        buildrootID: Optional[BuildrootID] = None,
+        imageID: Optional[int] = None,
+        componentBuildrootID: Optional[BuildrootID] = None,
+        hostID: Optional[int] = None,
+        arches: Union[Arch, List[Arch], None] = None,
+        queryOpts: Optional[QueryOptions] = None,
+        draft: Optional[bool] = None) -> List[RPMInfo]:
+    ...
+
+
 def list_tags(
-        build: Union[str, BuildID, None] = None,
+        build: Optional[BuildSpecifier] = None,
         package: Union[str, PackageID, None] = None,
         perms: bool = True,
         queryOpts: Optional[QueryOptions] = None,
         pattern: Optional[str] = None) -> List[TagInfo]:
     # TODO: this can optionally be a slightly modified TagInfo if
-    # package is specified
+    # package is specified, so we might need an overload
+    ...
+
+
+def list_task_output(
+        taskID: TaskID,
+        stat: bool = False,
+        all_volumes: bool = False,
+        strict: bool = False) -> Union[List[str],
+                                       Dict[str, List[str]],
+                                       Dict[str, Dict[str, Any]],
+                                       Dict[str, Dict[str, Dict[str, Any]]]]:
+    # TODO: oh my god the overload for this is going to be a mess
     ...
 
 
@@ -801,8 +1040,19 @@ def new_build(
     ...
 
 
+def new_group(
+        name: str) -> UserID:
+    ...
+
+
 def new_image_build(
         build_info: BuildInfo) -> None:
+    ...
+
+
+def new_maven_build(
+        build: BuildInfo,
+        maven_info: MavenInfo) -> None:
     ...
 
 
@@ -815,6 +1065,12 @@ def new_package(
 def new_typed_build(
         build_info: BuildInfo,
         btype: str) -> None:
+    ...
+
+
+def new_win_build(
+        build_info: BuildInfo,
+        win_info: WinInfo) -> None:
     ...
 
 
@@ -943,6 +1199,25 @@ def policy_get_user(
 
 def policy_get_version(
         data: Dict[str, Any]) -> str:
+    ...
+
+
+def query_buildroots(
+        hostID: Optional[int] = None,
+        tagID: Optional[TagID] = None,
+        state: Union[BuildrootState, List[BuildrootState], None] = None,
+        rpmID: Optional[RPMID] = None,
+        archiveID: Optional[ArchiveID] = None,
+        taskID: Optional[TaskID] = None,
+        buildrootID: Optional[BuildrootID] = None,
+        repoID: Optional[RepoID] = None,
+        queryOpts: Optional[QueryOptions] = None) -> List[BuildrootInfo]:
+    ...
+
+
+def query_history(
+        tables: Optional[List[str]] = None,
+        **kwargs) -> List[HistoryEntry]:
     ...
 
 
@@ -1168,10 +1443,10 @@ def tag_changed_since_event(
 
 def tag_notification(
         is_successful: bool,
-        tag_id: TagID,
-        from_id: int,
+        tag_id: Union[str, TagID, None],
+        from_id: Union[str, TagID, None],
         build_id: BuildID,
-        user_id: UserID,
+        user_id: Union[str, UserID, None],
         ignore_success: bool = False,
         failure_msg: str = '') -> None:
     ...

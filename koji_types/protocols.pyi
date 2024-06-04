@@ -21,7 +21,8 @@ Koji Types - Client Session Protocol method declarations
 
 
 from . import (
-    ArchiveInfo, ArchiveTypeInfo, BuildID, BuildInfo, BuildNVR,
+    ArchiveInfo, ArchiveTypeInfo,
+    BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR,
     BuildrootID, BuildrootInfo,
     BuildState, BTypeInfo, ChangelogEntry, ChannelInfo,
     CGID, CGInfo, CGInitInfo,
@@ -160,8 +161,13 @@ class ClientSession(Protocol):
 
     def getBuild(
             self,
-            buildInfo: Union[int, str],
+            buildInfo: Union[str, BuildID],
             strict: bool = False) -> BuildInfo:
+        ...
+
+    def getBuildLogs(
+            self,
+            buildInfo: Union[str, BuildID]) -> BuildLogs:
         ...
 
     def getBuildTarget(
