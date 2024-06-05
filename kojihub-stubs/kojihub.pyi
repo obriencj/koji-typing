@@ -23,6 +23,7 @@ Typing annotations stub for kojihub
 
 
 from koji import ParameterError
+from koji.policy import BaseSimpleTest, MatchTest
 from koji_types import (
     ArchiveID, ArchiveInfo, BuildID, BuildInfo, BuildLogs,
     BuildNVR, BuildState, BuildSpecifier,
@@ -39,11 +40,12 @@ from koji_types import (
     TagGroupID, TagGroupInfo,
     TagID, TagInfo,
     TagInheritance, TagPackageInfo,
-    TargetID, TargetInfo, TaskID, TaskState,
+    TargetID, TargetInfo,
+    TaskID, TaskInfo, TaskState,
     UserID, UserInfo,
     UserStatus, WinInfo, )
 from koji_types.arch import Arch
-from koji_types.protocols import ClientSession
+from koji_types.protocols import ClientSession, Host
 from logging import Logger
 from typing import (
     Any, Callable, Dict, Iterator, List, Literal, Optional, Set,
@@ -53,6 +55,118 @@ from typing import (
 NUMERIC_TYPES: Tuple[Type, ...]
 
 logger: Logger
+
+
+# === Policy Classes ===
+
+class BuildTagInheritsFromTest(BaseSimpleTest):
+    ...
+
+
+class BuildTagTest(BaseSimpleTest):
+    ...
+
+
+class BuildTypeTest(BaseSimpleTest):
+    ...
+
+
+class CGMatchAllTest(BaseSimpleTest):
+    ...
+
+
+class CGMatchAnyTest(BaseSimpleTest):
+    ...
+
+
+class ChildTaskTest(MatchTest):
+    ...
+
+
+class HasTagTest(BaseSimpleTest):
+    ...
+
+
+class HasPermTest(BaseSimpleTest):
+    ...
+
+
+class ImportedTest(BaseSimpleTest):
+    ...
+
+
+class IsBuildOwnerTest(BaseSimpleTest):
+    ...
+
+
+class IsDraftTest(BaseSimpleTest):
+    ...
+
+
+class MethodTest(MatchTest):
+    ...
+
+
+class NewPackageTest(BaseSimpleTest):
+    ...
+
+
+class OperationTest(MatchTest):
+    ...
+
+
+class PackageTest(MatchTest):
+    ...
+
+
+class PolicyTest(BaseSimpleTest):
+    ...
+
+
+class ReleaseTest(MatchTest):
+    ...
+
+
+class SkipTagTest(BaseSimpleTest):
+    ...
+
+
+class SourceTest(MatchTest):
+    ...
+
+
+class TagTest(MatchTest):
+    ...
+
+
+class UserInGroupTest(BaseSimpleTest):
+    ...
+
+
+class UserTest(MatchTest):
+    ...
+
+
+class VersionTest(MatchTest):
+    ...
+
+
+class VMTest(MatchTest):
+    ...
+
+
+class VolumeTest(MatchTest):
+    ...
+
+
+class FromTagTest(TagTest):
+    ...
+
+
+# === Other Classes ===
+
+# class HostExports(Host):
+#     pass
 
 
 class MultiSum:
@@ -70,7 +184,7 @@ class MultiSum:
 
 
 # class RootExports(ClientSession):
-#     ...
+#     host: HostExports
 
 
 class Task:
@@ -106,10 +220,62 @@ class Task:
             user_id: Optional[int] = None) -> None:
         ...
 
+    def assign(
+            self,
+            host_id: HostID,
+            force: bool = False) -> bool:
+        ...
+
+    def cancel(
+            self,
+            recurse: bool = True) -> bool:
+        ...
+
+    def cancelChildren(self) -> None:
+        ...
+
+    def close(
+            self,
+            result: str) -> None:
+        ...
+
+    def fail(self,
+             result: str) -> None:
+        ...
+
     def free(self) -> bool:
         ...
 
+    def getChildren(
+            self,
+            request: bool = False) -> List[TaskInfo]:
+        ...
+
+    def getInfo(
+            self,
+            strict: bool = True,
+            request: bool = False) -> Optional[TaskInfo]:
+        ...
+
     def getOwner(self) -> int:
+        ...
+
+    def getRequest(self) -> Dict[str, Any]:
+        ...
+
+    def getResult(self) -> str:
+        ...
+
+    def getState(self) -> TaskState:
+        ...
+
+    def isCanceled(self) -> bool:
+        ...
+
+    def isFailed(self) -> bool:
+        ...
+
+    def isFinished(self) -> bool:
         ...
 
     def lock(
@@ -122,6 +288,14 @@ class Task:
     def open(
             self,
             host_id: int) -> Optional[Dict[str, Any]]:
+        ...
+
+    def runCallbacks(
+            self,
+            cbtype: str,
+            old_info: TaskInfo,
+            attr: str,
+            new_val: Any) -> None:
         ...
 
     def setPriority(
@@ -138,6 +312,11 @@ class Task:
     def verifyHost(
             self,
             host_id: Optional[int] = None) -> bool:
+        ...
+
+    def verifyOwner(
+            self,
+            user_id: Optional[UserID] = None) -> bool:
         ...
 
 
@@ -202,6 +381,12 @@ def add_archive_type(
         description: str,
         extensions: str,
         compression_type: Optional[str] = None) -> None:
+    ...
+
+
+def add_channel(
+        channel_name: str,
+        description: Optional[str] = None) -> ChannelID:
     ...
 
 
@@ -834,6 +1019,34 @@ def grp_req_unblock(
         taginfo: Union[str, TagID],
         grpinfo: Union[str, TagGroupID],
         reqinfo: str) -> None:
+    ...
+
+
+def grplist_add(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        block: bool = False,
+        force: bool = False,
+        **opts) -> None:
+    ...
+
+
+def grplist_block(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID]) -> None:
+    ...
+
+
+def grplist_remove(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        force: bool = False) -> None:
+    ...
+
+
+def grplist_unblock(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID]) -> None:
     ...
 
 
