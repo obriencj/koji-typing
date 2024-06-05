@@ -25,7 +25,7 @@ Typing annotations stub for kojihub
 from koji import ParameterError
 from koji.policy import BaseSimpleTest, MatchTest
 from koji_types import (
-    ArchiveID, ArchiveInfo, BuildID, BuildInfo, BuildLogs,
+    ArchiveID, ArchiveFile, ArchiveInfo, BuildID, BuildInfo, BuildLogs,
     BuildNVR, BuildState, BuildSpecifier,
     BuildrootID, BuildrootInfo, BuildrootReference, BuildrootState,
     BTypeInfo, CGID, CGInfo, CGInitInfo,
@@ -45,11 +45,13 @@ from koji_types import (
     UserID, UserInfo,
     UserStatus, WinInfo, )
 from koji_types.arch import Arch
-from koji_types.protocols import ClientSession, Host
+from koji_types.protocols import (
+    ClientSession as _ClientSession, Host as _Host, )
 from logging import Logger
 from typing import (
     Any, Callable, Dict, Iterator, List, Literal, Optional, Set,
     Tuple, Type, TypeVar, Union, overload, )
+
 
 
 NUMERIC_TYPES: Tuple[Type, ...]
@@ -136,7 +138,9 @@ class SourceTest(MatchTest):
 
 
 class TagTest(MatchTest):
-    ...
+
+    def get_tag(self, data: Dict[str, Any]) -> TagInfo:
+        ...
 
 
 class UserInGroupTest(BaseSimpleTest):
@@ -160,13 +164,72 @@ class VolumeTest(MatchTest):
 
 
 class FromTagTest(TagTest):
-    ...
+
+    def get_tag(self, data: Dict[str, Any]) -> TagInfo:
+        ...
 
 
 # === Other Classes ===
 
-# class HostExports(Host):
+# class HostExports(_Host):
 #     pass
+
+
+class Host:
+
+    def __init__(
+            self,
+            id: Optional[HostID] = None):
+        ...
+
+    def getHostTasks(self) -> List[TaskInfo]:
+        # TODO: maybe a new TaskStatus
+        ...
+
+    def getLoadData(self) -> Tuple[List[HostID], List[TaskID]]:
+        # TODO: double check TaskID and not TaskInfo
+        ...
+
+    def isEnabled(self) -> bool:
+        ...
+
+    def taskSetWait(
+            self,
+            parent: TaskID,
+            tasks: List[TaskID]) -> None:
+        ...
+
+    def taskUnwait(
+            self,
+            parent: TaskID) -> None:
+        ...
+
+    def taskWait(
+            self,
+            parent: TaskID) -> Tuple[List[TaskID], List[TaskID]]:
+        ...
+
+    def taskWaitCheck(
+            self,
+            parent: TaskID) -> Tuple[List[TaskID], List[TaskID]]:
+        ...
+
+    def taskWaitResults(
+            self,
+            parent: TaskID,
+            tasks: List[TaskID],
+            canfail: Optional[List[TaskID]] = None) \
+            -> List[Tuple[TaskID, str]]:
+        ...
+
+    def updateHost(
+            self,
+            task_load: float,
+            ready: bool) -> None:
+        ...
+
+    def verify(self) -> bool:
+        ...
 
 
 class MultiSum:
@@ -183,7 +246,7 @@ class MultiSum:
         ...
 
 
-# class RootExports(ClientSession):
+# class RootExports(_ClientSession):
 #     host: HostExports
 
 
@@ -234,6 +297,11 @@ class Task:
     def cancelChildren(self) -> None:
         ...
 
+    def cancelFull(
+            self,
+            strict: bool = True) -> None:
+        ...
+
     def close(
             self,
             result: str) -> None:
@@ -263,7 +331,9 @@ class Task:
     def getRequest(self) -> Dict[str, Any]:
         ...
 
-    def getResult(self) -> str:
+    def getResult(
+            self,
+            raise_fault: bool = True) -> str:
         ...
 
     def getState(self) -> TaskState:
@@ -384,9 +454,37 @@ def add_archive_type(
     ...
 
 
+def add_btype(
+        name: str) -> None:
+    ...
+
+
 def add_channel(
         channel_name: str,
         description: Optional[str] = None) -> ChannelID:
+    ...
+
+
+def add_external_repo_to_tag(
+        tag_info: Union[str, TagID],
+        repo_info: Union[str, ExternalRepoID],
+        priority: int,
+        merge_mode: str = 'koji',
+        arches: Optional[str] = None) -> None:
+    ...
+
+
+def add_external_rpm(
+        rpminfo: Dict[str, Any],
+        external_repo: Union[str, ExternalRepoID],
+        strict: bool = True) -> RPMInfo:
+    ...
+
+
+def add_group_member(
+        group: Union[str, UserID],
+        user: Union[str, UserID],
+        strict: bool = True) -> None:
     ...
 
 
@@ -1107,9 +1205,41 @@ def importImageInternal(
     ...
 
 
+def list_archive_files(
+        archive_id: ArchiveID,
+        queryOpts: Optional[QueryOptions] = None,
+        strict: bool = False) -> List[ArchiveFile]:
+    ...
+
+
+def list_archives(
+        buildID: Optional[BuildID] = None,
+        buildrootID: Optional[BuildrootID] = None,
+        componentBuildrootID: Optional[BuildrootID] = None,
+        hostID: Optional[HostID] = None,
+        type: Optional[str] = None,
+        filename: Optional[str] = None,
+        size: Optional[int] = None,
+        checksum: Optional[int] = None,
+        checksum_type: Optional[ChecksumType] = None,
+        typeInfo: Optional[Dict[str, Any]] = None,
+        queryOpts: Optional[QueryOptions] = None,
+        imageID: Optional[int] = None,
+        archiveID: Optional[ArchiveID] = None,
+        strict: bool = False) -> List[ArchiveInfo]:
+    ...
+
+
 def list_btypes(
         query: Optional[NamedID] = None,
         queryOpts: Optional[QueryOptions] = None) -> List[BTypeInfo]:
+    ...
+
+
+def list_channels(
+        hostID: Optional[HostID] = None,
+        event: Optional[EventID] = None,
+        enabled: Optional[bool] = None) -> List[ChannelInfo]:
     ...
 
 
@@ -1227,6 +1357,11 @@ def maven_tag_archives(
         tag_id: TagID,
         event_id: Optional[EventID] = None,
         inherit: bool = True) -> Iterator[ArchiveInfo]:
+    ...
+
+
+def merge_scratch(
+        task_id: TaskID) -> BuildID:
     ...
 
 

@@ -39,7 +39,8 @@ from typing_extensions import TypedDict
 
 __all__ = (
     "ArchiveInfo",
-    "ArchiveTypeInfo",
+    "ATypeID",
+    "ATypeInfo",
     "AuthType",
     "BuildID",
     "BuildInfo",
@@ -119,6 +120,7 @@ __all__ = (
 
 
 ArchiveID = NewType("ArchiveID", int)
+ATypeID = NewType("ATypeID", int)
 BuildID = NewType("BuildID", int)
 BuildrootID = NewType("BuildrootID", int)
 BTypeID = NewType("BTypeID", int)
@@ -356,7 +358,18 @@ class ArchiveInfo(TypedDict):
     """ Only present on Image archives """
 
 
-class ArchiveTypeInfo(TypedDict):
+class ArchiveFile(TypedDict):
+    archive_id: ArchiveID
+    """ owning archive record """
+
+    name: str
+    """ filename inside of archive """
+
+    size: int
+    """ uncompressed file size """
+
+
+class ATypeInfo(TypedDict):
 
     description: str
     """ short title of the type """
@@ -364,7 +377,7 @@ class ArchiveTypeInfo(TypedDict):
     extensions: str
     """ space separated extensions for this type """
 
-    id: int
+    id: ATypeID
     """ the internal ID of the archive type """
 
     name: str

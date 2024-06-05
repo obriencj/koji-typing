@@ -21,7 +21,7 @@ Koji Types - Client Session Protocol method declarations
 
 
 from . import (
-    ArchiveInfo, ArchiveTypeInfo,
+    ArchiveID, ArchiveInfo, ATypeID, ATypeInfo,
     BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR,
     BuildrootID, BuildrootInfo,
     BuildState, BTypeInfo, ChangelogEntry, ChannelInfo,
@@ -144,7 +144,7 @@ class ClientSession(Protocol):
 
     def getArchive(
             self,
-            archive_id: int,
+            archive_id: ArchiveID,
             strict: bool = False) -> ArchiveInfo:
         ...
 
@@ -152,11 +152,11 @@ class ClientSession(Protocol):
             self,
             filename: Optional[str] = None,
             type_name: Optional[str] = None,
-            type_id: Optional[int] = None,
-            strict: bool = False) -> ArchiveTypeInfo:
+            type_id: Optional[ATypeID] = None,
+            strict: bool = False) -> ATypeInfo:
         ...
 
-    def getArchiveTypes(self) -> List[ArchiveTypeInfo]:
+    def getArchiveTypes(self) -> List[ATypeInfo]:
         ...
 
     def getBuild(
@@ -173,14 +173,14 @@ class ClientSession(Protocol):
     def getBuildTarget(
             self,
             info: Union[int, str],
-            event: Optional[int] = None,
+            event: Optional[EventID] = None,
             strict: bool = False) -> TargetInfo:
         ...
 
     def getBuildTargets(
             self,
             info: Optional[Union[int, str]] = None,
-            event: Optional[int] = None,
+            event: Optional[EventID] = None,
             buildTagID: Optional[int] = None,
             destTagID: Optional[int] = None,
             queryOpts: Optional[QueryOptions] = None) -> List[TargetInfo]:
