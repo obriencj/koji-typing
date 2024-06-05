@@ -796,7 +796,7 @@ class TagExternalRepoEntry(TypedDict):
     url: str
 
 
-TagExternalRepos: TypeAlias = List[TagExternalRepoEntry]
+TagExternalRepos = List[TagExternalRepoEntry]
 
 
 class TargetInfo(TypedDict):
