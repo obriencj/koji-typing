@@ -38,6 +38,7 @@ from typing_extensions import TypedDict
 
 
 __all__ = (
+    "ArchiveFile",
     "ArchiveInfo",
     "ATypeID",
     "ATypeInfo",

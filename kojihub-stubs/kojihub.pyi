@@ -25,7 +25,9 @@ Typing annotations stub for kojihub
 from koji import ParameterError
 from koji.policy import BaseSimpleTest, MatchTest
 from koji_types import (
-    ArchiveID, ArchiveFile, ArchiveInfo, BuildID, BuildInfo, BuildLogs,
+    ArchiveID, ArchiveFile, ArchiveInfo,
+    ATypeID, ATypeInfo,
+    BuildID, BuildInfo, BuildLogs,
     BuildNVR, BuildState, BuildSpecifier,
     BuildrootID, BuildrootInfo, BuildrootReference, BuildrootState,
     BTypeInfo, CGID, CGInfo, CGInitInfo,
@@ -502,6 +504,12 @@ def add_rpm_sig(
     ...
 
 
+def add_volume(
+        name: str,
+        strict: bool = True) -> NamedID:
+    ...
+
+
 @overload
 def apply_volume_policy(
         build: BuildInfo,
@@ -545,6 +553,13 @@ def assert_policy(
         name: str,
         data: Dict[str, Any],
         default: str = 'deny',
+        force: bool = False) -> None:
+    ...
+
+
+def assert_tag_access(
+        tag_id: Union[str, TagID],
+        user_id: Union[str, UserID, None] = None,
         force: bool = False) -> None:
     ...
 
@@ -626,6 +641,19 @@ def check_rpm_sig(
     ...
 
 
+def check_tag_access(
+        tag_id: Union[str, TagID],
+        user_id: Union[str, UserID, None] = None) -> Tuple[bool, bool, str]:
+    ...
+
+
+def check_volume_policy(
+        data: Dict[str, Any],
+        strict: bool = False,
+        default: Optional[str] = None) -> Optional[NamedID]:
+    ...
+
+
 def clear_reservation(
         build_id: BuildID) -> None:
     ...
@@ -663,10 +691,23 @@ def create_build_target(
     ...
 
 
+def create_external_repo(
+        name: str,
+        url: str) -> ExternalRepoInfo:
+    ...
+
+
 def create_rpm_checksum(
         rpm_id: int,
         sigkey: str,
         chsum_dict: Dict[ChecksumType, str]) -> None:
+    ...
+
+
+def create_rpm_checksums_output(
+        query_result: Dict[str, Any],
+        list_chsum_sigkeys: List[ChecksumType]) \
+        -> Dict[str, Dict[ChecksumType, str]]:
     ...
 
 
@@ -680,7 +721,6 @@ def create_tag(
         maven_include_all: bool = False,
         extra: Optional[Dict[str, str]] = None) -> TagID:
     ...
-
 
 
 def delete_build(
@@ -739,6 +779,12 @@ def edit_build_target(
     ...
 
 
+def edit_channel(
+        channelInfo: Union[int, str],
+        **kw) -> bool:
+    ...
+
+
 def edit_external_repo(
         info: Union[str, ExternalRepoID],
         name: Optional[str] = None,
@@ -746,15 +792,48 @@ def edit_external_repo(
     ...
 
 
-def edit_channel(
-        channelInfo: Union[int, str],
+def edit_host(
+        hostInfo: Union[str, HostID],
         **kw) -> bool:
+    ...
+
+
+def edit_tag(
+        tagInfo: Union[str, TagID],
+        **kwargs) -> None:
+    ...
+
+
+def edit_tag_external_repo(
+        tag_info: Union[str, TagID],
+        repo_info: Union[str, ExternalRepoID],
+        priority: Optional[int] = None,
+        merge_mode: Optional[str] = None,
+        arches: Optional[str] = None) -> bool:
+    ...
+
+
+def edit_user(
+        userInfo: Union[str, UserID],
+        name: Optional[str] = None,
+        krb_principal_mappings: Optional[List[Dict[str, str]]] = None) -> None:
+    ...
+
+
+def ensure_volume_symlink(
+        binfo: BuildInfo) -> None:
     ...
 
 
 def eval_policy(
         name: str,
         data: Dict[str, Any]) -> str:
+    ...
+
+
+def eventCondition(
+        event: EventID,
+        table: Optional[str] = None) -> str:
     ...
 
 
@@ -783,6 +862,25 @@ def get_archive(
     ...
 
 
+def get_archive_file(
+        archive_id: ArchiveID,
+        filename: str,
+        strict: bool = False) -> Optional[ArchiveFile]:
+    ...
+
+
+def get_archive_type(
+        filename: Optional[str] = None,
+        type_name: Optional[str] = None,
+        type_id: Optional[ATypeID] = None,
+        strict: bool = False) -> ATypeInfo:
+    ...
+
+
+def get_archive_types() -> List[ATypeInfo]:
+    ...
+
+
 def get_build(
         buildInfo: BuildSpecifier,
         strict: bool = False) -> BuildInfo:
@@ -791,6 +889,17 @@ def get_build(
 
 def get_build_logs(
         build: BuildSpecifier) -> BuildLogs:
+    ...
+
+
+def get_build_notifications(
+        user_id: UserID) -> Dict[str, Any]:
+    # TODO: need a new TypedDict
+    ...
+
+
+def get_build_notification_blocks(
+        user_id: UserID) -> Dict[str, Any]:
     ...
 
 
@@ -814,6 +923,12 @@ def get_build_targets(
         buildTagID: Union[str, int, TagInfo, None] = None,
         destTagID: Union[str, int, TagInfo, None] = None,
         queryOpts: Optional[QueryOptions] = None) -> List[TargetInfo]:
+    ...
+
+
+def get_build_type(
+        buildInfo: Union[str, BuildID, BuildNVR, BuildInfo],
+        strict: bool = False) -> BTypeInfo:
     ...
 
 
@@ -894,6 +1009,12 @@ def get_id(
 def get_image_archive(
         archive_id: ArchiveID,
         strict: bool = False) -> ArchiveInfo:
+    ...
+
+
+def get_image_build(
+        buildInfo: BuildSpecifier,
+        strict: bool = False) -> Optional[Dict[str, BuildID]]:
     ...
 
 
@@ -981,7 +1102,7 @@ def get_tag_groups(
         event: Optional[EventID] = None,
         inherit: bool = True,
         incl_pkgs: bool = True,
-        incl_reqs: bool = True) -> TagGroupInfo:
+        incl_reqs: bool = True) -> Dict[TagGroupID, TagGroupInfo]:
     ...
 
 
@@ -989,6 +1110,13 @@ def get_tag_id(
         info: Union[str, TagID, Dict[str, Any]],
         strict: bool = False,
         create: bool = False) -> Optional[TagID]:
+    ...
+
+
+def get_task_descendents(
+        task: Task,
+        childMap: Optional[Dict[str, List[TaskInfo]]] = None,
+        request: bool = False) -> Dict[str, List[TaskInfo]]:
     ...
 
 
@@ -1005,6 +1133,13 @@ def get_user(
         strict: bool = False,
         krb_princs: bool = True,
         groups: bool = False) -> Optional[UserInfo]:
+    ...
+
+
+def get_user_by_krb_principal(
+        krb_principal: str,
+        strict: bool = False,
+        krb_princs: bool = True) -> Optional[UserInfo]:
     ...
 
 
@@ -1195,6 +1330,13 @@ def import_rpm(
         brootid: Optional[int] = None,
         wrapper: bool = False,
         fileinfo: Optional[Dict[str, Any]] = None) -> RPMInfo:
+    ...
+
+
+def import_rpm_file(
+        fn: str,
+        buildinfo: BuildInfo,
+        rpminfo: RPMInfo) -> None:
     ...
 
 
@@ -1422,6 +1564,16 @@ def new_win_build(
     ...
 
 
+def old_edit_tag(
+        tagInfo: Union[str, TagID],
+        name: Optional[str],
+        arches: Optional[str],
+        locked: Optional[bool],
+        permissionID: Optional[PermID],
+        extra: Optional[Dict[str, str]] = None) -> None:
+    ...
+
+
 def parse_json(
         value: Optional[str],
         desc: Optional[str] = None,
@@ -1576,6 +1728,12 @@ def query_rpm_sigs(
     ...
 
 
+def readDescendantsData(
+        tag_id: TagID,
+        event: Optional[EventID] = None) -> TagInheritance:
+    ...
+
+
 def readFullInheritance(
         tag_id: TagID,
         event: Optional[EventID] = None,
@@ -1597,6 +1755,12 @@ def readFullInheritanceRecurse(
     ...
 
 
+def readInheritanceData(
+        tag_id: TagID,
+        event: Optional[EventID] = None) -> TagInheritance:
+    ...
+
+
 def readPackageList(
         tagID: Optional[TagID] = None,
         userID: Optional[UserID] = None,
@@ -1606,6 +1770,17 @@ def readPackageList(
         with_dups: bool = False,
         with_owners: bool = True,
         with_blocked: bool = True) -> Dict[PackageID, TagPackageInfo]:
+    ...
+
+
+def readTaggedArchives(
+        tag: TagID,
+        package: Union[str, PackageID, None] = None,
+        event: Optional[EventID] = None,
+        inherit: bool = False,
+        latest: bool = True,
+        type: Optional[str] = None,
+        extra: bool = True) -> Tuple[List[ArchiveInfo], List[BuildInfo]]:
     ...
 
 
@@ -1619,6 +1794,16 @@ def readTaggedBuilds(
         type: Optional[str] = None,
         extra: bool = False,
         draft: Optional[bool] = None) -> List[BuildInfo]:
+    ...
+
+
+def readTagGroups(
+        tag: Union[str, TagID],
+        event: Optional[EventID] = None,
+        inherit: bool = True,
+        incl_pkgs: bool = True,
+        incl_reqs: bool = True,
+        incl_blocked: bool = False) -> List[TagGroupInfo]:
     ...
 
 
