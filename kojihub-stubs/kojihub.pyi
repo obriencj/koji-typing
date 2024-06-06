@@ -49,7 +49,7 @@ from koji_types import (
 from koji_types.arch import Arch
 from koji_types.protocols import (
     ClientSession as _ClientSession, Host as _Host, )
-from logging import Logger
+from logging import ERROR, INFO, WARNING, Logger
 from typing import (
     Any, Callable, Dict, Iterator, List, Literal, Optional, Set,
     Tuple, Type, TypeVar, Union, overload, )
@@ -172,6 +172,240 @@ class FromTagTest(TagTest):
 
 
 # === Other Classes ===
+
+
+class BuildRoot:
+
+    def __init__(
+            self,
+            id: Optional[BuildrootID] = None):
+        ...
+
+    def assertHost(self, host_id: HostID) -> None:
+        ...
+
+    def assertStandard(self) -> None:
+        ...
+
+    def assertTask(self, task_id: TaskID) -> None:
+        ...
+
+    def cg_new(
+            self,
+            data: BuildrootInfo) -> BuildrootID:
+        # TODO: new TypedDict for CGBuildrootInfo
+        ...
+
+    def getArchiveList(
+            self,
+            queryOpts: Optional[QueryOptions] = None) -> List[ArchiveInfo]:
+        ...
+
+    def getList(self) -> List[RPMInfo]:
+        ...
+
+    def load(
+            self,
+            id: BuildrootID) -> None:
+        ...
+
+    def new(self,
+            host: HostID,
+            repo: RepoID,
+            arch: Arch,
+            task_id: Optional[TaskID] = None,
+            ctype: str = 'chroot') -> BuildrootID:
+        ...
+
+    def setList(
+            self,
+            rpmlist: List[RPMInfo]) -> None:
+        ...
+
+    def setState(
+            self,
+            state: BuildrootState) -> None:
+        ...
+
+    def setTools(
+            self,
+            tools: Optional[List[NamedID]]) -> None:
+        ...
+
+    def updateArchiveList(
+            self,
+            archives: List[ArchiveInfo],
+            project: bool = False) -> None:
+        ...
+
+    def updateList(
+            self,
+            rpmlist: List[RPMInfo]) -> None:
+        ...
+
+    def verifyHost(self, host_id: HostID) -> bool:
+        ...
+
+    def verifyTask(self, task_id: TaskID) -> bool:
+        ...
+
+
+class CG_Importer:
+
+    def __init__(self):
+        ...
+
+    def assert_cg_access(self) -> None:
+        ...
+
+    def assert_policy(self) -> None:
+        ...
+
+    def check_build_dir(self, delete: bool = False) -> None:
+        ...
+
+    def do_import(
+            self,
+            metadata: Union[str, Dict[str, Any], None],
+            directory: str,
+            token: Optional[str] = None) -> BuildInfo:
+        ...
+
+    def get_build(
+            self,
+            token: Optional[str] = None) -> BuildInfo:
+        ...
+
+    def get_metadata(
+            self,
+            metadata: Union[str, Dict, None],
+            directory: str) -> Dict[str, Any]:
+        ...
+
+    @classmethod
+    def get_task_id_from_metadata(
+            cls,
+            metadata: Dict[str, Any]) -> TaskID:
+        ...
+
+    def import_archive(
+            self,
+            buildinfo: BuildInfo,
+            brinfo: BuildrootInfo,
+            fileinfo: Dict[str, Any]) -> None:
+        ...
+
+    def import_brs(self) -> None:
+        ...
+
+    def import_buildroot(
+            self,
+            entry: Dict[str, Any]) -> BuildRoot:
+        ...
+
+    def import_components(
+            self,
+            archive_id: ArchiveID,
+            fileinfo: Dict[str, Any]) -> None:
+        ...
+
+    def import_log(
+            self,
+            buildinfo: BuildInfo,
+            fileinfo: Dict[str, Any]) -> None:
+        ...
+
+    def import_metadata(self) -> None:
+        ...
+
+    def import_outputs(self) -> None:
+        ...
+
+    def import_rpm(
+            self,
+            buildinfo: BuildInfo,
+            brinfo: BuildrootInfo,
+            fileinfo: Dict[str, Any]) -> None:
+        ...
+
+    def log(self,
+            msg: str,
+            level: int = WARNING) -> None:
+        ...
+
+    def log_error(
+            self,
+            msg: str,
+            *,
+            level: int = ERROR) -> None:
+        ...
+
+    def log_info(
+            self,
+            msg: str,
+            *,
+            level: int = INFO) -> None:
+        ...
+
+    def log_warning(
+            self,
+            msg: str,
+            *,
+            level: int = WARNING) -> None:
+        ...
+
+    def match_components(
+            self,
+            components: List[Dict[str, Any]]) \
+            -> Tuple[List[Dict], List[Dict]]:
+        ...
+
+    def match_file(
+            self,
+            comp: Dict) -> Optional[ArchiveInfo]:
+        ...
+
+    def match_kojifile(
+            self,
+            comp: Dict) -> Optional[ArchiveInfo]:
+        ...
+
+    def match_rpm(
+            self,
+            comp: Dict) -> Optional[RPMInfo]:
+        ...
+
+    def move_cg_log_file(self) -> None:
+        ...
+
+    def prep_archive(
+            self,
+            fileinfo: ArchiveInfo) -> None:
+        ...
+
+    def prep_brs(self) -> None:
+        ...
+
+    def prep_build(
+            self,
+            token: Optional[str] = None) -> BuildInfo:
+        ...
+
+    def prep_buildroot(
+            self,
+            brdata: Dict[str, Any]) -> Dict[str, Any]:
+        # TODO: TypedDict for this?
+        ...
+
+    def prep_outputs(self) -> None:
+        ...
+
+    def set_volume(self) -> None:
+        ...
+
+    def update_build(self) -> BuildInfo:
+        ...
+
 
 # class HostExports(_Host):
 #     pass
@@ -1794,6 +2028,22 @@ def readTaggedBuilds(
         type: Optional[str] = None,
         extra: bool = False,
         draft: Optional[bool] = None) -> List[BuildInfo]:
+    ...
+
+
+def readTaggedRPMS(
+        tag: Union[str, TagID],
+        package: Optional[str] = None,
+        arch: Union[Arch, List[Arch], None] = None,
+        event: Optional[EventID] = None,
+        inherit: bool = False,
+        latest: Union[bool, int] = True,
+        rpmsigs: bool = False,
+        owner: Optional[str] = None,
+        type: Optional[str] = None,
+        extra: bool = True,
+        draft: Optional[bool] = None) \
+        -> Tuple[List[RPMInfo], List[BuildInfo]]:
     ...
 
 
