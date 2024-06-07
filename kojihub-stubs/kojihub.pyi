@@ -173,7 +173,6 @@ class FromTagTest(TagTest):
 
 # === Other Classes ===
 
-
 class BuildRoot:
 
     def __init__(
@@ -407,8 +406,10 @@ class CG_Importer:
         ...
 
 
-# class HostExports(_Host):
-#     pass
+class HostExports(_Host):
+
+    def __init__(self):
+        ...
 
 
 class Host:

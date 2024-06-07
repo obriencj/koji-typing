@@ -23,13 +23,14 @@ Koji Types - Client Session Protocol method declarations
 from . import (
     ArchiveID, ArchiveInfo, ATypeID, ATypeInfo,
     BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR,
-    BuildrootID, BuildrootInfo,
+    BuildrootID, BuildrootInfo, BuildrootState,
     BuildState, BTypeInfo, ChangelogEntry, ChannelInfo,
     CGID, CGInfo, CGInitInfo,
     EventID, EventInfo,
-    FaultInfo, HostInfo, ListTasksOptions, MavenInfo,
+    FaultInfo, HostID, HostInfo, ListTasksOptions, MavenInfo,
     PackageID, PackageInfo,
-    PermInfo, POMInfo, QueryOptions, RepoInfo, RepoState, RPMInfo,
+    PermInfo, POMInfo, QueryOptions,
+    RepoID, RepoInfo, RepoState, RPMInfo,
     RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
     TagID, TagInfo, TagGroupInfo, TagInheritance, TagPackageInfo,
     TargetID, TargetInfo,
@@ -799,6 +800,12 @@ class ClientSession(Protocol):
             notify: bool = False) -> None:
         ...
 
+    def updateHost(
+            self,
+            task_load: float,
+            ready: bool) -> None:
+        ...
+
     def winBuild(
             self,
             vm: str,
@@ -825,18 +832,65 @@ class ClientSession(Protocol):
 
 class Host(Protocol):
 
+    def assertPolicy(
+            self,
+            name,
+            data: Dict[str, Any],
+            default: str = 'deny') -> None:
+        ...
+
+    def checkPolicy(
+            self,
+            name: str,
+            data: Dict[str, Any],
+            default: str = 'deny',
+            strict: bool = False) -> Tuple[bool, str]:
+        ...
+
+    def closeTask(
+            self,
+            task_id: TaskID,
+            response: Any) -> None:
+        ...
+
+    def completeBuild(
+            self,
+            task_id: TaskID,
+            build_id: BuildID,
+            srpm: str,
+            rpms: List[str],
+            brmap: Optional[Dict[str, BuildrootID]] = None,
+            logs: Optional[Dict[Arch, List[str]]] = None) -> BuildInfo:
+        ...
+
+    def completeImageBuild(
+            self,
+            task_id: TaskID,
+            build_id: BuildID,
+            results: Dict[str, Dict[str, Any]]) -> None:
+        ...
+
+    def evalPolicy(
+            self,
+            name: str,
+            data: Dict[str, Any]) -> str:
+        ...
+
     def failTask(
             self,
-            task_id: int,
+            task_id: TaskID,
             response: Any) -> None:
         ...
 
     def freeTasks(
             self,
-            tasks: List[int]) -> None:
+            tasks: List[TaskID]) -> None:
         ...
 
-    def getID(self) -> int:
+    def getID(self) -> HostID:
+        ...
+
+    def getHost(self) -> Tuple[List[HostID], List[TaskID]]:
         ...
 
     def getHostTasks(
@@ -851,6 +905,25 @@ class Host(Protocol):
             self) -> List[TaskInfo]:
         ...
 
+    def importImage(
+            self,
+            task_id: TaskID,
+            build_info: BuildInfo,
+            results: Dict[str, Dict[str, Any]]) -> None:
+        ...
+
+    def newBuildRoot(
+            self,
+            repo: RepoID,
+            arch: Arch,
+            task_id: Optional[TaskID] = None) -> BuildrootID:
+        ...
+
+    def openTask(
+            self,
+            task_id: TaskID) -> Optional[Dict[str, Any]]:
+        ...
+
     def refuseTask(
             self,
             task_id: int,
@@ -858,9 +931,22 @@ class Host(Protocol):
             msg: str = '') -> None:
         ...
 
+    def setBuildRootState(
+            self,
+            brootid: BuildrootID,
+            state: BuildrootState,
+            task_id: Optional[TaskID] = None) -> None:
+        ...
+
     def setHostData(
             self,
             hostdata: Dict[str, Any]) -> None:
+        ...
+
+    def setTaskWeight(
+            self,
+            task_id: TaskID,
+            weight: float) -> None:
         ...
 
     def subtask(
@@ -869,6 +955,17 @@ class Host(Protocol):
             arglist: List,
             parent: int,
             **opts) -> int:
+        ...
+
+    def tagNotification(
+            self,
+            is_successful: bool,
+            tag_id: Union[str, TagID, None],
+            from_id: Union[str, TagID, None],
+            build_id: BuildID,
+            user_id: Union[str, UserID, None],
+            ignore_success: bool = False,
+            failure_msg: str = '') -> None:
         ...
 
     def taskSetWait(
@@ -902,7 +999,8 @@ class Host(Protocol):
     def updateHost(
             self,
             task_load: float,
-            ready: bool) -> None:
+            ready: bool,
+            data: Optional[Dict[str, Any]] = None) -> None:
         ...
 
     def verify(self) -> bool:

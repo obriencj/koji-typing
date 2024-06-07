@@ -39,7 +39,6 @@ kojihub.auth.Session.perms
 
 koji.server
 kojihub.db
-kojihub.kojihub.HostExports
 kojihub.kojihub.RootExports
 kojihub.scheduler
 kojihub.kojixmlrpc
