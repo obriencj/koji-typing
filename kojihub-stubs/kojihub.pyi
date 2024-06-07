@@ -407,9 +407,7 @@ class CG_Importer:
 
 
 class HostExports(_Host):
-
-    def __init__(self):
-        ...
+    ...
 
 
 class Host:

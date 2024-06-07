@@ -931,6 +931,13 @@ class Host(Protocol):
             msg: str = '') -> None:
         ...
 
+    def setBuildRootList(
+            self,
+            brootid: BuildrootID,
+            rpmlist: List[RPMInfo],
+            task_id: Optional[TaskID] = None) -> None:
+        ...
+
     def setBuildRootState(
             self,
             brootid: BuildrootID,
@@ -993,7 +1000,22 @@ class Host(Protocol):
             self,
             parent: int,
             tasks: Optional[List[int]],
-            canfail: Optional[List[int]]) -> List[Tuple[int, Any]]:
+            canfail: Optional[List[int]] = None) -> List[Tuple[int, Any]]:
+        ...
+
+    def updateBuildrootArchives(
+            self,
+            brootid: BuildrootID,
+            task_id: TaskID,
+            archives: List[ArchiveInfo],
+            project: bool = False) -> None:
+        ...
+
+    def updateBuildRootList(
+            self,
+            brootid: BuildrootID,
+            rpmlist: List[RPMInfo],
+            task_id: Optional[TaskID] = None) -> None:
         ...
 
     def updateHost(
