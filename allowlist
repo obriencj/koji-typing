@@ -35,6 +35,12 @@ kojihub.auth.Session.host_id
 kojihub.auth.Session.perms
 
 
+# another method with double-underscored argument names
+
+kojihub.HostExports.subtask2
+kojihub.kojihub.HostExports.subtask2
+
+
 # TODO, as-yet un-stubbed
 
 koji.server

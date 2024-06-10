@@ -34,7 +34,8 @@ from . import (
     RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
     TagID, TagInfo, TagGroupInfo, TagInheritance, TagPackageInfo,
     TargetID, TargetInfo,
-    TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserType, )
+    TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserType,
+    WinInfo, )
 from .arch import Arch
 
 from datetime import datetime
@@ -870,10 +871,45 @@ class Host(Protocol):
             results: Dict[str, Dict[str, Any]]) -> None:
         ...
 
+    def completeMavenBuild(
+            self,
+            task_id: TaskID,
+            build_id: BuildID,
+            maven_results: Any,
+            rpm_results: Any) -> None:
+        ...
+
+    def completeWinBuild(
+            self,
+            task_id: TaskID,
+            build_id: BuildID,
+            results: Dict[str, Dict[str, Any]],
+            rpm_results: Any) -> None:
+        ...
+
+    def createMavenBuild(
+            self,
+            build_info: BuildInfo,
+            maven_info: MavenInfo) -> None:
+        ...
+
+    def distRepoMove(
+            self,
+            repo_id: RepoID,
+            uploadpath: str,
+            arch: Arch) -> None:
+        ...
+
     def evalPolicy(
             self,
             name: str,
             data: Dict[str, Any]) -> str:
+        ...
+
+    def failBuild(
+            self,
+            task_id: TaskID,
+            build_id: BuildID) -> None:
         ...
 
     def failTask(
@@ -905,11 +941,82 @@ class Host(Protocol):
             self) -> List[TaskInfo]:
         ...
 
+    def importArchive(
+            self,
+            filepath: str,
+            buildinfo: BuildInfo,
+            type: str,
+            typeInfo: Dict[str, Any]) -> None:
+        ...
+
     def importImage(
             self,
             task_id: TaskID,
             build_info: BuildInfo,
             results: Dict[str, Dict[str, Any]]) -> None:
+        ...
+
+    def importWrapperRPMs(
+            self,
+            task_id: TaskID,
+            build_id: BuildID,
+            rpm_results: Dict[str, List[str]]) -> None:
+        ...
+
+    def initBuild(
+            self,
+            data: Dict[str, Any]) -> BuildID:
+        ...
+
+    def initImageBuild(
+            self,
+            task_id: TaskID,
+            build_info: BuildInfo) -> BuildInfo:
+        ...
+
+    def initMavenBuild(
+            self,
+            task_id: TaskID,
+            build_info: BuildInfo,
+            maven_info: MavenInfo) -> BuildInfo:
+        ...
+
+    def initWinBuild(
+            self,
+            task_id: TaskID,
+            build_info: BuildInfo,
+            win_info: WinInfo) -> BuildInfo:
+        ...
+
+    def isEnabled(self) -> bool:
+        ...
+
+    def moveBuildToScratch(
+            self,
+            task_id: TaskID,
+            srpm: str,
+            rpms: List[str],
+            logs: Optional[Dict[str, List[str]]] = None) -> None:
+        ...
+
+    def moveImageBuildToScratch(
+            self,
+            task_id: TaskID,
+            results: Dict[str, Any]) -> None:
+        ...
+
+    def moveMavenBuildToScratch(
+            self,
+            task_id: TaskID,
+            results: Dict[str, Any],
+            rpm_results: Dict[str, Any]) -> None:
+        ...
+
+    def moveWinBuildToScratch(
+            self,
+            task_id: TaskID,
+            results: Dict[str, Any],
+            rpm_results: Dict[str, Any]) -> None:
         ...
 
     def newBuildRoot(
@@ -929,6 +1036,24 @@ class Host(Protocol):
             task_id: int,
             soft: bool = True,
             msg: str = '') -> None:
+        ...
+
+    def repoDone(
+            self,
+            repo_id: RepoID,
+            data: Dict[Arch, Tuple[str, List[str]]],
+            expire: bool = False,
+            repo_json_updates: Optional[Dict[str, Any]] = None) -> None:
+        ...
+
+    def repoInit(
+            self,
+            tag: Union[str, TagID],
+            task_id: Optional[TaskID] = None,
+            with_src: bool = False,
+            with_debuginfo: bool = False,
+            event: Optional[EventID] = None,
+            with_separate_src: bool = False) -> Tuple[RepoID, EventID]:
         ...
 
     def setBuildRootList(
@@ -964,6 +1089,24 @@ class Host(Protocol):
             **opts) -> int:
         ...
 
+    def subtask2(
+            self,
+            __parent: TaskID,
+            __taskopts: Dict[str, Any],
+            __method: str,
+            *args,
+            **opts) -> int:
+        ...
+
+    def tagBuild(
+            self,
+            task_id: TaskID,
+            tag: Union[str, TagID],
+            build: BuildSpecifier,
+            force: bool = False,
+            fromtag: Union[str, TagID, None] = None) -> None:
+        ...
+
     def tagNotification(
             self,
             is_successful: bool,
@@ -977,29 +1120,29 @@ class Host(Protocol):
 
     def taskSetWait(
             self,
-            parent: int,
-            tasks: Optional[List[int]]) -> None:
+            parent: TaskID,
+            tasks: Optional[List[TaskID]]) -> None:
         ...
 
     def taskUnwait(
             self,
-            parent: int) -> None:
+            parent: TaskID) -> None:
         ...
 
     def taskWait(
             self,
-            parent: int) -> Tuple[List[int], List[int]]:
+            parent: TaskID) -> Tuple[List[int], List[int]]:
         ...
 
     def taskWaitCheck(
             self,
-            parent: int) -> Tuple[List[int], List[int]]:
+            parent: TaskID) -> Tuple[List[int], List[int]]:
         ...
 
     def taskWaitResults(
             self,
-            parent: int,
-            tasks: Optional[List[int]],
+            parent: TaskID,
+            tasks: Optional[List[TaskID]],
             canfail: Optional[List[int]] = None) -> List[Tuple[int, Any]]:
         ...
 
@@ -1025,7 +1168,25 @@ class Host(Protocol):
             data: Optional[Dict[str, Any]] = None) -> None:
         ...
 
+    def updateMavenBuildRootList(
+            self,
+            brootid: BuildrootID,
+            task_id: TaskID,
+            mavenlist: List[Dict[str, Any]],
+            ignore: Optional[List[Union[int, str]]] = None,
+            project: bool = False,
+            ignore_unknown: bool = False,
+            extra_deps: Optional[List[Union[int, str]]] = None) -> None:
+        ...
+
     def verify(self) -> bool:
+        ...
+
+    def writeSignedRPM(
+            self,
+            an_rpm: str,
+            sigkey: str,
+            force: bool = False) -> None:
         ...
 
 

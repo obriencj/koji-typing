@@ -55,7 +55,6 @@ from typing import (
     Tuple, Type, TypeVar, Union, overload, )
 
 
-
 NUMERIC_TYPES: Tuple[Type, ...]
 
 logger: Logger
@@ -260,7 +259,9 @@ class CG_Importer:
     def assert_policy(self) -> None:
         ...
 
-    def check_build_dir(self, delete: bool = False) -> None:
+    def check_build_dir(
+            self,
+            delete: bool = False) -> None:
         ...
 
     def do_import(
@@ -659,6 +660,13 @@ def _edit_build_target(
 
 def _get_build_target(
         task_id: TaskID) -> Optional[TargetInfo]:
+    ...
+
+
+def _import_wrapper(
+        task_id: TaskID,
+        build_info: BuildInfo,
+        rpm_results: Dict[str, List[str]]) -> None:
     ...
 
 
@@ -2146,27 +2154,27 @@ def repo_init(
         with_src: bool = False,
         with_debuginfo: bool = False,
         event: Optional[EventID] = None,
-        with_separate_src: bool = False) -> Tuple[int, int]:
+        with_separate_src: bool = False) -> Tuple[RepoID, EventID]:
     ...
 
 
 def repo_problem(
-        repo_id: int) -> None:
+        repo_id: RepoID) -> None:
     ...
 
 
 def repo_ready(
-        repo_id: int) -> None:
+        repo_id: RepoID) -> None:
     ...
 
 
 def repo_references(
-        repo_id: int) -> List[BuildrootReference]:
+        repo_id: RepoID) -> List[BuildrootReference]:
     ...
 
 
 def repo_set_state(
-        repo_id: int,
+        repo_id: RepoID,
         state: RepoState,
         check: bool = True) -> None:
     ...
@@ -2179,7 +2187,7 @@ def reset_build(
 
 def revoke_cg_access(
         user: Union[str, UserID],
-        cg: Union[str, int]) -> None:
+        cg: Union[str, CGID]) -> None:
     ...
 
 
@@ -2219,7 +2227,7 @@ def set_user_status(
 
 def tag_changed_since_event(
         event: EventID,
-        taglist: List[int]) -> bool:
+        taglist: List[TagID]) -> bool:
     ...
 
 
