@@ -41,13 +41,22 @@ kojihub.HostExports.subtask2
 kojihub.kojihub.HostExports.subtask2
 
 
+# this is created by setup_logging1 but not pre-declared at the
+# module-level, so MyPy doesn't think it's available at runtime
+
+kojihub.kojixmlrpc.log_handler
+
+
+# uses a double-underscored argument name
+kojihub.kojixmlrpc.HandlerAccess.call
+
+
 # TODO, as-yet un-stubbed
 
 koji.server
 kojihub.db
 kojihub.kojihub.RootExports
 kojihub.scheduler
-kojihub.kojixmlrpc
 
 
 # The end.

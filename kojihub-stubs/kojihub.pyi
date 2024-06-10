@@ -15,7 +15,7 @@
 """
 Koji Hub - typing stubs
 
-Typing annotations stub for kojihub
+Typing annotations stub for kojihub.kojihub
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
