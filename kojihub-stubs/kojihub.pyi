@@ -482,8 +482,9 @@ class MultiSum:
         ...
 
 
-# class RootExports(_ClientSession):
-#     host: HostExports
+class RootExports(_ClientSession):
+
+    host: HostExports
 
 
 class Task:
@@ -1840,6 +1841,13 @@ def pkglist_block(
     ...
 
 
+def pkglist_remove(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        force: bool = False) -> None:
+    ...
+
+
 def pkglist_setarches(
         taginfo: Union[str, TagID],
         pkginfo: Union[str, PackageID],
@@ -1852,13 +1860,6 @@ def pkglist_setowner(
         taginfo: Union[str, TagID],
         pkginfo: Union[str, PackageID],
         owner: Union[str, UserID],
-        force: bool = False) -> None:
-    ...
-
-
-def pkglist_remove(
-        taginfo: Union[str, TagID],
-        pkginfo: Union[str, PackageID],
         force: bool = False) -> None:
     ...
 
@@ -1963,7 +1964,7 @@ def query_history(
 
 
 def query_rpm_sigs(
-        rpm_id: Union[int, str, BuildNVR, None] = None,
+        rpm_id: Union[RPMID, str, BuildNVR, None] = None,
         sigkey: Optional[str] = None,
         queryOpts: Optional[QueryOptions] = None) -> List[RPMSignature]:
     ...

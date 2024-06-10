@@ -30,9 +30,9 @@ from . import (
     FaultInfo, HostID, HostInfo, ListTasksOptions, MavenInfo,
     PackageID, PackageInfo,
     PermInfo, POMInfo, QueryOptions,
-    RepoID, RepoInfo, RepoState, RPMInfo,
+    RepoID, RepoInfo, RepoState, RPMID, RPMInfo,
     RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
-    TagID, TagInfo, TagGroupInfo, TagInheritance, TagPackageInfo,
+    TagID, TagInfo, TagGroupID, TagGroupInfo, TagInheritance, TagPackageInfo,
     TargetID, TargetInfo,
     TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserType,
     WinInfo, )
@@ -95,8 +95,8 @@ class ClientSession(Protocol):
             **kw: Any) -> int:
         ...
 
+    @staticmethod
     def createTag(
-            self,
             name: str,
             parent: Optional[Union[int, str]] = None,
             arches: Optional[str] = None,
@@ -138,6 +138,10 @@ class ClientSession(Protocol):
     def fault(self) -> NoReturn:
         ...
 
+    @staticmethod
+    def getActiveRepos() -> List[RepoInfo]:
+        ...
+
     def getAllPerms(self) -> List[PermInfo]:
         ...
 
@@ -172,6 +176,12 @@ class ClientSession(Protocol):
             buildInfo: Union[str, BuildID]) -> BuildLogs:
         ...
 
+    def getBuildroot(
+            self,
+            buildrootID: int,
+            strict: bool = False) -> BuildrootInfo:
+        ...
+
     def getBuildTarget(
             self,
             info: Union[int, str],
@@ -192,12 +202,6 @@ class ClientSession(Protocol):
             self,
             buildInfo: Union[int, str],
             strict: bool = False) -> Dict[str, dict]:
-        ...
-
-    def getBuildroot(
-            self,
-            buildrootID: int,
-            strict: bool = False) -> BuildrootInfo:
         ...
 
     def getChangelogEntries(
@@ -223,11 +227,6 @@ class ClientSession(Protocol):
             id: int) -> EventInfo:
         ...
 
-    def getLastEvent(
-            self,
-            before: Union[int, float, None] = None) -> EventInfo:
-        ...
-
     def getFullInheritance(
             self,
             tag: Union[int, str],
@@ -238,12 +237,6 @@ class ClientSession(Protocol):
     def getGroupMembers(
             self,
             group: Union[int, str]) -> List[UserInfo]:
-        ...
-
-    def getUserGroups(
-            self,
-            user: Union[int, str]) -> List[UserGroup]:
-        # :since: koji 1.35
         ...
 
     def getHost(
@@ -261,6 +254,11 @@ class ClientSession(Protocol):
 
     def getKojiVersion(self) -> str:
         # :since: koji 1.23
+        ...
+
+    def getLastEvent(
+            self,
+            before: Union[int, float, None] = None) -> EventInfo:
         ...
 
     @overload
@@ -456,6 +454,12 @@ class ClientSession(Protocol):
         # :since: koji 1.34
         ...
 
+    def getUserGroups(
+            self,
+            user: Union[int, str]) -> List[UserGroup]:
+        # :since: koji 1.35
+        ...
+
     @overload
     def getUserPerms(
             self,
@@ -474,6 +478,57 @@ class ClientSession(Protocol):
             self,
             userID: Union[str, UserID]) -> Dict[str, List[str]]:
         # :since: koji 1.34
+        ...
+
+    def groupListAdd(
+            taginfo: Union[str, TagID],
+            grpinfo: Union[str, TagGroupID],
+            block: bool = False,
+            force: bool = False,
+            **opts) -> None:
+        ...
+
+    def groupListBlock(
+            taginfo: Union[str, TagID],
+            grpinfo: Union[str, TagGroupID]) -> None:
+        ...
+
+    def groupListRemove(
+            taginfo: Union[str, TagID],
+            grpinfo: Union[str, TagGroupID],
+            force: bool = False) -> None:
+        ...
+
+    def groupListUnnblock(
+            taginfo: Union[str, TagID],
+            grpinfo: Union[str, TagGroupID]) -> None:
+        ...
+
+    def groupPackageListAdd(
+            taginfo: Union[str, TagID],
+            grpinfo: Union[str, TagGroupID],
+            pkg_name: str,
+            block: bool = False,
+            force: bool = False,
+            **opts) -> None:
+        ...
+
+    def groupPackageListBlock(
+            taginfo: Union[str, TagID],
+            grpinfo: Union[str, TagGroupID],
+            pkg_name: str) -> None:
+        ...
+
+    def groupPackageListRemove(
+            taginfo: Union[str, TagID],
+            grpinfo: Union[str, TagGroupID],
+            pkg_name: str) -> None:
+        ...
+
+    def groupPackageListUnblock(
+            taginfo: Union[str, TagID],
+            grpinfo: Union[str, TagGroupID],
+            pkg_name: str) -> None:
         ...
 
     def hasPerm(
@@ -621,10 +676,10 @@ class ClientSession(Protocol):
                                                  List[BuildInfo]]:
         ...
 
+    @staticmethod
     def listTags(
-            self,
-            build: Optional[Union[int, str]] = None,
-            package: Optional[Union[int, str]] = None,
+            build: Optional[BuildSpecifier] = None,
+            package: Union[str, PackageID, None] = None,
             perms: bool = True,
             queryOpts: Optional[QueryOptions] = None,
             pattern: Optional[str] = None) -> List[TagInfo]:
@@ -693,20 +748,57 @@ class ClientSession(Protocol):
     def mavenEnabled(self) -> bool:
         ...
 
+    @staticmethod
     def packageListAdd(
-            self,
-            taginfo: Union[int, str],
-            pkginfo: str,
-            owner: Optional[Union[int, str]] = None,
+            taginfo: Union[str, TagID],
+            pkginfo: Union[str, PackageID],
+            owner: Union[str, UserID, None] = None,
             block: Optional[bool] = None,
-            exta_arches: Optional[str] = None,
+            extra_arches: Optional[str] = None,
             force: bool = False,
-            update: bool = False):
+            update: bool = False) -> None:
+        ...
+
+    @staticmethod
+    def packkageListBlock(
+            taginfo: Union[str, TagID],
+            pkginfo: Union[str, PackageID],
+            force: bool = False) -> None:
+        ...
+
+    @staticmethod
+    def packageListRemove(
+            taginfo: Union[str, TagID],
+            pkginfo: Union[str, PackageID],
+            force: bool = False) -> None:
+        ...
+
+    @staticmethod
+    def packageListSetArches(
+            taginfo: Union[str, TagID],
+            pkginfo: Union[str, PackageID],
+            arches: str,
+            force: bool = False) -> None:
+        ...
+
+    @staticmethod
+    def packageListSetOwner(
+            taginfo: Union[str, TagID],
+            pkginfo: Union[str, PackageID],
+            owner: Union[str, UserID],
+            force: bool = False) -> None:
+        ...
+
+    @staticmethod
+    def packageListUnblock(
+            taginfo: Union[str, TagID],
+            pkginfo: Union[str, PackageID],
+            force: bool = False) -> None:
         ...
 
     @overload
+    @staticmethod
     def queryHistory(
-            self,
             tables: Optional[List[str]] = None,
             *,
             queryOpts: Optional[QueryOptions] = None,
@@ -715,23 +807,23 @@ class ClientSession(Protocol):
         ...
 
     @overload  # type: ignore
+    @staticmethod
     def queryHistory(
-            self,
             tables: Optional[List[str]] = None,
             **kwargs: Any) -> Dict[str, List[Dict[str, Any]]]:
         ...
 
+    @staticmethod
     def queryRPMSigs(
-            self,
-            rpm_id: Optional[int] = None,
+            rpm_id: Union[RPMID, str, BuildNVR, None] = None,
             sigkey: Optional[str] = None,
             queryOpts: Optional[QueryOptions] = None) -> List[RPMSignature]:
         ...
 
+    @staticmethod
     def repoInfo(
-            self,
-            repo_id: int,
-            struct: bool = False) -> RepoInfo:
+            repo_id: RepoID,
+            strict: bool = False) -> RepoInfo:
         ...
 
     def resubmitTask(
