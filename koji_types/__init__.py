@@ -141,6 +141,9 @@ TaskID = NewType("TaskID", int)
 UserID = NewType("UserID", int)
 
 
+Data = Dict[str, Any]
+
+
 class NamedID(TypedDict):
     id: int
     name: str

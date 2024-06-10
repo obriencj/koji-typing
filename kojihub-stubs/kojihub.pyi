@@ -1534,7 +1534,7 @@ def import_archive(
         buildinfo: BuildInfo,
         type: str,
         typeInfo: Dict[str, Any],
-        buildroot_id: Optional[int] = None) -> ArchiveInfo:
+        buildroot_id: Optional[BuildrootID] = None) -> ArchiveInfo:
     ...
 
 
@@ -2126,12 +2126,12 @@ def rename_channel(
 
 
 def repo_delete(
-        repo_id: int) -> int:
+        repo_id: RepoID) -> int:
     ...
 
 
 def repo_expire(
-        repo_id: int) -> None:
+        repo_id: RepoID) -> None:
     ...
 
 
@@ -2143,7 +2143,7 @@ def repo_expire_older(
 
 
 def repo_info(
-        repo_id: int,
+        repo_id: RepoID,
         strict: bool = False) -> RepoInfo:
     ...
 
