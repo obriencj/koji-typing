@@ -655,25 +655,30 @@ class ClientSession(Protocol):
 
     def listTagged(
             self,
-            tag: Union[int, str],
-            event: Optional[int] = None,
+            tag: Union[str, TagID],
+            event: Optional[EventID] = None,
             inherit: bool = False,
             prefix: Optional[str] = None,
             latest: bool = False,
-            package: Optional[Union[int, str]] = None,
-            owner: Optional[Union[int, str]] = None,
-            type: Optional[str] = None) -> List[TagBuildInfo]:
+            package: Optional[str] = None,
+            owner: Optional[Union[str, UserID]] = None,
+            type: Optional[str] = None,
+            strict: bool = True,
+            extra: bool = False,
+            draft: Optional[bool] = None) -> List[TagBuildInfo]:
         ...
 
     def listTaggedArchives(
             self,
-            tag: Union[int, str],
-            event: Optional[int] = None,
+            tag: Union[str, TagID],
+            event: Optional[EventID] = None,
             inherit: bool = False,
             latest: bool = False,
-            package: Optional[Union[int, str]] = None,
-            type: Optional[str] = None) -> Tuple[List[ArchiveInfo],
-                                                 List[BuildInfo]]:
+            package: Optional[str] = None,
+            type: Optional[str] = None,
+            strict: bool = True,
+            extra: bool = True) -> Tuple[List[ArchiveInfo],
+                                         List[BuildInfo]]:
         ...
 
     @staticmethod
@@ -685,42 +690,16 @@ class ClientSession(Protocol):
             pattern: Optional[str] = None) -> List[TagInfo]:
         ...
 
-    @overload
+    @staticmethod
     def listTaskOutput(
-            self,
-            task_id: int,
-            *,
-            all_volumes: bool = False,
-            strict: bool = False) -> Dict[str, List[str]]:
-        ...
-
-    @overload
-    def listTaskOutput(
-            self,
-            task_id: int,
-            stat: Literal[False],
-            all_volumes: bool = False,
-            strict: bool = False) -> Dict[str, List[str]]:
-        ...
-
-    @overload
-    def listTaskOutput(
-            self,
-            task_id: int,
-            stat: Literal[True],
-            all_volumes: bool = False,
-            strict: bool = False) -> Dict[str, Dict[str, Dict[str, Any]]]:
-        ...
-
-    @overload
-    def listTaskOutput(
-            self,
-            task_id: int,
+            taskID: TaskID,
             stat: bool = False,
             all_volumes: bool = False,
-            strict: bool = False) -> Union[Dict[str, List[str]],
-                                           Dict[str, Dict[str,
-                                                          Dict[str, Any]]]]:
+            strict: bool = False) \
+            -> Union[List[str],
+                     Dict[str, List[str]],
+                     Dict[str, Dict[str, Any]],
+                     Dict[str, Dict[str, Dict[str, Any]]]]:
         ...
 
     def listTasks(
@@ -731,8 +710,8 @@ class ClientSession(Protocol):
 
     def massTag(
             self,
-            tag: Union[int, str],
-            builds: List[Union[int, str]]) -> None:
+            tag: Union[str, TagID],
+            builds: List[Union[str, BuildID]]) -> None:
         # :since: koji 1.30
         ...
 
@@ -870,8 +849,8 @@ class ClientSession(Protocol):
             notify: bool = False) -> None:
         ...
 
+    @staticmethod
     def tagChangedSinceEvent(
-            self,
             event: EventID,
             taglist: List[TagID]) -> bool:
         ...
@@ -979,10 +958,22 @@ class Host(Protocol):
             rpm_results: Any) -> None:
         ...
 
+    @staticmethod
+    def createBuildTarget(
+            name: str,
+            build_tag: Union[str, TagID],
+            dest_tag: Union[str, TagID]) -> None:
+        ...
+
     def createMavenBuild(
             self,
             build_info: BuildInfo,
             maven_info: MavenInfo) -> None:
+        ...
+
+    @staticmethod
+    def deleteBuildTarget(
+            buildTargetInfo: Union[str, TargetID]) -> None:
         ...
 
     def distRepoMove(
