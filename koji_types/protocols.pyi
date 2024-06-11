@@ -25,12 +25,13 @@ from . import (
     BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR,
     BuildrootID, BuildrootInfo, BuildrootState,
     BuildState, BTypeInfo, ChangelogEntry, ChannelInfo,
+    ChecksumType,
     CGID, CGInfo, CGInitInfo,
     EventID, EventInfo,
     FaultInfo, HostID, HostInfo, ListTasksOptions, MavenInfo,
-    PackageID, PackageInfo,
+    NamedID, PackageID, PackageInfo,
     PermInfo, POMInfo, QueryOptions,
-    RepoID, RepoInfo, RepoState, RPMID, RPMInfo,
+    RepoID, RepoInfo, RepoState, RPMID, RPMInfo, RPMNVRA,
     RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
     TagID, TagInfo, TagGroupID, TagGroupInfo, TagInheritance, TagPackageInfo,
     TargetID, TargetInfo,
@@ -336,36 +337,36 @@ class ClientSession(Protocol):
         ...
 
     @overload
+    @staticmethod
     def getRPM(
-            self,
-            rpminfo: Union[int, str],
-            strict: bool = False) -> RPMInfo:
+            rpminfo: Union[str, RPMID, RPMNVRA],
+            strict: bool = False) -> Optional[RPMInfo]:
         ...
 
     @overload
+    @staticmethod
     def getRPM(
-            self,
-            rpminfo: Union[int, str],
+            rpminfo: Union[str, RPMID, RPMNVRA],
             strict: bool = False,
             *,
-            multi: Literal[False]) -> RPMInfo:
+            multi: Literal[False]) -> Optional[RPMInfo]:
         ...
 
     @overload
+    @staticmethod
     def getRPM(
-            self,
-            rpminfo: Union[int, str],
+            rpminfo: Union[str, RPMID, RPMNVRA],
             strict: bool = False,
             *,
             multi: Literal[True]) -> List[RPMInfo]:
         ...
 
     @overload
+    @staticmethod
     def getRPM(
-            self,
-            rpminfo: Union[int, str],
+            rpminfo: Union[str, RPMID, RPMNVRA],
             strict: bool = False,
-            multi: bool = False) -> Union[RPMInfo, List[RPMInfo]]:
+            multi: bool = False) -> Union[RPMInfo, List[RPMInfo], None]:
         ...
 
     @overload
@@ -395,16 +396,23 @@ class ClientSession(Protocol):
                                                        List[SessionInfo]]:
         ...
 
+    @staticmethod
     def getTag(
-            self,
-            taginfo: Union[str, TagID],
+            tagInfo: Union[str, TagID],
             strict: bool = False,
-            event: Optional[int] = None,
-            blocked: bool = False) -> TagInfo:
+            event: Optional[EventID] = None,
+            blocked: bool = False) -> Optional[TagInfo]:
         ...
 
+    @staticmethod
+    def getTagID(
+            info: Union[str, TagID, Dict[str, Any]],
+            strict: bool = False,
+            create: bool = False) -> Optional[TagID]:
+        ...
+
+    @staticmethod
     def getTagGroups(
-            self,
             tag: Union[str, TagID],
             event: Optional[EventID] = None,
             inherit: bool = True,
@@ -437,16 +445,16 @@ class ClientSession(Protocol):
         ...
 
     @overload
+    @staticmethod
     def getUser(
-            self,
             userInfo: Union[str, UserID, None] = None,
             strict: bool = False,
             krb_princs: bool = True) -> UserInfo:
         ...
 
     @overload
+    @staticmethod
     def getUser(
-            self,
             userInfo: Union[str, UserID, None] = None,
             strict: bool = False,
             krb_princs: bool = True,
@@ -480,6 +488,7 @@ class ClientSession(Protocol):
         # :since: koji 1.34
         ...
 
+    @staticmethod
     def groupListAdd(
             taginfo: Union[str, TagID],
             grpinfo: Union[str, TagGroupID],
@@ -488,22 +497,26 @@ class ClientSession(Protocol):
             **opts) -> None:
         ...
 
+    @staticmethod
     def groupListBlock(
             taginfo: Union[str, TagID],
             grpinfo: Union[str, TagGroupID]) -> None:
         ...
 
+    @staticmethod
     def groupListRemove(
             taginfo: Union[str, TagID],
             grpinfo: Union[str, TagGroupID],
             force: bool = False) -> None:
         ...
 
+    @staticmethod
     def groupListUnnblock(
             taginfo: Union[str, TagID],
             grpinfo: Union[str, TagGroupID]) -> None:
         ...
 
+    @staticmethod
     def groupPackageListAdd(
             taginfo: Union[str, TagID],
             grpinfo: Union[str, TagGroupID],
@@ -513,18 +526,21 @@ class ClientSession(Protocol):
             **opts) -> None:
         ...
 
+    @staticmethod
     def groupPackageListBlock(
             taginfo: Union[str, TagID],
             grpinfo: Union[str, TagGroupID],
             pkg_name: str) -> None:
         ...
 
+    @staticmethod
     def groupPackageListRemove(
             taginfo: Union[str, TagID],
             grpinfo: Union[str, TagGroupID],
             pkg_name: str) -> None:
         ...
 
+    @staticmethod
     def groupPackageListUnblock(
             taginfo: Union[str, TagID],
             grpinfo: Union[str, TagGroupID],
@@ -553,26 +569,27 @@ class ClientSession(Protocol):
             win_info: Dict[str, Any]) -> None:
         ...
 
+    @staticmethod
     def listArchives(
-            self,
             buildID: Optional[BuildID] = None,
             buildrootID: Optional[BuildrootID] = None,
             componentBuildrootID: Optional[BuildrootID] = None,
-            hostID: Optional[int] = None,
+            hostID: Optional[HostID] = None,
             type: Optional[str] = None,
             filename: Optional[str] = None,
             size: Optional[int] = None,
-            checksum: Optional[str] = None,
-            typeInfo: Optional[dict] = None,
+            checksum: Optional[int] = None,
+            checksum_type: Optional[ChecksumType] = None,
+            typeInfo: Optional[Dict[str, Any]] = None,
             queryOpts: Optional[QueryOptions] = None,
             imageID: Optional[int] = None,
-            archiveID: Optional[int] = None,
+            archiveID: Optional[ArchiveID] = None,
             strict: bool = False) -> List[ArchiveInfo]:
         ...
 
+    @staticmethod
     def listBTypes(
-            self,
-            query: Optional[Dict[str, str]] = None,
+            query: Optional[NamedID] = None,
             queryOpts: Optional[QueryOptions] = None) -> List[BTypeInfo]:
         ...
 
@@ -597,7 +614,8 @@ class ClientSession(Protocol):
             draft: Optional[bool] = None) -> List[BuildInfo]:
         ...
 
-    def listCGs(self) -> Dict[str, CGInfo]:
+    @staticmethod
+    def listCGs() -> Dict[str, CGInfo]:
         ...
 
     def listHosts(
@@ -620,18 +638,20 @@ class ClientSession(Protocol):
             with_dups: bool = False,
             event: Optional[EventID] = None,
             queryOpts: Optional[QueryOptions] = None,
-            with_owners: bool = True) -> List[TagPackageInfo]:
+            with_owners: bool = True,
+            with_blocked: bool = True) -> List[TagPackageInfo]:
         ...
 
+    @staticmethod
     def listRPMs(
-            self,
             buildID: Optional[BuildID] = None,
             buildrootID: Optional[BuildrootID] = None,
             imageID: Optional[int] = None,
-            componentBuildrootID: Optional[int] = None,
+            componentBuildrootID: Optional[BuildrootID] = None,
             hostID: Optional[int] = None,
-            arches: Optional[str] = None,
-            queryOpts: Optional[QueryOptions] = None) -> List[RPMInfo]:
+            arches: Union[Arch, List[Arch], None] = None,
+            queryOpts: Optional[QueryOptions] = None,
+            draft: Optional[bool] = None) -> List[RPMInfo]:
         ...
 
     @overload

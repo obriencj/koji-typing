@@ -1313,7 +1313,7 @@ def get_reservation_token(
 def get_rpm(
         rpminfo: Union[str, RPMID, RPMNVRA],
         strict: bool = False,
-        multi: bool = False) -> Optional[RPMInfo]:
+        multi: bool = False) -> Union[RPMInfo, List[RPMInfo], None]:
     ...
 
 
