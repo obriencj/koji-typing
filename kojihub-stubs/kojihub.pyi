@@ -34,7 +34,7 @@ from koji_types import (
     ChannelID, ChannelInfo, ChecksumType,
     ExternalRepoID, ExternalRepoInfo,
     EventID, HistoryEntry, HostID, HostInfo,
-    MavenInfo, NamedID, PackageID, PackageInfo, PermID,
+    MavenInfo, NamedID, OldNew, PackageID, PackageInfo, PermID,
     QueryOptions,
     RepoID, RepoInfo, RepoState, RPMID, RPMInfo, RPMNVRA, RPMSignature,
     TagExternalRepos,
@@ -1058,7 +1058,7 @@ def edit_tag_external_repo(
 def edit_user(
         userInfo: Union[str, UserID],
         name: Optional[str] = None,
-        krb_principal_mappings: Optional[List[Dict[str, str]]] = None) -> None:
+        krb_principal_mappings: Optional[List[OldNew]] = None) -> None:
     ...
 
 
@@ -1162,8 +1162,8 @@ def get_build_target_id(
 def get_build_targets(
         info: Union[str, TargetID, None] = None,
         event: Optional[EventID] = None,
-        buildTagID: Union[str, int, TagInfo, None] = None,
-        destTagID: Union[str, int, TagInfo, None] = None,
+        buildTagID: Union[str, TagID, TagInfo, None] = None,
+        destTagID: Union[str, TagID, TagInfo, None] = None,
         queryOpts: Optional[QueryOptions] = None) -> List[TargetInfo]:
     ...
 

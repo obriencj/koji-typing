@@ -77,6 +77,7 @@ __all__ = (
     "ListTasksOptions",
     "MavenInfo",
     "NamedID",
+    "OldNew",
     "PackageID",
     "PackageInfo",
     "PermID",
@@ -142,6 +143,11 @@ UserID = NewType("UserID", int)
 
 
 Data = Dict[str, Any]
+
+
+class OldNew(TypedDict):
+    old: str
+    new: str
 
 
 class NamedID(TypedDict):

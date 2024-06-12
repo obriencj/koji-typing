@@ -24,13 +24,13 @@ from . import (
     ArchiveID, ArchiveInfo, ATypeID, ATypeInfo,
     BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR,
     BuildrootID, BuildrootInfo, BuildrootState,
-    BuildState, BTypeInfo, ChangelogEntry, ChannelInfo,
+    BuildState, BTypeInfo, ChangelogEntry, ChannelID, ChannelInfo,
     ChecksumType,
     CGID, CGInfo, CGInitInfo,
     EventID, EventInfo,
     FaultInfo, HostID, HostInfo, ListTasksOptions, MavenInfo,
-    NamedID, PackageID, PackageInfo,
-    PermInfo, POMInfo, QueryOptions,
+    NamedID, OldNew, PackageID, PackageInfo,
+    PermID, PermInfo, POMInfo, QueryOptions,
     RepoID, RepoInfo, RepoState, RPMID, RPMInfo, RPMNVRA,
     RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
     TagID, TagInfo, TagGroupID, TagGroupInfo, TagInheritance, TagPackageInfo,
@@ -116,10 +116,27 @@ class ClientSession(Protocol):
     def echo(self, *args) -> List:
         ...
 
+    @staticmethod
+    def editTag(
+            tagInfo: Union[str, TagID],
+            name: Optional[str],
+            arches: Optional[str],
+            locked: Optional[bool],
+            permissionID: Optional[PermID],
+            extra: Optional[Dict[str, str]] = None) -> None:
+        ...
+
+    @staticmethod
     def editTag2(
-            self,
-            taginfo: Union[int, str],
+            taginfo: Union[str, TagID],
             **kwargs) -> None:
+        ...
+
+    @staticmethod
+    def editUser(
+            userInfo: Union[str, UserID],
+            name: Optional[str] = None,
+            krb_principal_mappings: Optional[List[OldNew]] = None) -> None:
         ...
 
     def enableUser(
@@ -143,65 +160,70 @@ class ClientSession(Protocol):
     def getActiveRepos() -> List[RepoInfo]:
         ...
 
+    @staticmethod
+    def getAllArches() -> List[Arch]:
+        ...
+
     def getAllPerms(self) -> List[PermInfo]:
         ...
 
     def getAPIVersion(self) -> int:
         ...
 
+    @staticmethod
     def getArchive(
-            self,
             archive_id: ArchiveID,
-            strict: bool = False) -> ArchiveInfo:
+            strict: bool = False) -> Optional[ArchiveInfo]:
         ...
 
+    @staticmethod
     def getArchiveType(
-            self,
             filename: Optional[str] = None,
             type_name: Optional[str] = None,
             type_id: Optional[ATypeID] = None,
             strict: bool = False) -> ATypeInfo:
         ...
 
-    def getArchiveTypes(self) -> List[ATypeInfo]:
+    @staticmethod
+    def getArchiveTypes() -> List[ATypeInfo]:
         ...
 
+    @staticmethod
     def getBuild(
-            self,
-            buildInfo: Union[str, BuildID],
+            buildInfo: BuildSpecifier,
             strict: bool = False) -> BuildInfo:
         ...
 
+    @staticmethod
     def getBuildLogs(
-            self,
-            buildInfo: Union[str, BuildID]) -> BuildLogs:
+            buildInfo: BuildSpecifier) -> BuildLogs:
         ...
 
+    @staticmethod
     def getBuildroot(
-            self,
-            buildrootID: int,
+            buildrootID: BuildrootID,
             strict: bool = False) -> BuildrootInfo:
         ...
 
+    @staticmethod
     def getBuildTarget(
-            self,
-            info: Union[int, str],
+            info: Union[str, TargetID],
             event: Optional[EventID] = None,
             strict: bool = False) -> TargetInfo:
         ...
 
+    @staticmethod
     def getBuildTargets(
-            self,
-            info: Optional[Union[int, str]] = None,
+            info: Union[str, TargetID, None] = None,
             event: Optional[EventID] = None,
-            buildTagID: Optional[int] = None,
-            destTagID: Optional[int] = None,
+            buildTagID: Union[str, TagID, TagInfo, None] = None,
+            destTagID: Union[str, TagID, TagInfo, None] = None,
             queryOpts: Optional[QueryOptions] = None) -> List[TargetInfo]:
         ...
 
+    @staticmethod
     def getBuildType(
-            self,
-            buildInfo: Union[int, str],
+            buildInfo: BuildSpecifier,
             strict: bool = False) -> Dict[str, dict]:
         ...
 
@@ -217,9 +239,9 @@ class ClientSession(Protocol):
             strict: bool = False) -> List[ChangelogEntry]:
         ...
 
+    @staticmethod
     def getChannel(
-            self,
-            channelInfo: Union[int, str],
+            channelInfo: Union[str, ChannelID],
             strict: bool = False) -> ChannelInfo:
         ...
 
@@ -230,27 +252,27 @@ class ClientSession(Protocol):
 
     def getFullInheritance(
             self,
-            tag: Union[int, str],
-            event: Optional[int] = None,
+            tag: Union[str, TagID],
+            event: Optional[EventID] = None,
             reverse: bool = False) -> TagInheritance:
         ...
 
+    @staticmethod
     def getGroupMembers(
-            self,
-            group: Union[int, str]) -> List[UserInfo]:
+            group: Union[str, UserID]) -> List[UserInfo]:
         ...
 
+    @staticmethod
     def getHost(
-            self,
-            hostInfo: Union[int, str],
+            hostInfo: Union[str, HostID],
             strict: bool = False,
-            event: Optional[int] = None) -> HostInfo:
+            event: Optional[EventID] = None) -> HostInfo:
         ...
 
     def getInheritanceData(
             self,
-            tag: Union[int, str],
-            event: Optional[int] = None) -> TagInheritance:
+            tag: Union[str, TagID],
+            event: Optional[EventID] = None) -> TagInheritance:
         ...
 
     def getKojiVersion(self) -> str:
@@ -289,12 +311,24 @@ class ClientSession(Protocol):
             ts: bool = False) -> Union[str, float, None]:
         ...
 
+    @overload
     def getLatestBuilds(
             self,
-            tag: Union[int, str],
-            event: Optional[int] = None,
-            package: Optional[Union[int, str]] = None,
+            tag: Union[str, TagID],
+            event: Optional[EventID] = None,
+            package: Optional[str] = None,
             type: Optional[str] = None) -> List[TagBuildInfo]:
+        ...
+
+    @overload
+    def getLatestBuilds(
+            self,
+            tag: Union[str, TagID],
+            event: Optional[EventID] = None,
+            package: Optional[str] = None,
+            type: Optional[str] = None,
+            draft: Optional[bool] = None) -> List[TagBuildInfo]:
+        # :since: koji 1.34
         ...
 
     def getLatestMavenArchives(
@@ -304,25 +338,40 @@ class ClientSession(Protocol):
             inherit: bool = True) -> List[ArchiveInfo]:
         ...
 
+    @overload
     def getLatestRPMS(
             self,
-            tag: Union[int, str],
-            package: Optional[Union[int, str]] = None,
-            arch: Optional[str] = None,
-            event: Optional[int] = None,
+            tag: Union[str, TagID],
+            package: Optional[str] = None,
+            arch: Union[Arch, List[Arch], None] = None,
+            event: Optional[EventID] = None,
             rpmsigs: bool = False,
             type: Optional[str] = None) -> Tuple[List[RPMInfo],
                                                  List[BuildInfo]]:
         ...
 
+    @overload
+    def getLatestRPMS(
+            self,
+            tag: Union[str, TagID],
+            package: Optional[str] = None,
+            arch: Union[Arch, List[Arch], None] = None,
+            event: Optional[EventID] = None,
+            rpmsigs: bool = False,
+            type: Optional[str] = None,
+            draft: Optional[bool] = None) -> Tuple[List[RPMInfo],
+                                                   List[BuildInfo]]:
+        # :since: koji 1.34
+        ...
+
     def getLoggedInUser(self) -> UserInfo:
         ...
 
+    @staticmethod
     def getPackage(
-            self,
-            info: Union[int, str],
+            info: Union[str, PackageID],
             strict: bool = False,
-            create: bool = False) -> PackageInfo:
+            create: bool = False) -> Optional[NamedID]:
         ...
 
     def getPerms(self) -> List[str]:
