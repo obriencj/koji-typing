@@ -29,7 +29,7 @@ from . import (
     CGID, CGInfo, CGInitInfo,
     EventID, EventInfo,
     FaultInfo, HostID, HostInfo, ListTasksOptions, MavenInfo,
-    NamedID, OldNew, PackageID, PackageInfo,
+    NamedID, NotificationID, OldNew, PackageID, PackageInfo,
     PermID, PermInfo, POMInfo, QueryOptions,
     RepoID, RepoInfo, RepoState, RPMID, RPMInfo, RPMNVRA,
     RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
@@ -128,7 +128,7 @@ class ClientSession(Protocol):
 
     @staticmethod
     def editTag2(
-            taginfo: Union[str, TagID],
+            tagInfo: Union[str, TagID],
             **kwargs) -> None:
         ...
 
@@ -196,7 +196,7 @@ class ClientSession(Protocol):
 
     @staticmethod
     def getBuildLogs(
-            buildInfo: BuildSpecifier) -> BuildLogs:
+            build: BuildSpecifier) -> BuildLogs:
         ...
 
     @staticmethod
@@ -924,6 +924,11 @@ class ClientSession(Protocol):
             taglist: List[TagID]) -> bool:
         ...
 
+    def taskFinished(
+            self,
+            taskId: TaskID) -> bool:
+        ...
+
     def untagBuild(
             self,
             tag: Union[str, TagID],
@@ -941,10 +946,38 @@ class ClientSession(Protocol):
             notify: bool = False) -> None:
         ...
 
+    @staticmethod
+    def untaggedBuilds(
+            name: Optional[str] = None,
+            queryOpts: Optional[QueryOptions] = None,
+            draft: Optional[bool] = None) -> List[BuildNVR]:
+        ...
+
     def updateHost(
             self,
             task_load: float,
             ready: bool) -> None:
+        ...
+
+    def updateNotification(
+            self,
+            id: NotificationID,
+            package_id: Union[str, PackageID, None],
+            tag_id: Union[str, TagID, None],
+            success_only: bool) -> None:
+        ...
+
+    def uploadFile(
+            self,
+            path: str,
+            name: str,
+            size: int,
+            md5sum: str,
+            offset: int,
+            data: str,
+            volume: Optional[str] = None,
+            checksum: Union[str, Tuple[ChecksumType, str], None] = None) \
+            -> bool:
         ...
 
     def winBuild(
@@ -968,6 +1001,13 @@ class ClientSession(Protocol):
             priority: Optional[int] = None,
             channel: str = 'maven',
             opts: Optional[Dict[str, Any]] = None) -> int:
+        ...
+
+    def writeSignedRPM(
+            self,
+            an_rpm: str,
+            sigkey: str,
+            force: bool = False) -> None:
         ...
 
 

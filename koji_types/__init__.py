@@ -77,6 +77,7 @@ __all__ = (
     "ListTasksOptions",
     "MavenInfo",
     "NamedID",
+    "NotificationID",
     "OldNew",
     "PackageID",
     "PackageInfo",
@@ -131,6 +132,7 @@ ChannelID = NewType("ChannelID", int)
 ExternalRepoID = NewType("ExternalRepoID", int)
 EventID = NewType("EventID", int)
 HostID = NewType("HostID", int)
+NotificationID = NewType("NotificationID", int)
 PackageID = NewType("PackageID", int)
 PermID = NewType("PermID", int)
 RepoID = NewType("RepoID", int)
