@@ -50,6 +50,25 @@ from preoccupied.proxytype import proxytype
 
 class ClientSession(Protocol):
 
+    @staticmethod
+    def addArchiveType(
+            name: str,
+            description: str,
+            extensions: str,
+            compression_type: Optional[str] = None) -> None:
+        ...
+
+    @staticmethod
+    def addBType(
+            name: str) -> None:
+        ...
+
+    @staticmethod
+    def addChannel(
+            channel_name: str,
+            description: Optional[str] = None) -> ChannelID:
+        ...
+
     def build(
             self,
             src: str,
@@ -892,6 +911,60 @@ class ClientSession(Protocol):
             tag: Union[str, TagID],
             data: TagInheritance,
             clear: bool = False) -> None:
+        ...
+
+    @overload
+    def showOpts(self) -> str:
+        ...
+
+    @overload
+    def showOpts(
+            self,
+            as_string: Literal[True]) -> str:
+        ...
+
+    @overload
+    def showOpts(
+            self,
+            as_string: Literal[False]) -> Dict[str, Any]:
+        ...
+
+    @overload
+    def showOpts(
+            self,
+            as_string: bool = True) -> Union[str, Dict[str, Any]]:
+        ...
+
+    def showSession(self) -> str:
+        ...
+
+    def snapshotTag(
+            self,
+            src: Union[str, TagID],
+            dst: Union[str, TagID],
+            config: bool = True,
+            pkgs: bool = True,
+            builds: bool = True,
+            groups: bool = True,
+            latest_only: bool = True,
+            inherit_builds: bool = True,
+            event: Optional[EventID] = None,
+            force: bool = False) -> None:
+        ...
+
+    def snapshotTagModify(
+            self,
+            src: Union[str, TagID],
+            dst: Union[str, TagID],
+            config: bool = True,
+            pkgs: bool = True,
+            builds: bool = True,
+            groups: bool = True,
+            latest_only: bool = True,
+            inherit_builds: bool = True,
+            event: Optional[EventID] = None,
+            force: bool = False,
+            remove: bool = False) -> None:
         ...
 
     def ssl_login(
