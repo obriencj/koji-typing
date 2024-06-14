@@ -661,6 +661,11 @@ class ClientSession(Protocol):
             queryOpts: Optional[QueryOptions] = None) -> List[BTypeInfo]:
         ...
 
+    def listBuildRPMs(
+            self,
+            build: BuildSpecifier) -> List[RPMInfo]:
+        ...
+
     def listBuilds(
             self,
             packageID: Optional[PackageID] = None,
@@ -722,25 +727,6 @@ class ClientSession(Protocol):
             draft: Optional[bool] = None) -> List[RPMInfo]:
         ...
 
-    @overload
-    def listUsers(
-            self,
-            userType: UserType = UserType.NORMAL,
-            prefix: Optional[str] = None,
-            queryOpts: Optional[QueryOptions] = None) -> List[UserInfo]:
-        ...
-
-    @overload
-    def listUsers(
-            self,
-            userType: UserType = UserType.NORMAL,
-            prefix: Optional[str] = None,
-            queryOpts: Optional[QueryOptions] = None,
-            perm: Optional[str] = None,
-            inherited_perm: bool = False) -> List[UserInfo]:
-        # :since: koji 1.35
-        ...
-
     def listTagged(
             self,
             tag: Union[str, TagID],
@@ -796,6 +782,25 @@ class ClientSession(Protocol):
             queryOpts: Optional[QueryOptions] = None) -> List[TaskInfo]:
         ...
 
+    @overload
+    def listUsers(
+            self,
+            userType: UserType = UserType.NORMAL,
+            prefix: Optional[str] = None,
+            queryOpts: Optional[QueryOptions] = None) -> List[UserInfo]:
+        ...
+
+    @overload
+    def listUsers(
+            self,
+            userType: UserType = UserType.NORMAL,
+            prefix: Optional[str] = None,
+            queryOpts: Optional[QueryOptions] = None,
+            perm: Optional[str] = None,
+            inherited_perm: bool = False) -> List[UserInfo]:
+        # :since: koji 1.35
+        ...
+
     @staticmethod
     def listVolumes() -> List[NamedID]:
         ...
@@ -828,6 +833,28 @@ class ClientSession(Protocol):
     def mergeScratch(
             self,
             task_id: TaskID) -> BuildID:
+        ...
+
+    def moveBuild(
+            self,
+            tag1: Union[str, TagID],
+            tag2: Union[str, TagID],
+            build: BuildSpecifier,
+            force: bool = False):
+        ...
+
+    @staticmethod
+    def newGroup(
+            name: str) -> UserID:
+        ...
+
+    def newRepo(
+            self,
+            tag: Union[str, TagID],
+            event: Optional[EventID] = None,
+            src: bool = False,
+            debuginfo: bool = False,
+            separate_src: bool = False) -> TaskID:
         ...
 
     @staticmethod
