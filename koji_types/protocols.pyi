@@ -796,6 +796,16 @@ class ClientSession(Protocol):
             queryOpts: Optional[QueryOptions] = None) -> List[TaskInfo]:
         ...
 
+    @staticmethod
+    def listVolumes() -> List[NamedID]:
+        ...
+
+    def makeTask(
+            self,
+            *args,
+            **opts) -> TaskID:
+        ...
+
     def massTag(
             self,
             tag: Union[str, TagID],
@@ -815,6 +825,11 @@ class ClientSession(Protocol):
     def mavenEnabled(self) -> bool:
         ...
 
+    def mergeScratch(
+            self,
+            task_id: TaskID) -> BuildID:
+        ...
+
     @staticmethod
     def packageListAdd(
             taginfo: Union[str, TagID],
@@ -827,7 +842,7 @@ class ClientSession(Protocol):
         ...
 
     @staticmethod
-    def packkageListBlock(
+    def packageListBlock(
             taginfo: Union[str, TagID],
             pkginfo: Union[str, PackageID],
             force: bool = False) -> None:
@@ -863,6 +878,12 @@ class ClientSession(Protocol):
             force: bool = False) -> None:
         ...
 
+    @staticmethod
+    def promoteBuild(
+            build: Union[str, int],
+            force: bool = False) -> BuildInfo:
+        ...
+
     @overload
     @staticmethod
     def queryHistory(
@@ -885,6 +906,18 @@ class ClientSession(Protocol):
             rpm_id: Union[RPMID, str, BuildNVR, None] = None,
             sigkey: Optional[str] = None,
             queryOpts: Optional[QueryOptions] = None) -> List[RPMSignature]:
+        ...
+
+    def removeExternalRepoFromTag(
+            self,
+            tag_info: Union[str, TagID],
+            repo_info: int) -> None:
+        ...
+
+    @staticmethod
+    def removeHostFromChannel(
+            hostname: str,
+            channel_name: str) -> None:
         ...
 
     def removeUserKrbPrincipal(
