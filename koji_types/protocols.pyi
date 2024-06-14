@@ -887,15 +887,70 @@ class ClientSession(Protocol):
             queryOpts: Optional[QueryOptions] = None) -> List[RPMSignature]:
         ...
 
+    def removeUserKrbPrincipal(
+            self,
+            user: Union[str, UserID],
+            krb_principal: str) -> UserID:
+        ...
+
+    @staticmethod
+    def removeVolume(
+            volume: str) -> None:
+        ...
+
+    @staticmethod
+    def renameChannel(
+            old: str,
+            new: str) -> None:
+        ...
+
+    def repoDelete(
+            self,
+            repo_id: RepoID) -> int:
+        ...
+
+    def repoExpire(
+            self,
+            repo_id: RepoID) -> None:
+        ...
+
     @staticmethod
     def repoInfo(
             repo_id: RepoID,
             strict: bool = False) -> RepoInfo:
         ...
 
+    def repoProblem(
+            self,
+            repo_id: RepoID) -> None:
+        ...
+
+    @staticmethod
+    def resetBuild(
+            build: Union[str, BuildID]) -> None:
+        ...
+
+    def restartHosts(
+            self,
+            priority: int = 5,
+            options: Optional[Dict[str, Any]] = None) -> TaskID:
+        ...
+
     def resubmitTask(
             self,
             taskID: int) -> int:
+        ...
+
+    @staticmethod
+    def revokeCGAccess(
+            user: Union[str, UserID],
+            cg: Union[str, CGID]) -> None:
+        ...
+
+    def revokePermission(
+            self,
+            userinfo: Union[str, UserID],
+            permission: Union[str, PermID]) -> None:
         ...
 
     def search(
@@ -906,11 +961,30 @@ class ClientSession(Protocol):
             queryOpts: Optional[QueryOptions] = None) -> List[SearchResult]:
         ...
 
+    def setBuildOwner(
+            self,
+            build: BuildSpecifier,
+            user: Union[str, UserID]) -> None:
+        ...
+
+    def setBuildTimestamp(
+            self,
+            build: BuildSpecifier,
+            ts: Union[int, float]) -> None:
+        ...
+
     def setInheritanceData(
             self,
             tag: Union[str, TagID],
             data: TagInheritance,
             clear: bool = False) -> None:
+        ...
+
+    def setTaskPriority(
+            self,
+            task_id: TaskID,
+            priority: int,
+            recurse: bool = True) -> None:
         ...
 
     @overload
