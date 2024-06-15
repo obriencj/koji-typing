@@ -21,19 +21,23 @@ Koji Types - Client Session Protocol method declarations
 
 
 from . import (
-    ArchiveID, ArchiveInfo, ATypeID, ATypeInfo,
+    ArchiveFileInfo, ArchiveID, ArchiveInfo, ATypeID, ATypeInfo,
     BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR,
     BuildrootID, BuildrootInfo, BuildrootState,
     BuildState, BTypeInfo, ChangelogEntry, ChannelID, ChannelInfo,
     ChecksumType,
     CGID, CGInfo, CGInitInfo,
+    ExternalRepoID, ExternalRepoInfo,
     EventID, EventInfo,
     FaultInfo, HostID, HostInfo, ListTasksOptions, MavenInfo,
     NamedID, NotificationID, OldNew, PackageID, PackageInfo,
     PermID, PermInfo, POMInfo, QueryOptions,
-    RepoID, RepoInfo, RepoState, RPMID, RPMInfo, RPMNVRA,
+    RepoID, RepoInfo, RepoState,
+    RPMDepType, RPMDepInfo,
+    RPMFileInfo, RPMID, RPMInfo, RPMNVRA,
     RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
-    TagID, TagInfo, TagGroupID, TagGroupInfo, TagInheritance, TagPackageInfo,
+    TagGroupID, TagGroupInfo, TagID, TagInfo, TagInheritance,
+    TagExternalRepos, TagPackageInfo, TagPackageSimple,
     TargetID, TargetInfo,
     TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserType,
     WinInfo, )
@@ -67,6 +71,22 @@ class ClientSession(Protocol):
     def addChannel(
             channel_name: str,
             description: Optional[str] = None) -> ChannelID:
+        ...
+
+    def addHost(
+            self,
+            hostname: str,
+            arches: List[Arch],
+            krb_principal: Optional[str] = None,
+            force: bool = False) -> HostID:
+        ...
+
+    @staticmethod
+    def addHostToChannel(
+            hostname: Union[str, HostID],
+            channel_name: str,
+            create: bool = False,
+            force: bool = False) -> None:
         ...
 
     def build(
@@ -269,6 +289,20 @@ class ClientSession(Protocol):
             id: int) -> EventInfo:
         ...
 
+    @staticmethod
+    def getExternalRepo(
+            info: Union[str, ExternalRepoID],
+            strict: bool = False,
+            event: Optional[EventID] = None) -> ExternalRepoInfo:
+        ...
+
+    @staticmethod
+    def getExternalRepoList(
+            tag_info: Union[str, TagID],
+            event: Optional[EventID] = None) -> TagExternalRepos:
+        ...
+
+
     def getFullInheritance(
             self,
             tag: Union[str, TagID],
@@ -286,6 +320,12 @@ class ClientSession(Protocol):
             hostInfo: Union[str, HostID],
             strict: bool = False,
             event: Optional[EventID] = None) -> HostInfo:
+        ...
+
+    @staticmethod
+    def getImageArchive(
+            archive_id: ArchiveID,
+            strict: bool = False) -> ArchiveInfo:
         ...
 
     def getInheritanceData(
@@ -387,6 +427,25 @@ class ClientSession(Protocol):
         ...
 
     @staticmethod
+    def getMavenArchive(
+            archive_id: ArchiveID,
+            strict: bool = False) -> ArchiveInfo:
+        ...
+
+    @staticmethod
+    def getMavenBuild(
+            buildInfo: Union[str, BuildID],
+            strict: bool = False) -> Dict[str, Any]:
+        # TODO: need a return typedict
+        ...
+
+    @staticmethod
+    def getNextRelease(
+            build_info: BuildNVR,
+            incr: int = 1) -> str:
+        ...
+
+    @staticmethod
     def getPackage(
             info: Union[str, PackageID],
             strict: bool = False,
@@ -437,6 +496,21 @@ class ClientSession(Protocol):
             multi: bool = False) -> Union[RPMInfo, List[RPMInfo], None]:
         ...
 
+    def getRPMDeps(
+            self,
+            rpmID: RPMID,
+            depType: Optional[RPMDepType] = None,
+            queryOpts: Optional[QueryOptions] = None,
+            strict: bool = False) -> List[RPMDepInfo]:
+        ...
+
+    def getRPMFile(
+            self,
+            rpmID: RPMID,
+            filename: str,
+            strict: bool = False) -> Optional[RPMFileInfo]:
+        ...
+
     @overload
     def getRPMHeaders(
             self,
@@ -454,7 +528,7 @@ class ClientSession(Protocol):
             filepath: Optional[str] = None,
             headers: Optional[List[str]] = None,
             strict: Optional[bool] = False) -> Dict[str, Any]:
-        # :since: koji 1.29.0
+        # :since: koji 1.29
         ...
 
     def getSessionInfo(
@@ -480,6 +554,13 @@ class ClientSession(Protocol):
         ...
 
     @staticmethod
+    def getTagExternalRepos(
+            tag_info: Union[str, TagID, None] = None,
+            repo_info: Union[str, ExternalRepoID, None] = None,
+            event: Optional[EventID] = None) -> TagExternalRepos:
+        ...
+
+    @staticmethod
     def getTagGroups(
             tag: Union[str, TagID],
             event: Optional[EventID] = None,
@@ -496,6 +577,12 @@ class ClientSession(Protocol):
             strict: Optional[bool] = False) -> List[TaskInfo]:
         ...
 
+    def getTaskDescendents(
+            self,
+            task_id: TaskID,
+            request: bool = False) -> Dict[str, List[TaskInfo]]:
+        ...
+
     @overload
     def getTaskInfo(
             self,
@@ -510,6 +597,17 @@ class ClientSession(Protocol):
             task_id: TaskID,
             request: bool = False,
             strict: bool = False) -> TaskInfo:
+        ...
+
+    def getTaskRequest(
+            self,
+            taskId: TaskID) -> Dict[str, Any]:
+        ...
+
+    def getTaskResult(
+            self,
+            taskId: TaskID,
+            raise_fault: bool = True) -> Any:
         ...
 
     @overload
@@ -556,6 +654,32 @@ class ClientSession(Protocol):
         # :since: koji 1.34
         ...
 
+    def getVolume(
+            self,
+            volume: str,
+            strict: bool = False) -> Optional[NamedID]:
+        ...
+
+    @staticmethod
+    def getWinArchive(
+            archive_id: ArchiveID,
+            strict: bool = False) -> ArchiveInfo:
+        ...
+
+    @staticmethod
+    def getWinBuild(
+            buildInfo: Union[str, BuildID],
+            strict: bool = False) -> Dict[str, Any]:
+        ...
+
+    def grantPermission(
+            self,
+            userinfo: Union[str, UserID],
+            permission: Union[str, PermID],
+            create: bool = False,
+            description: Optional[str] = None) -> None:
+        ...
+
     @staticmethod
     def groupListAdd(
             taginfo: Union[str, TagID],
@@ -579,7 +703,7 @@ class ClientSession(Protocol):
         ...
 
     @staticmethod
-    def groupListUnnblock(
+    def groupListUnblock(
             taginfo: Union[str, TagID],
             grpinfo: Union[str, TagGroupID]) -> None:
         ...
@@ -615,6 +739,38 @@ class ClientSession(Protocol):
             pkg_name: str) -> None:
         ...
 
+    @staticmethod
+    def groupReqListAdd(
+            taginfo: Union[str, TagID],
+            grpinfo: Union[str, TagGroupID],
+            reqinfo: str,
+            block: bool = False,
+            force: bool = False,
+            **opts) -> None:
+        ...
+
+    @staticmethod
+    def groupReqListBlock(
+            taginfo: Union[str, TagID],
+            grpinfo: Union[str, TagGroupID],
+            reqinfo: str) -> None:
+        ...
+
+    @staticmethod
+    def groupReqListRemove(
+            taginfo: Union[str, TagID],
+            grpinfo: Union[str, TagGroupID],
+            reqinfo: str,
+            force: Optional[bool] = None) -> None:
+        ...
+
+    @staticmethod
+    def groupReqListUnblock(
+            taginfo: Union[str, TagID],
+            grpinfo: Union[str, TagGroupID],
+            reqinfo: str) -> None:
+        ...
+
     def hasPerm(
             self,
             perm: str,
@@ -628,6 +784,14 @@ class ClientSession(Protocol):
 
     @property
     def host(self) -> Host:
+        ...
+
+    def importArchive(
+            self,
+            filepath: str,
+            buildinfo: BuildInfo,
+            type: str,
+            typeInfo: Dict[str, Any]) -> ArchiveInfo:
         ...
 
     def initWinBuild(
@@ -656,6 +820,13 @@ class ClientSession(Protocol):
         ...
 
     @staticmethod
+    def listArchiveFiles(
+            archive_id: ArchiveID,
+            queryOpts: Optional[QueryOptions] = None,
+            strict: bool = False) -> List[ArchiveFileInfo]:
+        ...
+
+    @staticmethod
     def listBTypes(
             query: Optional[NamedID] = None,
             queryOpts: Optional[QueryOptions] = None) -> List[BTypeInfo]:
@@ -664,6 +835,19 @@ class ClientSession(Protocol):
     def listBuildRPMs(
             self,
             build: BuildSpecifier) -> List[RPMInfo]:
+        ...
+
+    @staticmethod
+    def listBuildroots(
+            hostID: Optional[int] = None,
+            tagID: Optional[TagID] = None,
+            state: Union[BuildrootState, List[BuildrootState], None] = None,
+            rpmID: Optional[RPMID] = None,
+            archiveID: Optional[ArchiveID] = None,
+            taskID: Optional[TaskID] = None,
+            buildrootID: Optional[BuildrootID] = None,
+            repoID: Optional[RepoID] = None,
+            queryOpts: Optional[QueryOptions] = None) -> List[BuildrootInfo]:
         ...
 
     def listBuilds(
@@ -691,6 +875,21 @@ class ClientSession(Protocol):
     def listCGs() -> Dict[str, CGInfo]:
         ...
 
+    @staticmethod
+    def listChannels(
+            hostID: Optional[HostID] = None,
+            event: Optional[EventID] = None,
+            enabled: Optional[bool] = None) -> List[ChannelInfo]:
+        ...
+
+    @staticmethod
+    def listExternalRepos(
+            info: Union[str, ExternalRepoID, None] = None,
+            url: Optional[str] = None,
+            event: Optional[EventID] = None,
+            queryOpts: Optional[QueryOptions] = None) -> List[ExternalRepoInfo]:
+        ...
+
     def listHosts(
             self,
             arches: Optional[List[str]] = None,
@@ -713,6 +912,19 @@ class ClientSession(Protocol):
             queryOpts: Optional[QueryOptions] = None,
             with_owners: bool = True,
             with_blocked: bool = True) -> List[TagPackageInfo]:
+        ...
+
+    def listPackagesSimple(
+            self,
+            prefix: Optional[str] = None,
+            queryOpts: Optional[QueryOptions] = None) \
+            -> List[TagPackageSimple]:
+        ...
+
+    def listRPMFiles(
+            self,
+            rpmID: RPMID,
+            queryOpts: Optional[QueryOptions] = None) -> List[RPMFileInfo]:
         ...
 
     @staticmethod
@@ -753,6 +965,41 @@ class ClientSession(Protocol):
             strict: bool = True,
             extra: bool = True) -> Tuple[List[ArchiveInfo],
                                          List[BuildInfo]]:
+        ...
+
+    @overload
+    def listTaggedRPMS(
+            self,
+            tag: Union[str, TagID],
+            event: Optional[EventID] = None,
+            inherit: bool = False,
+            latest: bool = False,
+            package: Optional[str] = None,
+            arch: Optional[Arch] = None,
+            rpmsigs: bool = False,
+            owner: Union[str, UserID, None] = None,
+            type: Optional[str] = None,
+            strict: bool = True,
+            extra: bool = True) -> Tuple[List[RPMInfo], List[BuildInfo]]:
+        ...
+
+    @overload
+    def listTaggedRPMS(
+            self,
+            tag: Union[str, TagID],
+            event: Optional[EventID] = None,
+            inherit: bool = False,
+            latest: bool = False,
+            package: Optional[str] = None,
+            arch: Optional[Arch] = None,
+            rpmsigs: bool = False,
+            owner: Union[str, UserID, None] = None,
+            type: Optional[str] = None,
+            strict: bool = True,
+            extra: bool = True,
+            draft: Optional[bool] = None) \
+            -> Tuple[List[RPMInfo], List[BuildInfo]]:
+        # :since: koji 1.34
         ...
 
     @staticmethod
@@ -835,12 +1082,20 @@ class ClientSession(Protocol):
             task_id: TaskID) -> BuildID:
         ...
 
+    def moveAllBuilds(
+            self,
+            tag1: Union[str, TagID],
+            tag2: Union[str, TagID],
+            package: Union[str, PackageID],
+            force: bool = False) -> TaskID:
+        ...
+
     def moveBuild(
             self,
             tag1: Union[str, TagID],
             tag2: Union[str, TagID],
             build: BuildSpecifier,
-            force: bool = False):
+            force: bool = False) -> TaskID:
         ...
 
     @staticmethod

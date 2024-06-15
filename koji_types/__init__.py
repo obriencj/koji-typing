@@ -27,6 +27,8 @@ from datetime import datetime
 from enum import IntEnum
 from koji import (
     AUTHTYPES, BR_STATES, BR_TYPES, BUILD_STATES, CHECKSUM_TYPES,
+    DEP_CONFLICT, DEP_ENHANCE, DEP_OBSOLETE, DEP_PROVIDE, DEP_RECOMMEND,
+    DEP_REQUIRE, DEP_SUGGEST, DEP_SUPPLEMENT,
     REPO_STATES, RPM_SIGTAG_DSA, RPM_SIGTAG_GPG, RPM_SIGTAG_MD5,
     RPM_SIGTAG_PGP, RPM_SIGTAG_RSA, TASK_STATES, USERTYPES, USER_STATUS,
     ClientSession, PathInfo, )
@@ -38,7 +40,7 @@ from typing_extensions import TypedDict
 
 
 __all__ = (
-    "ArchiveFile",
+    "ArchiveFileInfo",
     "ArchiveInfo",
     "ATypeID",
     "ATypeInfo",
@@ -88,6 +90,7 @@ __all__ = (
     "RepoID",
     "RepoInfo",
     "RepoState",
+    "RPMFileInfo",
     "RPMID",
     "RPMInfo",
     "RPMNVRA",
@@ -107,6 +110,7 @@ __all__ = (
     "TagGroupPackage",
     "TagGroupReq",
     "TagPackageInfo",
+    "TagPackageSimple",
     "TargetID",
     "TargetInfo",
     "TaskID",
@@ -251,6 +255,17 @@ class RepoState(IntEnum):
     PROBLEM = REPO_STATES['PROBLEM']
 
 
+class RPMDepType(IntEnum):
+    CONFLICT = DEP_CONFLICT
+    ENHANCE = DEP_ENHANCE
+    OBSOLETE = DEP_OBSOLETE
+    PROVIDE = DEP_PROVIDE
+    RECOMMEND = DEP_RECOMMEND
+    REQUIRE = DEP_REQUIRE
+    SUGGEST = DEP_SUGGEST
+    SUPPLEMENT = DEP_SUPPLEMENT
+
+
 class RPMSigTag(IntEnum):
     DSA = RPM_SIGTAG_DSA
     GPG = RPM_SIGTAG_GPG
@@ -370,7 +385,7 @@ class ArchiveInfo(TypedDict):
     """ Only present on Image archives """
 
 
-class ArchiveFile(TypedDict):
+class ArchiveFileInfo(TypedDict):
     archive_id: ArchiveID
     """ owning archive record """
 
@@ -1016,7 +1031,19 @@ class PackageInfo(TypedDict):
     """
 
 
-class TagPackageInfo(TypedDict):
+class TagPackageSimple(TypedDict):
+    """
+    ``listPackagesSimple`` XMLRPC call.
+    """
+
+    package_id: PackageID
+    """ ID of the package """
+
+    package_name: str
+    """ name of the package """
+
+
+class TagPackageInfo(TagPackageSimple):
     """
     ``listPackages`` XMLRPC call.
     """
@@ -1032,12 +1059,6 @@ class TagPackageInfo(TypedDict):
 
     owner_name: str
     """ name of the user who is the owner of the package for this tag """
-
-    package_id: PackageID
-    """ ID of the package """
-
-    package_name: str
-    """ name of the package """
 
     tag_id: TagID
     """ ID of the package listing's tag """
@@ -1302,6 +1323,38 @@ class SessionInfo(TypedDict):
     authtype: AuthType
     callnum: Optional[int]
     exclusive: bool
+
+
+class RPMFileInfo(TypedDict):
+    """
+    Information about a file embedded inside an RPM's CPIO archive
+    """
+
+    digest: str
+    digest_algo: ChecksumType  # TODO: see filedigestAlgo
+    md5: str
+    name: str
+    size: int
+    flags: int
+    user: int
+    group: int
+    mtime: int
+    mode: int
+
+    rpm_id: Optional[RPMID]
+    """
+    the RPMInfo for the RPM that contains this file
+    """
+
+class RPMDepInfo(TypedDict):
+    """
+    ``getRPMDeps`` XMLRPC result
+    """
+
+    name: str
+    version: str
+    flags: int
+    type: RPMDepType
 
 
 # The end.

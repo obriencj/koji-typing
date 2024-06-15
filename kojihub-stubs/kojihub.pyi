@@ -25,7 +25,7 @@ Typing annotations stub for kojihub.kojihub
 from koji import ParameterError
 from koji.policy import BaseSimpleTest, MatchTest
 from koji_types import (
-    ArchiveID, ArchiveFile, ArchiveInfo,
+    ArchiveID, ArchiveFileInfo, ArchiveInfo,
     ATypeID, ATypeInfo,
     BuildID, BuildInfo, BuildLogs,
     BuildNVR, BuildState, BuildSpecifier,
@@ -733,7 +733,7 @@ def add_group_member(
 
 
 def add_host_to_channel(
-        hostname: str,
+        hostname: Union[str, HostID],
         channel_name: str,
         create: bool = False,
         force: bool = False) -> None:
@@ -1107,7 +1107,7 @@ def get_archive(
 def get_archive_file(
         archive_id: ArchiveID,
         filename: str,
-        strict: bool = False) -> Optional[ArchiveFile]:
+        strict: bool = False) -> Optional[ArchiveFileInfo]:
     ...
 
 
@@ -1267,7 +1267,7 @@ def get_maven_archive(
 
 
 def get_maven_build(
-        buildInfo: Union[int, str],
+        buildInfo: Union[str, BuildID],
         strict: bool = False) -> Dict[str, Any]:
     # TODO: need a return typedict
     ...
@@ -1592,7 +1592,7 @@ def importImageInternal(
 def list_archive_files(
         archive_id: ArchiveID,
         queryOpts: Optional[QueryOptions] = None,
-        strict: bool = False) -> List[ArchiveFile]:
+        strict: bool = False) -> List[ArchiveFileInfo]:
     ...
 
 
@@ -2039,6 +2039,22 @@ def readTaggedBuilds(
     ...
 
 
+@overload
+def readTaggedRPMS(
+        tag: Union[str, TagID],
+        package: Optional[str] = None,
+        arch: Union[Arch, List[Arch], None] = None,
+        event: Optional[EventID] = None,
+        inherit: bool = False,
+        latest: Union[bool, int] = True,
+        rpmsigs: bool = False,
+        owner: Optional[str] = None,
+        type: Optional[str] = None,
+        extra: bool = True) -> Tuple[List[RPMInfo], List[BuildInfo]]:
+    ...
+
+
+@overload
 def readTaggedRPMS(
         tag: Union[str, TagID],
         package: Optional[str] = None,
@@ -2052,6 +2068,7 @@ def readTaggedRPMS(
         extra: bool = True,
         draft: Optional[bool] = None) \
         -> Tuple[List[RPMInfo], List[BuildInfo]]:
+    # :since: koji 1.34
     ...
 
 
