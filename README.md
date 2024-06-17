@@ -3,6 +3,13 @@
 `preoccupied.koji-typing` is an experimental distribution which
 provides typing support for the [koji] package.
 
+It is currently a Work In-Progress, there are still many signatures
+to be added. The initial starting point was simply the set of
+hub calls that were being used by [koji-smoky-dingo]. This project
+aims to fill out everything.
+
+[koji-smoky-dingo]: https://github.com/obriencj/koji-smoky-dingo
+
 [koji]: https://pagure.io/koji
 
 **This project is neither enodorsed, nor supported, by the upstream
