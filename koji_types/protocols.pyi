@@ -110,6 +110,29 @@ class ClientSession(Protocol):
             priority: Optional[int] = None) -> int:
         ...
 
+    def cancelBuild(
+            self,
+            buildID: BuildID,
+            strict: bool = False) -> bool:
+        ...
+
+    def cancelTask(
+            self,
+            task_id: TaskID,
+            recurse: bool = True) -> None:
+        ...
+
+    def cancelTaskChildren(
+            self,
+            task_id: TaskID) -> None:
+        ...
+
+    def cancelTaskFull(
+            self,
+            task_id: TaskID,
+            strict: bool = True) -> None:
+        ...
+
     def chainBuild(
             self,
             srcs: List[str],
@@ -193,6 +216,12 @@ class ClientSession(Protocol):
         ...
 
     def fault(self) -> NoReturn:
+        ...
+
+    @staticmethod
+    def findBuildID(
+            X: BuildSpecifier,
+            strict: bool = False) -> Optional[BuildID]:
         ...
 
     @staticmethod
@@ -452,6 +481,12 @@ class ClientSession(Protocol):
             create: bool = False) -> Optional[NamedID]:
         ...
 
+    def getPackageID(
+            self,
+            name: str,
+            strict: bool = False) -> Optional[PackageID]:
+        ...
+
     def getPerms(self) -> List[str]:
         ...
 
@@ -672,6 +707,13 @@ class ClientSession(Protocol):
             strict: bool = False) -> Dict[str, Any]:
         ...
 
+    @staticmethod
+    def grantCGAccess(
+            user: Union[str, UserID],
+            cg: Union[str, CGID],
+            create: bool = False) -> None:
+        ...
+
     def grantPermission(
             self,
             userinfo: Union[str, UserID],
@@ -794,6 +836,12 @@ class ClientSession(Protocol):
             typeInfo: Dict[str, Any]) -> ArchiveInfo:
         ...
 
+    def importRPM(
+            self,
+            path: str,
+            basename: str) -> RPMInfo:
+        ...
+
     def initWinBuild(
             self,
             task_id: TaskID,
@@ -887,7 +935,8 @@ class ClientSession(Protocol):
             info: Union[str, ExternalRepoID, None] = None,
             url: Optional[str] = None,
             event: Optional[EventID] = None,
-            queryOpts: Optional[QueryOptions] = None) -> List[ExternalRepoInfo]:
+            queryOpts: Optional[QueryOptions] = None) \
+            -> List[ExternalRepoInfo]:
         ...
 
     def listHosts(

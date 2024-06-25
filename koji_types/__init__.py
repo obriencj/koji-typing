@@ -1346,6 +1346,7 @@ class RPMFileInfo(TypedDict):
     the RPMInfo for the RPM that contains this file
     """
 
+
 class RPMDepInfo(TypedDict):
     """
     ``getRPMDeps`` XMLRPC result
