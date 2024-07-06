@@ -366,6 +366,12 @@ class ClientSession(Protocol):
             strict: bool = False) -> ArchiveInfo:
         ...
 
+    @staticmethod
+    def getImageBuild(
+            buildInfo: BuildSpecifier,
+            strict: bool = False) -> Optional[Dict[str, BuildID]]:
+        ...
+
     def getInheritanceData(
             self,
             tag: Union[str, TagID],
@@ -490,6 +496,13 @@ class ClientSession(Protocol):
             create: bool = False) -> Optional[NamedID]:
         ...
 
+    def getPackageConfig(
+            self,
+            tag: Union[str, TagID],
+            pkg: Union[str, PackageID],
+            event: Optional[EventID] = None) -> Optional[TagPackageInfo]:
+        ...
+
     def getPackageID(
             self,
             name: str,
@@ -550,6 +563,13 @@ class ClientSession(Protocol):
             rpminfo: Union[str, RPMID, RPMNVRA],
             strict: bool = False,
             multi: bool = False) -> Union[RPMInfo, List[RPMInfo], None]:
+        ...
+
+    def getRPMChecksums(
+            self,
+            rpm_id: RPMID,
+            checksum_types: Optional[List[ChecksumType]] = None,
+            cacheonly: bool = False) -> Dict[ChecksumType, str]:
         ...
 
     def getRPMDeps(
