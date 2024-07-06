@@ -266,15 +266,6 @@ class ClientSession(ClientSessionProtocol):
             **kwds) -> Any:
         ...
 
-    def downloadTaskOutput(
-            self,
-            taskID: int,
-            fileName: str,
-            offset: int = 0,
-            size: int = -1,
-            volume: Optional[str] = None) -> bytes:
-        ...
-
     def exclusiveSession(
             self,
             force: bool = False) -> None:
