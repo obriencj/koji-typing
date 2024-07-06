@@ -89,6 +89,7 @@ __all__ = (
     "QueryOptions",
     "RepoID",
     "RepoInfo",
+    "RepoOptions",
     "RepoState",
     "RPMFileInfo",
     "RPMID",
@@ -849,6 +850,16 @@ class RepoInfo(TypedDict):
 
     task_id: TaskID
     """ ID of the task which generated this repository """
+
+
+class RepoOptions(TypedDict):
+    """
+    opts used by ``host.repoInit`` XMLRPC call
+    """
+
+    debuginfo: bool
+    separate_src: bool
+    src: bool
 
 
 class ExternalRepoInfo(TypedDict):

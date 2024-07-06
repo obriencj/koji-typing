@@ -36,7 +36,8 @@ from koji_types import (
     EventID, HistoryEntry, HostID, HostInfo,
     MavenInfo, NamedID, OldNew, PackageID, PackageInfo, PermID,
     QueryOptions,
-    RepoID, RepoInfo, RepoState, RPMID, RPMInfo, RPMNVRA, RPMSignature,
+    RepoID, RepoInfo, RepoState, RPMID, RPMInfo,
+    RPMNVRA, RPMSignature,
     TagExternalRepos,
     TagFullInheritance, TagFullInheritanceEntry,
     TagGroupID, TagGroupInfo,
@@ -47,6 +48,7 @@ from koji_types import (
     UserID, UserInfo,
     UserStatus, WinInfo, )
 from koji_types.arch import Arch
+from koji_types.hub import RepoOpts
 from koji_types.protocols import (
     ClientSession as _ClientSession, Host as _Host, )
 from logging import ERROR, INFO, WARNING, Logger
@@ -2169,10 +2171,8 @@ def repo_info(
 def repo_init(
         tag: Union[str, TagID],
         task_id: Optional[TaskID] = None,
-        with_src: bool = False,
-        with_debuginfo: bool = False,
         event: Optional[EventID] = None,
-        with_separate_src: bool = False) -> Tuple[RepoID, EventID]:
+        opts: Optional[RepoOpts] = None) -> Tuple[RepoID, EventID]:
     ...
 
 
@@ -2246,6 +2246,20 @@ def set_user_status(
 def tag_changed_since_event(
         event: EventID,
         taglist: List[TagID]) -> bool:
+    ...
+
+
+def tag_first_change_event(
+        tag: Union[str, TagID],
+        after: Optional[EventID] = None,
+        inherit: bool = True) -> Optional[EventID]:
+    ...
+
+
+def tag_last_change_event(
+        tag: Union[str, TagID],
+        before: Optional[EventID] = None,
+        inherit: bool = True) -> Optional[EventID]:
     ...
 
 

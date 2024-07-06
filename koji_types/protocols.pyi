@@ -32,7 +32,7 @@ from . import (
     FaultInfo, HostID, HostInfo, ListTasksOptions, MavenInfo,
     NamedID, NotificationID, OldNew, PackageID, PackageInfo,
     PermID, PermInfo, POMInfo, QueryOptions,
-    RepoID, RepoInfo, RepoState,
+    RepoID, RepoInfo, RepoOptions, RepoState,
     RPMDepType, RPMDepInfo,
     RPMFileInfo, RPMID, RPMInfo, RPMNVRA,
     RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
@@ -313,9 +313,18 @@ class ClientSession(Protocol):
             strict: bool = False) -> ChannelInfo:
         ...
 
+    @overload
     def getEvent(
             self,
             id: int) -> EventInfo:
+        ...
+
+    @overload
+    def getEvent(
+            self,
+            id: int,
+            strict: bool = False) -> EventInfo:
+        # :since: koji 1.35
         ...
 
     @staticmethod
@@ -490,12 +499,24 @@ class ClientSession(Protocol):
     def getPerms(self) -> List[str]:
         ...
 
+    @overload
+    @staticmethod
     def getRepo(
-            self,
             tag: Union[int, str],
             state: Optional[RepoState] = None,
             event: Optional[int] = None,
             dist: bool = False) -> RepoInfo:
+        ...
+
+    @overload
+    @staticmethod
+    def getRepo(
+            tag: Union[int, str],
+            state: Optional[RepoState] = None,
+            event: Optional[int] = None,
+            dist: bool = False,
+            min_event: Optional[EventID] = None) -> RepoInfo:
+        # :since: koji 1.35
         ...
 
     @overload
@@ -1435,6 +1456,20 @@ class ClientSession(Protocol):
             taglist: List[TagID]) -> bool:
         ...
 
+    @staticmethod
+    def tagFirstChangeEvent(
+            tag: Union[str, TagID],
+            after: Optional[EventID] = None,
+            inherit: bool = True) -> Optional[EventID]:
+        ...
+
+    @staticmethod
+    def tagLastChangeEvent(
+            tag: Union[str, TagID],
+            before: Optional[EventID] = None,
+            inherit: bool = True) -> Optional[EventID]:
+        ...
+
     def taskFinished(
             self,
             taskId: TaskID) -> bool:
@@ -1753,10 +1788,8 @@ class Host(Protocol):
             self,
             tag: Union[str, TagID],
             task_id: Optional[TaskID] = None,
-            with_src: bool = False,
-            with_debuginfo: bool = False,
             event: Optional[EventID] = None,
-            with_separate_src: bool = False) -> Tuple[RepoID, EventID]:
+            opts: Optional[RepoOptions] = None) -> Tuple[RepoID, EventID]:
         ...
 
     def setBuildRootList(
