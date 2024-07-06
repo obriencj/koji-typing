@@ -26,10 +26,10 @@ from datetime import datetime
 from koji import ClientSession
 from koji.daemon import TaskManager
 from koji_types import (
-    BuildInfo, HostInfo, GOptions, RepoInfo, TagInfo, TaskInfo, )
+    BuildInfo, EventID, HostInfo, GOptions, RepoInfo, TagInfo, TaskInfo, )
 from koji_types.arch import Arch
 from koji_types.plugin import CallbackType
-from typing import Any, Dict, List, NoReturn, Optional, Union
+from typing import Any, Dict, List, NoReturn, Optional, Union, overload
 
 
 LEGACY_SIGNATURES: Dict[str, List]
@@ -271,7 +271,9 @@ class WaitrepoTask(BaseTaskHandler):
             self,
             tag: Union[str, int],
             newer_than: Union[str, datetime, None] = None,
-            nvrs: Optional[List[str]] = None) -> RepoInfo:
+            nvrs: Optional[List[str]] = None,
+            min_event: Optional[EventID] = None) -> RepoInfo:
+        # :since: koji 1.35
         ...
 
 

@@ -91,6 +91,7 @@ __all__ = (
     "RepoID",
     "RepoInfo",
     "RepoOptions",
+    "RepoRequestID",
     "RepoState",
     "RPMFileInfo",
     "RPMID",
@@ -142,6 +143,7 @@ NotificationID = NewType("NotificationID", int)
 PackageID = NewType("PackageID", int)
 PermID = NewType("PermID", int)
 RepoID = NewType("RepoID", int)
+RepoRequestID = NewType("RepoRequestID", int)
 RPMID = NewType("RPMID", int)
 TagGroupID = NewType("TagGroupID", int)
 TagID = NewType("TagID", int)

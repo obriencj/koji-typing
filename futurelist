@@ -16,11 +16,15 @@ koji.policy.MatchAllTest
 koji.policy.MatchAnyTest
 
 koji.tasks.RefuseTask
+koji.tasks.WaitrepoTask.handler
 
 koji.util.rmtree
+koji.util.RepoWatcher
 koji.util.SimpleProxyLogger
 
 koji_cli.commands.anon_handle_list_users
+koji_cli.commands.handle_request_repo
+koji_cli.commands.handle_wait_repo_request
 
 
 # The end.

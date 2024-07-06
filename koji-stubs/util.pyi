@@ -28,7 +28,9 @@ from base64 import b64decode
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import md5
-from koji_types import BuildNVR, BuildInfo, ChangelogEntry, EventInfo
+from koji_types import (
+    BuildNVR, BuildInfo, ChangelogEntry, EventID, EventInfo,
+    RepoInfo, RepoRequestID, TagID, TagInfo, TaskID, )
 from koji_types.rpm import RPMHeader
 from logging import Logger
 from optparse import Values
@@ -158,6 +160,54 @@ class MavenConfigOptAdapter:
         ...
 
     def __getattr__(self, name: str) -> Any:
+        ...
+
+
+class RepoWatcher:
+
+    PAUSE: int
+    TIMEOUT: int
+
+    def __init__(
+            self,
+            session: ClientSession,
+            tag: Union[str, TagID],
+            nvrs: Optional[List[str]] = None,
+            min_event: Optional[EventID] = None,
+            at_event: Optional[EventID] = None,
+            opts: Optional[Dict[str, Any]] = None,
+            logger: Optional[Logger] = None):
+        ...
+
+    def check_timeout(self) -> bool:
+        ...
+
+    def check_repo(self, repoinfo: RepoInfo) -> bool:
+        ...
+
+    def get_start(self) -> datetime:
+        ...
+
+    def getRepo(self) -> Optional[RepoInfo]:
+        ...
+
+    def pause(self) -> None:
+        ...
+
+    def request(self, min_event: Optional[EventID] = None) -> TaskID:
+        ...
+
+    def task_args(self) -> Tuple[TagInfo, None, List[str], EventID]:
+        ...
+
+    def wait_builds(self, builds: List[str]) -> None:
+        ...
+
+    def wait_request(self, req: RepoRequestID) -> RepoInfo:
+        # TODO: check this against checkRequest
+        ...
+
+    def waitrepo(self, anon: bool = False) -> RepoRequestID:
         ...
 
 

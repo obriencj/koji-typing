@@ -139,6 +139,7 @@ handle_remove_sig: CLIHandler
 handle_remove_tag: CLIHandler
 handle_remove_tag_inheritance: CLIHandler
 handle_remove_target: CLIHandler
+handle_request_repo: CLIHandler
 handle_restart_hosts: CLIHandler
 handle_resubmit: CLIHandler
 handle_revoke_cg_access: CLIHandler
@@ -160,6 +161,7 @@ handle_unblock_pkg: CLIHandler
 handle_unlock_tag: CLIHandler
 handle_untag_build: CLIHandler
 handle_version: CLIHandler
+handle_wait_repo_request: CLIHandler
 handle_win_build: CLIHandler
 handle_wrapper_rpm: CLIHandler
 handle_write_signed_rpm: CLIHandler
