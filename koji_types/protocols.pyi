@@ -39,7 +39,7 @@ from . import (
     TagGroupID, TagGroupInfo, TagID, TagInfo, TagInheritance,
     TagExternalRepos, TagPackageInfo, TagPackageSimple,
     TargetID, TargetInfo,
-    TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserType,
+    TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserStatus, UserType,
     WinInfo, )
 from .arch import Arch
 
@@ -53,6 +53,27 @@ from preoccupied.proxytype import proxytype
 
 
 class ClientSession(Protocol):
+
+    @staticmethod
+    def CGImport(
+            metadata: Union[str, Dict[str, Any]],
+            directory: str,
+            token: Optional[str] = None) -> BuildInfo:
+        ...
+
+    @staticmethod
+    def CGInitBuild(
+            cg: str,
+            data: Dict[str, Any]) -> CGInitInfo:
+        ...
+
+    @staticmethod
+    def CGRefundBuild(
+            cg: str,
+            build_id: BuildID,
+            token: str,
+            state: BuildState = BuildState.FAILED) -> None:
+        ...
 
     @staticmethod
     def addArchiveType(
@@ -73,6 +94,29 @@ class ClientSession(Protocol):
             description: Optional[str] = None) -> ChannelID:
         ...
 
+    def addExternalRepoToTag(
+            self,
+            tag_info: Union[str, TagID],
+            repo_info: Union[str, ExternalRepoID],
+            priority: int,
+            merge_mode: str = 'koji',
+            arches: Optional[List[Arch]] = None) -> None:
+        ...
+
+    def addExternalRPM(
+            self,
+            rpminfo: Dict[str, Any],
+            external_repo: Union[str, ExternalRepoID],
+            strict: bool = True) -> None:
+        ...
+
+    @staticmethod
+    def addGroupMember(
+            group: Union[str, UserID],
+            user: Union[str, UserID],
+            strict: bool = True) -> None:
+        ...
+
     def addHost(
             self,
             hostname: str,
@@ -87,6 +131,38 @@ class ClientSession(Protocol):
             channel_name: str,
             create: bool = False,
             force: bool = False) -> None:
+        ...
+
+    def addRPMSig(
+            self,
+            an_rpm: str,
+            data: bytes) -> None:
+        ...
+
+    def addUserKrbPrincipal(
+            self,
+            user: Union[str, UserID],
+            krb_principal: str) -> int:
+        ...
+
+    @staticmethod
+    def addVolume(
+            name: str,
+            strict: bool = True) -> NamedID:
+        ...
+
+    def applyVolumePolicy(
+            self,
+            build: BuildSpecifier,
+            strict: bool = False) -> None:
+        ...
+
+    @staticmethod
+    def assignTask(
+            task_id: TaskID,
+            host: str,
+            force: bool = False,
+            override: bool = False) -> bool:
         ...
 
     def build(
@@ -108,6 +184,30 @@ class ClientSession(Protocol):
             img_type: str,
             opts: Optional[Dict[str, Any]] = None,
             priority: Optional[int] = None) -> int:
+        ...
+
+    def buildImageIndirection(
+            self,
+            opts: Optional[Dict[str, Any]] = None,
+            priority: Optional[int] = None) -> TaskID:
+        ...
+
+    def buildImageOz(
+            self,
+            name: str,
+            version: str,
+            arches: List[Arch],
+            target: str,
+            inst_tree: str,
+            opts: Optional[Dict[str, Any]] = None,
+            priority: Optional[int] = None) -> TaskID:
+        ...
+
+    def buildReferences(
+            self,
+            build: BuildID,
+            limit: Optional[int] = None,
+            lazy: bool = False) -> Dict[str, Any]:
         ...
 
     def cancelBuild(
@@ -151,6 +251,35 @@ class ClientSession(Protocol):
             channel: str = 'maven') -> int:
         ...
 
+    @staticmethod
+    def changeBuildVolume(
+            build: Union[str, BuildID],
+            volume: str,
+            strict: bool = True) -> None:
+        ...
+
+    @staticmethod
+    def checkTagAccess(
+            tag_id: Union[str, TagID],
+            user_id: Union[str, UserID, None] = None) \
+            -> Tuple[bool, bool, str]:
+        ...
+
+    def checkTagPackage(
+            self,
+            tag: Union[str, TagID],
+            pkg: Union[str, PackageID]) -> bool:
+        ...
+
+    def checkUpload(
+            self,
+            path: str,
+            name: str,
+            verify: Optional[ChecksumType] = None,
+            tail: Optional[int] = None,
+            volume: Optional[str] = None) -> Dict[str, Any]:
+        ...
+
     def count(
             self,
             methodName: str,
@@ -176,6 +305,55 @@ class ClientSession(Protocol):
         ...
 
     @staticmethod
+    def createBuildTarget(
+            name: str,
+            build_tag: Union[str, TagID],
+            dest_tag: Union[str, TagID]) -> None:
+        ...
+
+    def createEmptyBuild(
+            self,
+            name: str,
+            version: str,
+            release: str,
+            epoch: str,
+            owner: Union[str, UserID, None] = None,
+            draft: bool = False) -> BuildID:
+        ...
+
+    @staticmethod
+    def createExternalRepo(
+            name: str,
+            url: str) -> ExternalRepoInfo:
+        ...
+
+    def createImageBuild(
+            self,
+            build_info: BuildSpecifier) -> None:
+        ...
+
+    def createMavenBuild(
+            self,
+            build_info: BuildSpecifier,
+            maven_info: MavenInfo) -> None:
+        ...
+
+    def createNotification(
+            self,
+            user_id: UserID,
+            package_id: PackageID,
+            tag_id: TagID,
+            success_only: bool) -> None:
+        ...
+
+    def createNotificationBlock(
+            self,
+            user_id: UserID,
+            package_id: Optional[PackageID] = None,
+            tag_id: Optional[TagID] = None) -> None:
+        ...
+
+    @staticmethod
     def createTag(
             name: str,
             parent: Optional[Union[int, str]] = None,
@@ -185,6 +363,58 @@ class ClientSession(Protocol):
             maven_support: bool = False,
             maven_include_all: bool = False,
             extra: Optional[Dict[str, str]] = None) -> int:
+        ...
+
+    def createUser(
+            self,
+            username: str,
+            status: Optional[UserStatus] = None,
+            krb_principal: Optional[str] = None) -> UserID:
+        ...
+
+    def createWinBuild(
+            self,
+            build_info: BuildSpecifier,
+            win_info: WinInfo) -> None:
+        ...
+
+    @staticmethod
+    def deleteBuild(
+            build: BuildSpecifier,
+            strict: bool = True,
+            min_ref_age: int = 604800) -> bool:
+        ...
+
+    @staticmethod
+    def deleteBuildTarget(
+            buildTargetInfo: Union[str, TargetID]) -> None:
+        ...
+
+    @staticmethod
+    def deleteExternalRepo(
+            info: Union[str, ExternalRepoID]) -> None:
+        ...
+
+    def deleteNotification(
+            self,
+            id: int) -> None:
+        ...
+
+    def deleteNotificationBlock(
+            self,
+            id: int) -> None:
+        ...
+
+    def deleteRPMSig(
+            self,
+            rpminfo: Union[str, RPMID, RPMNVRA],
+            sigkey: Optional[str] = None,
+            all_sigs: bool = False) -> None:
+        ...
+
+    @staticmethod
+    def deleteTag(
+            tagInfo: Union[str, TagID]) -> None:
         ...
 
     def disableChannel(

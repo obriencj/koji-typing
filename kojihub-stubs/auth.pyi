@@ -26,7 +26,8 @@ from .db import (
     DeleteProcessor, InsertProcessor, QueryProcessor,
     UpdateProcessor, nextval, )
 
-from koji_types import AuthType, UserData, UserStatus, UserType
+from koji_types import (
+    AuthType, PermID, UserData, UserID, UserStatus, UserType, )
 from koji_types.hub import SessionInfo
 from typing import (
     Any, Dict, List, Literal, Optional, Union, Tuple, overload, )
@@ -81,12 +82,12 @@ class Session:
 
     def checkLoginAllowed(
             self,
-            user_id: int) -> None:
+            user_id: UserID) -> None:
         ...
 
     def createSession(
             self,
-            user_id: int,
+            user_id: UserID,
             hostip: str,
             authtype: AuthType,
             master: Optional[int] = None,
@@ -99,12 +100,12 @@ class Session:
             usertype: Optional[UserType] = None,
             status: Optional[UserStatus] = None,
             krb_principal: Optional[str] = None,
-            krb_princ_check: bool = True) -> int:
+            krb_princ_check: bool = True) -> UserID:
         ...
 
     def createUserFromKerberos(
             self,
-            krb_principal: str) -> int:
+            krb_principal: str) -> UserID:
         ...
 
     def get_remote_ip(
@@ -180,18 +181,18 @@ class Session:
         ...
 
     @property
-    def perms(self) -> Dict[str, int]:
+    def perms(self) -> Dict[str, PermID]:
         ...
 
     def removeKrbPrincipal(
             self,
-            name: Union[int, str],
+            name: Union[str, UserID],
             krb_principal: str) -> int:
         ...
 
     def setKrbPrincipal(
             self,
-            name: Union[int, str],
+            name: Union[str, UserID],
             krb_principal: str,
             krb_princ_check: bool = True) -> int:
         ...
@@ -217,12 +218,12 @@ def exclusiveSession(*args, **opts) -> None:
 
 
 def get_user_data(
-        user_id: int) -> UserData:
+        user_id: UserID) -> UserData:
     ...
 
 
 def get_user_groups(
-        user_id: int) -> Dict[int, str]:
+        user_id: UserID) -> Dict[UserID, str]:
     ...
 
 

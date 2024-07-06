@@ -1780,12 +1780,12 @@ def new_group(
 
 
 def new_image_build(
-        build_info: BuildInfo) -> None:
+        build_info: BuildSpecifier) -> None:
     ...
 
 
 def new_maven_build(
-        build: BuildInfo,
+        build: BuildSpecifier,
         maven_info: MavenInfo) -> None:
     ...
 
@@ -1797,13 +1797,13 @@ def new_package(
 
 
 def new_typed_build(
-        build_info: BuildInfo,
+        build_info: BuildSpecifier,
         btype: str) -> None:
     ...
 
 
 def new_win_build(
-        build_info: BuildInfo,
+        build_info: BuildSpecifier,
         win_info: WinInfo) -> None:
     ...
 
