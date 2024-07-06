@@ -72,6 +72,7 @@ __all__ = (
     "ExternalRepoInfo",
     "EventID",
     "EventInfo",
+    "FilterOptions",
     "GOptions",
     "HistoryEntry",
     "HostID",
@@ -1263,6 +1264,18 @@ class QueryOptions(TypedDict, total=False):
     limit: int
     group: str
     asList: bool
+
+
+class FilterOptions(TypedDict, total=False):
+    """
+    the ``filterOpts`` argument for for ``filterResults`` and
+    ``countAndFilterResults` XMLRPC calls
+    """
+
+    order: str
+    offset: int
+    limit: int
+    noneGreatest: bool
 
 
 class ListTasksOptions(TypedDict, total=False):

@@ -28,8 +28,8 @@ from . import (
     ChecksumType,
     CGID, CGInfo, CGInitInfo,
     ExternalRepoID, ExternalRepoInfo,
-    EventID, EventInfo,
-    FaultInfo, HostID, HostInfo, ListTasksOptions, MavenInfo,
+    EventID, EventInfo, FaultInfo, FilterOptions,
+    HostID, HostInfo, ListTasksOptions, MavenInfo,
     NamedID, NotificationID, OldNew, PackageID, PackageInfo,
     PermID, PermInfo, POMInfo, QueryOptions,
     RepoID, RepoInfo, RepoOptions, RepoState,
@@ -158,6 +158,23 @@ class ClientSession(Protocol):
             **kw: Any) -> int:
         ...
 
+    @overload
+    def countAndFilterResults(
+            self,
+            methodName: str,
+            *args,
+            filterOpts: FilterOptions,
+            **kw) -> Tuple[int, List[Dict[str, Any]]]:
+        ...
+
+    @overload
+    def countAndFilterResults(
+            self,
+            methodName: str,
+            *args,
+            **kw) -> Tuple[int, List[Dict[str, Any]]]:
+        ...
+
     @staticmethod
     def createTag(
             name: str,
@@ -170,12 +187,78 @@ class ClientSession(Protocol):
             extra: Optional[Dict[str, str]] = None) -> int:
         ...
 
+    def disableChannel(
+            self,
+            channelname: str,
+            comment: Optional[str] = None) -> None:
+        ...
+
+    def disableHost(
+            self,
+            hostname: str) -> None:
+        ...
+
     def disableUser(
             self,
             username: Union[int, str]) -> None:
         ...
 
+    def distRepo(
+            self,
+            tag: Union[str, TagID],
+            keys: List[str],
+            **task_opts) -> TaskID:
+        ...
+
+    def downloadTaskOutput(
+            self,
+            taskID: TaskID,
+            fileName: str,
+            offset: int = 0,
+            size: int = -1,
+            volume: Optional[str] = None) -> str:
+        ...
+
+    @staticmethod
+    def dropGroupMember(
+            group: Union[str, UserID],
+            user: Union[str, UserID]) -> None:
+        ...
+
     def echo(self, *args) -> List:
+        ...
+
+    @staticmethod
+    def editBuildTarget(
+            buildTargetInfo: Union[str, int],
+            name: str,
+            build_tag: Union[str, int],
+            dest_tag: Union[str, int]) -> None:
+        ...
+
+    @staticmethod
+    def editChannel(
+            channelInfo: Union[int, str],
+            **kw) -> bool:
+        ...
+
+    @staticmethod
+    def editExternalRepo(
+            info: Union[str, ExternalRepoID],
+            name: Optional[str] = None,
+            url: Optional[str] = None) -> None:
+        ...
+
+    @staticmethod
+    def editHost(
+            hostInfo: Union[str, HostID],
+            **kw) -> bool:
+        ...
+
+    def editPermission(
+            self,
+            permission: Union[str, PermID],
+            description: str) -> None:
         ...
 
     @staticmethod
@@ -195,10 +278,30 @@ class ClientSession(Protocol):
         ...
 
     @staticmethod
+    def editTagExternalRepo(
+            tag_info: Union[str, TagID],
+            repo_info: Union[str, ExternalRepoID],
+            priority: Optional[int] = None,
+            merge_mode: Optional[str] = None,
+            arches: Optional[str] = None) -> bool:
+        ...
+
+    @staticmethod
     def editUser(
             userInfo: Union[str, UserID],
             name: Optional[str] = None,
             krb_principal_mappings: Optional[List[OldNew]] = None) -> None:
+        ...
+
+    def enableChannel(
+            self,
+            channelname: str,
+            comment: Optional[str] = None) -> None:
+        ...
+
+    def enableHost(
+            self,
+            hostname: str) -> None:
         ...
 
     def enableUser(
@@ -207,6 +310,12 @@ class ClientSession(Protocol):
         ...
 
     def error(self) -> NoReturn:
+        ...
+
+    @staticmethod
+    def evalPolicy(
+            name: str,
+            data: Dict[str, Any]) -> str:
         ...
 
     def exclusiveSession(self, *args, **kwargs) -> None:
@@ -218,10 +327,32 @@ class ClientSession(Protocol):
     def fault(self) -> NoReturn:
         ...
 
+    @overload
+    def filterResults(
+            self,
+            methodName: str,
+            *args,
+            filterOpts: FilterOptions,
+            **kw) -> List[Dict[str, Any]]:
+        ...
+
+    @overload
+    def filterResults(
+            self,
+            methodName: str,
+            *args,
+            **kw) -> List[Dict[str, Any]]:
+        ...
+
     @staticmethod
     def findBuildID(
             X: BuildSpecifier,
             strict: bool = False) -> Optional[BuildID]:
+        ...
+
+    def freeTask(
+            self,
+            task_id: TaskID) -> None:
         ...
 
     @staticmethod
@@ -245,6 +376,13 @@ class ClientSession(Protocol):
         ...
 
     @staticmethod
+    def getArchiveFile(
+            archive_id: ArchiveID,
+            filename: str,
+            strict: bool = False) -> Optional[ArchiveFileInfo]:
+        ...
+
+    @staticmethod
     def getArchiveType(
             filename: Optional[str] = None,
             type_name: Optional[str] = None,
@@ -256,10 +394,22 @@ class ClientSession(Protocol):
     def getArchiveTypes() -> List[ATypeInfo]:
         ...
 
+    def getAverageBuildDuration(
+            self,
+            package: Union[str, PackageID],
+            age: Optional[int] = None) -> Optional[float]:
+        ...
+
     @staticmethod
     def getBuild(
             buildInfo: BuildSpecifier,
             strict: bool = False) -> BuildInfo:
+        ...
+
+    def getBuildConfig(
+            self,
+            tag: Union[str, TagID],
+            event: Optional[EventID] = None) -> TagInfo:
         ...
 
     @staticmethod
@@ -267,10 +417,37 @@ class ClientSession(Protocol):
             build: BuildSpecifier) -> BuildLogs:
         ...
 
+    def getBuildNotification(
+            self,
+            id: int,
+            strict: bool = False) -> Optional[Dict[str, Any]]:
+        ...
+
+    def getBuildNotificationBlock(
+            self,
+            id: int,
+            strict: bool = False) -> Optional[Dict[str, Any]]:
+        ...
+
+    def getBuildNotificationBlocks(
+            self,
+            userID: Union[str, UserID, None] = None) -> Dict[str, Any]:
+        ...
+
+    def getBuildNotifications(
+            self,
+            userID: Union[str, UserID, None] = None) -> Dict[str, Any]:
+        ...
+
     @staticmethod
     def getBuildroot(
             buildrootID: BuildrootID,
             strict: bool = False) -> BuildrootInfo:
+        ...
+
+    def getBuildrootListing(
+            self,
+            id: BuildrootID) -> List[RPMInfo]:
         ...
 
     @staticmethod
