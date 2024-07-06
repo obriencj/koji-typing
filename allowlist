@@ -35,13 +35,30 @@ kojihub.auth.Session.host_id
 kojihub.auth.Session.perms
 
 
+# another method with double-underscored argument names
+
+kojihub.HostExports.subtask2
+kojihub.kojihub.HostExports.subtask2
+
+
+# uses a double-underscored argument name
+
+kojihub.kojixmlrpc.HandlerAccess.call
+
+
+# this is created by setup_logging1 but not pre-declared at the
+# module-level, so MyPy doesn't think it's available at runtime
+
+kojihub.kojixmlrpc.log_handler
+
+
 # TODO, as-yet un-stubbed
 
 koji.server
 kojihub.db
-kojihub.kojihub.RootExports.*
+kojihub.kojihub.RootExports
+kojihub.repos
 kojihub.scheduler
-kojihub.kojixmlrpc
 
 
 # The end.

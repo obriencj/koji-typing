@@ -110,7 +110,7 @@ twine:	requires-tox build	## Launches twine via tox
 tools/koji:	requires-git
 	@if [ ! -d tools/koji ] ; then \
 		git clone https://pagure.io/koji.git tools/koji ; \
-	else \
+	elif [ "$(SKIP_PULL)" != "1" ] ; then \
 		git -C tools/koji pull ; \
 	fi
 

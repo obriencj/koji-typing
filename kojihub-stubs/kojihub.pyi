@@ -15,7 +15,7 @@
 """
 Koji Hub - typing stubs
 
-Typing annotations stub for kojihub
+Typing annotations stub for kojihub.kojihub
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
@@ -23,31 +23,451 @@ Typing annotations stub for kojihub
 
 
 from koji import ParameterError
+from koji.policy import BaseSimpleTest, MatchTest
 from koji_types import (
-    ArchiveID, ArchiveInfo, BuildID, BuildInfo, BuildNVR,
-    BuildrootReference, CGID, CGInfo,
-    ChannelID, ChecksumType, ExternalRepoID, ExternalRepoInfo,
-    EventID, NamedID, PackageID, PermID,
+    ArchiveID, ArchiveFileInfo, ArchiveInfo,
+    ATypeID, ATypeInfo,
+    BuildID, BuildInfo, BuildLogs,
+    BuildNVR, BuildState, BuildSpecifier,
+    BuildrootID, BuildrootInfo, BuildrootReference, BuildrootState,
+    BTypeInfo, CGID, CGInfo, CGInitInfo,
+    ChannelID, ChannelInfo, ChecksumType,
+    ExternalRepoID, ExternalRepoInfo,
+    EventID, HistoryEntry, HostID, HostInfo,
+    MavenInfo, NamedID, OldNew, PackageID, PackageInfo, PermID,
     QueryOptions,
-    RepoID, RepoInfo, RepoState, RPMID, RPMInfo, RPMNVRA, RPMSignature,
+    RepoID, RepoInfo, RepoState, RPMID, RPMInfo,
+    RPMNVRA, RPMSignature,
     TagExternalRepos,
     TagFullInheritance, TagFullInheritanceEntry,
-    TagGroupInfo,
+    TagGroupID, TagGroupInfo,
     TagID, TagInfo,
-    TagInheritance, TargetID, TargetInfo, TaskID, TaskState,
+    TagInheritance, TagPackageInfo,
+    TargetID, TargetInfo,
+    TaskID, TaskInfo, TaskState,
     UserID, UserInfo,
-    UserStatus, )
+    UserStatus, WinInfo, )
 from koji_types.arch import Arch
-from koji_types.protocols import ClientSession
-from logging import Logger
+from koji_types.hub import RepoOpts
+from koji_types.protocols import (
+    ClientSession as _ClientSession, Host as _Host, )
+from logging import ERROR, INFO, WARNING, Logger
 from typing import (
-    Any, Callable, Dict, Iterator, List, Literal, Optional, Tuple, Type,
-    TypeVar, Union, overload, )
+    Any, Callable, Dict, Iterator, List, Literal, Optional, Set,
+    Tuple, Type, TypeVar, Union, overload, )
 
 
 NUMERIC_TYPES: Tuple[Type, ...]
 
 logger: Logger
+
+
+# === Policy Classes ===
+
+class BuildTagInheritsFromTest(BaseSimpleTest):
+    ...
+
+
+class BuildTagTest(BaseSimpleTest):
+    ...
+
+
+class BuildTypeTest(BaseSimpleTest):
+    ...
+
+
+class CGMatchAllTest(BaseSimpleTest):
+    ...
+
+
+class CGMatchAnyTest(BaseSimpleTest):
+    ...
+
+
+class ChildTaskTest(MatchTest):
+    ...
+
+
+class HasTagTest(BaseSimpleTest):
+    ...
+
+
+class HasPermTest(BaseSimpleTest):
+    ...
+
+
+class ImportedTest(BaseSimpleTest):
+    ...
+
+
+class IsBuildOwnerTest(BaseSimpleTest):
+    ...
+
+
+class IsDraftTest(BaseSimpleTest):
+    ...
+
+
+class MethodTest(MatchTest):
+    ...
+
+
+class NewPackageTest(BaseSimpleTest):
+    ...
+
+
+class OperationTest(MatchTest):
+    ...
+
+
+class PackageTest(MatchTest):
+    ...
+
+
+class PolicyTest(BaseSimpleTest):
+    ...
+
+
+class ReleaseTest(MatchTest):
+    ...
+
+
+class SkipTagTest(BaseSimpleTest):
+    ...
+
+
+class SourceTest(MatchTest):
+    ...
+
+
+class TagTest(MatchTest):
+
+    def get_tag(self, data: Dict[str, Any]) -> TagInfo:
+        ...
+
+
+class UserInGroupTest(BaseSimpleTest):
+    ...
+
+
+class UserTest(MatchTest):
+    ...
+
+
+class VersionTest(MatchTest):
+    ...
+
+
+class VMTest(MatchTest):
+    ...
+
+
+class VolumeTest(MatchTest):
+    ...
+
+
+class FromTagTest(TagTest):
+
+    def get_tag(self, data: Dict[str, Any]) -> TagInfo:
+        ...
+
+
+# === Other Classes ===
+
+class BuildRoot:
+
+    def __init__(
+            self,
+            id: Optional[BuildrootID] = None):
+        ...
+
+    def assertHost(self, host_id: HostID) -> None:
+        ...
+
+    def assertStandard(self) -> None:
+        ...
+
+    def assertTask(self, task_id: TaskID) -> None:
+        ...
+
+    def cg_new(
+            self,
+            data: BuildrootInfo) -> BuildrootID:
+        # TODO: new TypedDict for CGBuildrootInfo
+        ...
+
+    def getArchiveList(
+            self,
+            queryOpts: Optional[QueryOptions] = None) -> List[ArchiveInfo]:
+        ...
+
+    def getList(self) -> List[RPMInfo]:
+        ...
+
+    def load(
+            self,
+            id: BuildrootID) -> None:
+        ...
+
+    def new(self,
+            host: HostID,
+            repo: RepoID,
+            arch: Arch,
+            task_id: Optional[TaskID] = None,
+            ctype: str = 'chroot') -> BuildrootID:
+        ...
+
+    def setList(
+            self,
+            rpmlist: List[RPMInfo]) -> None:
+        ...
+
+    def setState(
+            self,
+            state: BuildrootState) -> None:
+        ...
+
+    def setTools(
+            self,
+            tools: Optional[List[NamedID]]) -> None:
+        ...
+
+    def updateArchiveList(
+            self,
+            archives: List[ArchiveInfo],
+            project: bool = False) -> None:
+        ...
+
+    def updateList(
+            self,
+            rpmlist: List[RPMInfo]) -> None:
+        ...
+
+    def verifyHost(self, host_id: HostID) -> bool:
+        ...
+
+    def verifyTask(self, task_id: TaskID) -> bool:
+        ...
+
+
+class CG_Importer:
+
+    def __init__(self):
+        ...
+
+    def assert_cg_access(self) -> None:
+        ...
+
+    def assert_policy(self) -> None:
+        ...
+
+    def check_build_dir(
+            self,
+            delete: bool = False) -> None:
+        ...
+
+    def do_import(
+            self,
+            metadata: Union[str, Dict[str, Any], None],
+            directory: str,
+            token: Optional[str] = None) -> BuildInfo:
+        ...
+
+    def get_build(
+            self,
+            token: Optional[str] = None) -> BuildInfo:
+        ...
+
+    def get_metadata(
+            self,
+            metadata: Union[str, Dict, None],
+            directory: str) -> Dict[str, Any]:
+        ...
+
+    @classmethod
+    def get_task_id_from_metadata(
+            cls,
+            metadata: Dict[str, Any]) -> TaskID:
+        ...
+
+    def import_archive(
+            self,
+            buildinfo: BuildInfo,
+            brinfo: BuildrootInfo,
+            fileinfo: Dict[str, Any]) -> None:
+        ...
+
+    def import_brs(self) -> None:
+        ...
+
+    def import_buildroot(
+            self,
+            entry: Dict[str, Any]) -> BuildRoot:
+        ...
+
+    def import_components(
+            self,
+            archive_id: ArchiveID,
+            fileinfo: Dict[str, Any]) -> None:
+        ...
+
+    def import_log(
+            self,
+            buildinfo: BuildInfo,
+            fileinfo: Dict[str, Any]) -> None:
+        ...
+
+    def import_metadata(self) -> None:
+        ...
+
+    def import_outputs(self) -> None:
+        ...
+
+    def import_rpm(
+            self,
+            buildinfo: BuildInfo,
+            brinfo: BuildrootInfo,
+            fileinfo: Dict[str, Any]) -> None:
+        ...
+
+    def log(self,
+            msg: str,
+            level: int = WARNING) -> None:
+        ...
+
+    def log_error(
+            self,
+            msg: str,
+            *,
+            level: int = ERROR) -> None:
+        ...
+
+    def log_info(
+            self,
+            msg: str,
+            *,
+            level: int = INFO) -> None:
+        ...
+
+    def log_warning(
+            self,
+            msg: str,
+            *,
+            level: int = WARNING) -> None:
+        ...
+
+    def match_components(
+            self,
+            components: List[Dict[str, Any]]) \
+            -> Tuple[List[Dict], List[Dict]]:
+        ...
+
+    def match_file(
+            self,
+            comp: Dict) -> Optional[ArchiveInfo]:
+        ...
+
+    def match_kojifile(
+            self,
+            comp: Dict) -> Optional[ArchiveInfo]:
+        ...
+
+    def match_rpm(
+            self,
+            comp: Dict) -> Optional[RPMInfo]:
+        ...
+
+    def move_cg_log_file(self) -> None:
+        ...
+
+    def prep_archive(
+            self,
+            fileinfo: ArchiveInfo) -> None:
+        ...
+
+    def prep_brs(self) -> None:
+        ...
+
+    def prep_build(
+            self,
+            token: Optional[str] = None) -> BuildInfo:
+        ...
+
+    def prep_buildroot(
+            self,
+            brdata: Dict[str, Any]) -> Dict[str, Any]:
+        # TODO: TypedDict for this?
+        ...
+
+    def prep_outputs(self) -> None:
+        ...
+
+    def set_volume(self) -> None:
+        ...
+
+    def update_build(self) -> BuildInfo:
+        ...
+
+
+class HostExports(_Host):
+    ...
+
+
+class Host:
+
+    def __init__(
+            self,
+            id: Optional[HostID] = None):
+        ...
+
+    def getHostTasks(self) -> List[TaskInfo]:
+        # TODO: maybe a new TaskStatus
+        ...
+
+    def getLoadData(self) -> Tuple[List[HostID], List[TaskID]]:
+        # TODO: double check TaskID and not TaskInfo
+        ...
+
+    def isEnabled(self) -> bool:
+        ...
+
+    def taskSetWait(
+            self,
+            parent: TaskID,
+            tasks: List[TaskID]) -> None:
+        ...
+
+    def taskUnwait(
+            self,
+            parent: TaskID) -> None:
+        ...
+
+    def taskWait(
+            self,
+            parent: TaskID) -> Tuple[List[TaskID], List[TaskID]]:
+        ...
+
+    def taskWaitCheck(
+            self,
+            parent: TaskID) -> Tuple[List[TaskID], List[TaskID]]:
+        ...
+
+    def taskWaitResults(
+            self,
+            parent: TaskID,
+            tasks: List[TaskID],
+            canfail: Optional[List[TaskID]] = None) \
+            -> List[Tuple[TaskID, str]]:
+        ...
+
+    def updateHost(
+            self,
+            task_load: float,
+            ready: bool) -> None:
+        ...
+
+    def verify(self) -> bool:
+        ...
 
 
 class MultiSum:
@@ -64,8 +484,9 @@ class MultiSum:
         ...
 
 
-class RootExports(ClientSession):
-    ...
+class RootExports(_ClientSession):
+
+    host: HostExports
 
 
 class Task:
@@ -101,10 +522,69 @@ class Task:
             user_id: Optional[int] = None) -> None:
         ...
 
+    def assign(
+            self,
+            host_id: HostID,
+            force: bool = False) -> bool:
+        ...
+
+    def cancel(
+            self,
+            recurse: bool = True) -> bool:
+        ...
+
+    def cancelChildren(self) -> None:
+        ...
+
+    def cancelFull(
+            self,
+            strict: bool = True) -> None:
+        ...
+
+    def close(
+            self,
+            result: str) -> None:
+        ...
+
+    def fail(self,
+             result: str) -> None:
+        ...
+
     def free(self) -> bool:
         ...
 
+    def getChildren(
+            self,
+            request: bool = False) -> List[TaskInfo]:
+        ...
+
+    def getInfo(
+            self,
+            strict: bool = True,
+            request: bool = False) -> Optional[TaskInfo]:
+        ...
+
     def getOwner(self) -> int:
+        ...
+
+    def getRequest(self) -> Dict[str, Any]:
+        ...
+
+    def getResult(
+            self,
+            raise_fault: bool = True) -> str:
+        ...
+
+    def getState(self) -> TaskState:
+        ...
+
+    def isCanceled(self) -> bool:
+        ...
+
+    def isFailed(self) -> bool:
+        ...
+
+    def isFinished(self) -> bool:
         ...
 
     def lock(
@@ -117,6 +597,14 @@ class Task:
     def open(
             self,
             host_id: int) -> Optional[Dict[str, Any]]:
+        ...
+
+    def runCallbacks(
+            self,
+            cbtype: str,
+            old_info: TaskInfo,
+            attr: str,
+            new_val: Any) -> None:
         ...
 
     def setPriority(
@@ -135,8 +623,30 @@ class Task:
             host_id: Optional[int] = None) -> bool:
         ...
 
+    def verifyOwner(
+            self,
+            user_id: Optional[UserID] = None) -> bool:
+        ...
+
 
 # === functions ===
+
+
+def _create_build_target(
+        name: str,
+        build_tag: Union[str, TagID],
+        dest_tag: Union[str, TagID]) -> None:
+    ...
+
+
+def _delete_build(
+        binfo: BuildInfo) -> None:
+    ...
+
+
+def _delete_build_symlinks(
+        binfo: BuildInfo) -> None:
+    ...
 
 
 def _delete_event_id() -> None:
@@ -153,6 +663,13 @@ def _edit_build_target(
 
 def _get_build_target(
         task_id: TaskID) -> Optional[TargetInfo]:
+    ...
+
+
+def _import_wrapper(
+        task_id: TaskID,
+        build_info: BuildInfo,
+        rpm_results: Dict[str, List[str]]) -> None:
     ...
 
 
@@ -175,8 +692,50 @@ def _writeInheritanceData(
     ...
 
 
+def add_archive_type(
+        name: str,
+        description: str,
+        extensions: str,
+        compression_type: Optional[str] = None) -> None:
+    ...
+
+
+def add_btype(
+        name: str) -> None:
+    ...
+
+
+def add_channel(
+        channel_name: str,
+        description: Optional[str] = None) -> ChannelID:
+    ...
+
+
+def add_external_repo_to_tag(
+        tag_info: Union[str, TagID],
+        repo_info: Union[str, ExternalRepoID],
+        priority: int,
+        merge_mode: str = 'koji',
+        arches: Optional[str] = None) -> None:
+    ...
+
+
+def add_external_rpm(
+        rpminfo: Dict[str, Any],
+        external_repo: Union[str, ExternalRepoID],
+        strict: bool = True) -> RPMInfo:
+    ...
+
+
+def add_group_member(
+        group: Union[str, UserID],
+        user: Union[str, UserID],
+        strict: bool = True) -> None:
+    ...
+
+
 def add_host_to_channel(
-        hostname: str,
+        hostname: Union[str, HostID],
         channel_name: str,
         create: bool = False,
         force: bool = False) -> None:
@@ -186,6 +745,12 @@ def add_host_to_channel(
 def add_rpm_sig(
         an_rpm: str,
         sighdr: bytes) -> None:
+    ...
+
+
+def add_volume(
+        name: str,
+        strict: bool = True) -> NamedID:
     ...
 
 
@@ -228,6 +793,35 @@ def assert_cg(
     ...
 
 
+def assert_policy(
+        name: str,
+        data: Dict[str, Any],
+        default: str = 'deny',
+        force: bool = False) -> None:
+    ...
+
+
+def assert_tag_access(
+        tag_id: Union[str, TagID],
+        user_id: Union[str, UserID, None] = None,
+        force: bool = False) -> None:
+    ...
+
+
+def build_notification(
+        task_id: TaskID,
+        build_id: BuildID) -> None:
+    ...
+
+
+def build_references(
+        build_id: BuildID,
+        limit: Optional[int] = None,
+        lazy: bool = False) -> Dict[str, Any]:
+    # TODO: create a TypedDict
+    ...
+
+
 def calculate_chsum(
         path: str,
         checksum_types: List[ChecksumType]) -> Dict[ChecksumType, str]:
@@ -240,10 +834,47 @@ def cancel_build(
     ...
 
 
+def cg_import(
+        metadata: Union[str, Dict[str, Any]],
+        directory: str,
+        token: Optional[str] = None) -> BuildInfo:
+    ...
+
+
+def cg_init_build(
+        cg: str,
+        data: Dict[str, Any]) -> CGInitInfo:
+    ...
+
+
+def cg_refund_build(
+        cg: str,
+        build_id: BuildID,
+        token: str,
+        state: BuildState = BuildState.FAILED) -> None:
+    ...
+
+
+def change_build_volume(
+        build: Union[str, BuildID],
+        volume: str,
+        strict: bool = True) -> None:
+    ...
+
+
 def check_noarch_rpms(
         basepath: str,
         rpms: List[str],
-        logs: Optional[Dict[Arch, List[str]]]) -> List[str]:
+        logs: Optional[Dict[Arch, List[str]]] = None) -> List[str]:
+    ...
+
+
+def check_policy(
+        name: str,
+        data: Dict[str, Any],
+        default: str = 'deny',
+        strict: bool = False,
+        force: bool = False) -> Tuple[bool, str]:
     ...
 
 
@@ -254,8 +885,28 @@ def check_rpm_sig(
     ...
 
 
+def check_tag_access(
+        tag_id: Union[str, TagID],
+        user_id: Union[str, UserID, None] = None) -> Tuple[bool, bool, str]:
+    ...
+
+
+def check_volume_policy(
+        data: Dict[str, Any],
+        strict: bool = False,
+        default: Optional[str] = None) -> Optional[NamedID]:
+    ...
+
+
+def clear_reservation(
+        build_id: BuildID) -> None:
+    ...
+
+
 _CVT = TypeVar("_CVT")
 
+
+@overload
 def convert_value(
         value: Any,
         cast: _CVT,
@@ -266,10 +917,65 @@ def convert_value(
     ...
 
 
+@overload
+def convert_value(
+        value: Any,
+        *,
+        message: Optional[str] = None,
+        exc_type: Type[BaseException] = ParameterError,
+        none_allowed: bool = False,
+        check_only: bool = False) -> Any:
+    ...
+
+
+def create_build_target(
+        name: str,
+        build_tag: Union[str, TagID],
+        dest_tag: Union[str, TagID]) -> None:
+    ...
+
+
+def create_external_repo(
+        name: str,
+        url: str) -> ExternalRepoInfo:
+    ...
+
+
 def create_rpm_checksum(
         rpm_id: int,
         sigkey: str,
         chsum_dict: Dict[ChecksumType, str]) -> None:
+    ...
+
+
+def create_rpm_checksums_output(
+        query_result: Dict[str, Any],
+        list_chsum_sigkeys: List[ChecksumType]) \
+        -> Dict[str, Dict[ChecksumType, str]]:
+    ...
+
+
+def create_tag(
+        name: str,
+        parent: Union[str, TagID, None] = None,
+        arches: Optional[str] = None,
+        perm: Union[str, PermID, None] = None,
+        locked: bool = False,
+        maven_support: bool = False,
+        maven_include_all: bool = False,
+        extra: Optional[Dict[str, str]] = None) -> TagID:
+    ...
+
+
+def delete_build(
+        build: BuildSpecifier,
+        strict: bool = True,
+        min_ref_age: int = 604800) -> bool:
+    ...
+
+
+def delete_build_target(
+        buildTargetInfo: Union[str, TargetID]) -> None:
     ...
 
 
@@ -280,8 +986,13 @@ def delete_external_repo(
 
 def delete_rpm_sig(
         rpminfo: Union[str, RPMID, RPMNVRA],
-        sigkey: Optional[str],
+        sigkey: Optional[str] = None,
         all_sigs: bool = False) -> None:
+    ...
+
+
+def delete_tag(
+        tagInfo: Union[str, TagID]) -> None:
     ...
 
 
@@ -295,6 +1006,12 @@ def dist_repo_init(
 def draft_clause(
         draft: bool,
         table: Optional[str] = None) -> str:
+    ...
+
+
+def drop_group_member(
+        group: Union[str, UserID],
+        user: Union[str, UserID]) -> None:
     ...
 
 
@@ -312,6 +1029,64 @@ def edit_channel(
     ...
 
 
+def edit_external_repo(
+        info: Union[str, ExternalRepoID],
+        name: Optional[str] = None,
+        url: Optional[str] = None) -> None:
+    ...
+
+
+def edit_host(
+        hostInfo: Union[str, HostID],
+        **kw) -> bool:
+    ...
+
+
+def edit_tag(
+        tagInfo: Union[str, TagID],
+        **kwargs) -> None:
+    ...
+
+
+def edit_tag_external_repo(
+        tag_info: Union[str, TagID],
+        repo_info: Union[str, ExternalRepoID],
+        priority: Optional[int] = None,
+        merge_mode: Optional[str] = None,
+        arches: Optional[str] = None) -> bool:
+    ...
+
+
+def edit_user(
+        userInfo: Union[str, UserID],
+        name: Optional[str] = None,
+        krb_principal_mappings: Optional[List[OldNew]] = None) -> None:
+    ...
+
+
+def ensure_volume_symlink(
+        binfo: BuildInfo) -> None:
+    ...
+
+
+def eval_policy(
+        name: str,
+        data: Dict[str, Any]) -> str:
+    ...
+
+
+def eventCondition(
+        event: EventID,
+        table: Optional[str] = None) -> str:
+    ...
+
+
+def find_build_id(
+        X: BuildSpecifier,
+        strict: bool = False) -> BuildID:
+    ...
+
+
 def generate_token(
         nbytes: int = 32) -> str:
     ...
@@ -325,6 +1100,53 @@ def get_all_arches() -> List[Arch]:
     ...
 
 
+def get_archive(
+        archive_id: ArchiveID,
+        strict: bool = False) -> Optional[ArchiveInfo]:
+    ...
+
+
+def get_archive_file(
+        archive_id: ArchiveID,
+        filename: str,
+        strict: bool = False) -> Optional[ArchiveFileInfo]:
+    ...
+
+
+def get_archive_type(
+        filename: Optional[str] = None,
+        type_name: Optional[str] = None,
+        type_id: Optional[ATypeID] = None,
+        strict: bool = False) -> ATypeInfo:
+    ...
+
+
+def get_archive_types() -> List[ATypeInfo]:
+    ...
+
+
+def get_build(
+        buildInfo: BuildSpecifier,
+        strict: bool = False) -> BuildInfo:
+    ...
+
+
+def get_build_logs(
+        build: BuildSpecifier) -> BuildLogs:
+    ...
+
+
+def get_build_notifications(
+        user_id: UserID) -> Dict[str, Any]:
+    # TODO: need a new TypedDict
+    ...
+
+
+def get_build_notification_blocks(
+        user_id: UserID) -> Dict[str, Any]:
+    ...
+
+
 def get_build_target(
         info: Union[str, TargetID],
         event: Optional[EventID] = None,
@@ -332,12 +1154,44 @@ def get_build_target(
     ...
 
 
+def get_build_target_id(
+        info: str,
+        strict: bool = False,
+        create: bool = False) -> Optional[TargetID]:
+    ...
+
+
 def get_build_targets(
         info: Union[str, TargetID, None] = None,
         event: Optional[EventID] = None,
-        buildTagID: Union[str, int, TagInfo, None] = None,
-        destTagID: Union[str, int, TagInfo, None] = None,
+        buildTagID: Union[str, TagID, TagInfo, None] = None,
+        destTagID: Union[str, TagID, TagInfo, None] = None,
         queryOpts: Optional[QueryOptions] = None) -> List[TargetInfo]:
+    ...
+
+
+def get_build_type(
+        buildInfo: Union[str, BuildID, BuildNVR, BuildInfo],
+        strict: bool = False) -> BTypeInfo:
+    ...
+
+
+def get_buildroot(
+        buildrootID: BuildrootID,
+        strict: bool = False) -> BuildrootInfo:
+    ...
+
+
+def get_channel(
+        channelInfo: Union[str, ChannelID],
+        strict: bool = False) -> ChannelInfo:
+    ...
+
+
+def get_channel_id(
+        info: Union[str, int, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[int]:
     ...
 
 
@@ -369,6 +1223,25 @@ def get_external_repos(
     ...
 
 
+def get_group_id(
+        info: Union[str, UserID, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> int:
+    ...
+
+
+def get_group_members(
+        group: Union[str, UserID]) -> List[UserInfo]:
+    ...
+
+
+def get_host(
+        hostInfo: Union[str, HostID],
+        strict: bool = False,
+        event: Optional[EventID] = None) -> HostInfo:
+    ...
+
+
 def get_id(
         table: str,
         info: Union[str, int, Dict[str, Any]],
@@ -377,10 +1250,46 @@ def get_id(
     ...
 
 
+def get_image_archive(
+        archive_id: ArchiveID,
+        strict: bool = False) -> ArchiveInfo:
+    ...
+
+
+def get_image_build(
+        buildInfo: BuildSpecifier,
+        strict: bool = False) -> Optional[Dict[str, BuildID]]:
+    ...
+
+
+def get_maven_archive(
+        archive_id: ArchiveID,
+        strict: bool = False) -> ArchiveInfo:
+    ...
+
+
 def get_maven_build(
-        buildInfo: Union[int, str],
+        buildInfo: Union[str, BuildID],
         strict: bool = False) -> Dict[str, Any]:
     # TODO: need a return typedict
+    ...
+
+
+def get_next_build(
+        build_info: BuildNVR) -> BuildID:
+    ...
+
+
+def get_next_release(
+        build_info: BuildNVR,
+        incr: int = 1) -> str:
+    ...
+
+
+def get_notification_recipients(
+        build: Optional[BuildInfo],
+        tag_id: Optional[TagID],
+        state: BuildState) -> List[str]:
     ...
 
 
@@ -398,10 +1307,15 @@ def get_perm_id(
     ...
 
 
+def get_reservation_token(
+        build_id: BuildID) -> Optional[str]:
+    ...
+
+
 def get_rpm(
         rpminfo: Union[str, RPMID, RPMNVRA],
         strict: bool = False,
-        multi: bool = False) -> Optional[RPMInfo]:
+        multi: bool = False) -> Union[RPMInfo, List[RPMInfo], None]:
     ...
 
 
@@ -432,7 +1346,7 @@ def get_tag_groups(
         event: Optional[EventID] = None,
         inherit: bool = True,
         incl_pkgs: bool = True,
-        incl_reqs: bool = True) -> TagGroupInfo:
+        incl_reqs: bool = True) -> Dict[TagGroupID, TagGroupInfo]:
     ...
 
 
@@ -440,6 +1354,13 @@ def get_tag_id(
         info: Union[str, TagID, Dict[str, Any]],
         strict: bool = False,
         create: bool = False) -> Optional[TagID]:
+    ...
+
+
+def get_task_descendents(
+        task: Task,
+        childMap: Optional[Dict[str, List[TaskInfo]]] = None,
+        request: bool = False) -> Dict[str, List[TaskInfo]]:
     ...
 
 
@@ -459,8 +1380,21 @@ def get_user(
     ...
 
 
+def get_user_by_krb_principal(
+        krb_principal: str,
+        strict: bool = False,
+        krb_princs: bool = True) -> Optional[UserInfo]:
+    ...
+
+
 def get_verify_class(
         verify: Optional[ChecksumType]) -> Optional[Callable]:
+    ...
+
+
+def get_win_archive(
+        archive_id: ArchiveID,
+        strict: bool = False) -> ArchiveInfo:
     ...
 
 
@@ -502,6 +1436,97 @@ def grant_cg_access(
     ...
 
 
+def grp_pkg_add(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        pkg_name: str,
+        block: bool = False,
+        force: bool = False,
+        **opts) -> None:
+    ...
+
+
+def grp_pkg_block(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        pkg_name: str) -> None:
+    ...
+
+
+def grp_pkg_remove(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        pkg_name: str) -> None:
+    ...
+
+
+def grp_pkg_unblock(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        pkg_name: str) -> None:
+    ...
+
+
+def grp_req_add(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        reqinfo: str,
+        block: bool = False,
+        force: bool = False,
+        **opts) -> None:
+    ...
+
+
+def grp_req_block(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        reqinfo: str) -> None:
+    ...
+
+
+def grp_req_remove(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        reqinfo: str,
+        force: Optional[bool] = None) -> None:
+    ...
+
+
+def grp_req_unblock(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        reqinfo: str) -> None:
+    ...
+
+
+def grplist_add(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        block: bool = False,
+        force: bool = False,
+        **opts) -> None:
+    ...
+
+
+def grplist_block(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID]) -> None:
+    ...
+
+
+def grplist_remove(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID],
+        force: bool = False) -> None:
+    ...
+
+
+def grplist_unblock(
+        taginfo: Union[str, TagID],
+        grpinfo: Union[str, TagGroupID]) -> None:
+    ...
+
+
 def handle_upload(
         environ: Dict[str, Any]) -> Dict[str, Any]:
     ...
@@ -512,7 +1537,7 @@ def import_archive(
         buildinfo: BuildInfo,
         type: str,
         typeInfo: Dict[str, Any],
-        buildroot_id: Optional[int] = None) -> ArchiveInfo:
+        buildroot_id: Optional[BuildrootID] = None) -> ArchiveInfo:
     ...
 
 
@@ -526,9 +1551,19 @@ def import_archive_internal(
     ...
 
 
+def import_build(
+        srpm: str,
+        rpms: List[str],
+        brmap: Optional[Dict[str, BuildrootID]] = None,
+        task_id: Optional[TaskID] = None,
+        build_id: Optional[BuildID] = None,
+        logs: Optional[Dict[Arch, List[str]]] = None) -> BuildInfo:
+    ...
+
+
 def import_build_log(
         fn: str,
-        buildinfo: Optional[BuildInfo] = None,
+        buildinfo: BuildInfo,
         subdir: Optional[str] = None) -> None:
     ...
 
@@ -542,6 +1577,13 @@ def import_rpm(
     ...
 
 
+def import_rpm_file(
+        fn: str,
+        buildinfo: BuildInfo,
+        rpminfo: RPMInfo) -> None:
+    ...
+
+
 def importImageInternal(
         task_id: TaskID,
         build_info: BuildInfo,
@@ -549,7 +1591,89 @@ def importImageInternal(
     ...
 
 
+def list_archive_files(
+        archive_id: ArchiveID,
+        queryOpts: Optional[QueryOptions] = None,
+        strict: bool = False) -> List[ArchiveFileInfo]:
+    ...
+
+
+def list_archives(
+        buildID: Optional[BuildID] = None,
+        buildrootID: Optional[BuildrootID] = None,
+        componentBuildrootID: Optional[BuildrootID] = None,
+        hostID: Optional[HostID] = None,
+        type: Optional[str] = None,
+        filename: Optional[str] = None,
+        size: Optional[int] = None,
+        checksum: Optional[int] = None,
+        checksum_type: Optional[ChecksumType] = None,
+        typeInfo: Optional[Dict[str, Any]] = None,
+        queryOpts: Optional[QueryOptions] = None,
+        imageID: Optional[int] = None,
+        archiveID: Optional[ArchiveID] = None,
+        strict: bool = False) -> List[ArchiveInfo]:
+    ...
+
+
+def list_btypes(
+        query: Optional[NamedID] = None,
+        queryOpts: Optional[QueryOptions] = None) -> List[BTypeInfo]:
+    ...
+
+
+def list_channels(
+        hostID: Optional[HostID] = None,
+        event: Optional[EventID] = None,
+        enabled: Optional[bool] = None) -> List[ChannelInfo]:
+    ...
+
+
 def list_cgs() -> Dict[str, CGInfo]:
+    ...
+
+
+def list_rpms(
+        buildID: Optional[BuildID] = None,
+        buildrootID: Optional[BuildrootID] = None,
+        imageID: Optional[int] = None,
+        componentBuildrootID: Optional[BuildrootID] = None,
+        hostID: Optional[int] = None,
+        arches: Union[Arch, List[Arch], None] = None,
+        queryOpts: Optional[QueryOptions] = None,
+        draft: Optional[bool] = None) -> List[RPMInfo]:
+    ...
+
+
+def list_tags(
+        build: Optional[BuildSpecifier] = None,
+        package: Union[str, PackageID, None] = None,
+        perms: bool = True,
+        queryOpts: Optional[QueryOptions] = None,
+        pattern: Optional[str] = None) -> List[TagInfo]:
+    # TODO: this can optionally be a slightly modified TagInfo if
+    # package is specified, so we might need an overload
+    ...
+
+
+def list_task_output(
+        taskID: TaskID,
+        stat: bool = False,
+        all_volumes: bool = False,
+        strict: bool = False) -> Union[List[str],
+                                       Dict[str, List[str]],
+                                       Dict[str, Dict[str, Any]],
+                                       Dict[str, Dict[str, Dict[str, Any]]]]:
+    # TODO: oh my god the overload for this is going to be a mess
+    ...
+
+
+def list_user_krb_principals(
+        user_info: Union[str, UserID, None] = None) -> List[str]:
+    ...
+
+
+def list_volumes() -> List[NamedID]:
     ...
 
 
@@ -558,8 +1682,22 @@ def log_error(
     ...
 
 
+def lookup_build_target(
+        info: str,
+        strict: bool = False,
+        create: bool = False) -> Optional[NamedID]:
+    ...
+
+
 def lookup_channel(
         info: Union[str, ChannelID, Dict[str, Any]],
+        strict: bool = False,
+        create: bool = False) -> Optional[NamedID]:
+    ...
+
+
+def lookup_group(
+        info: str,
         strict: bool = False,
         create: bool = False) -> Optional[NamedID]:
     ...
@@ -594,6 +1732,13 @@ def lookup_tag(
     ...
 
 
+def make_task(
+        method: str,
+        arglist: List,
+        **opts) -> TaskID:
+    ...
+
+
 def maven_tag_archives(
         tag_id: TagID,
         event_id: Optional[EventID] = None,
@@ -601,13 +1746,18 @@ def maven_tag_archives(
     ...
 
 
-NameOrID = TypeVar("NameOrID", str, int)
+def merge_scratch(
+        task_id: TaskID) -> BuildID:
+    ...
+
+
+_NameOrID = TypeVar("_NameOrID", str, int)
 
 
 @overload
 def name_or_id_clause(
         table: str,
-        info: NameOrID) -> Tuple[str, Dict[str, NameOrID]]:
+        info: _NameOrID) -> Tuple[str, Dict[str, _NameOrID]]:
     ...
 
 
@@ -624,14 +1774,47 @@ def new_build(
     ...
 
 
+def new_group(
+        name: str) -> UserID:
+    ...
+
+
 def new_image_build(
-        build_info: BuildInfo) -> None:
+        build_info: BuildSpecifier) -> None:
+    ...
+
+
+def new_maven_build(
+        build: BuildSpecifier,
+        maven_info: MavenInfo) -> None:
+    ...
+
+
+def new_package(
+        name: str,
+        strict: bool = True) -> PackageID:
     ...
 
 
 def new_typed_build(
-        build_info: BuildInfo,
+        build_info: BuildSpecifier,
         btype: str) -> None:
+    ...
+
+
+def new_win_build(
+        build_info: BuildSpecifier,
+        win_info: WinInfo) -> None:
+    ...
+
+
+def old_edit_tag(
+        tagInfo: Union[str, TagID],
+        name: Optional[str],
+        arches: Optional[str],
+        locked: Optional[bool],
+        permissionID: Optional[PermID],
+        extra: Optional[Dict[str, str]] = None) -> None:
     ...
 
 
@@ -642,10 +1825,156 @@ def parse_json(
     ...
 
 
+def pkglist_add(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        owner: Union[str, UserID, None] = None,
+        block: Optional[bool] = None,
+        extra_arches: Optional[str] = None,
+        force: bool = False,
+        update: bool = False) -> None:
+    ...
+
+
+def pkglist_block(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        force: bool = False) -> None:
+    ...
+
+
+def pkglist_remove(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        force: bool = False) -> None:
+    ...
+
+
+def pkglist_setarches(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        arches: str,
+        force: bool = False) -> None:
+    ...
+
+
+def pkglist_setowner(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        owner: Union[str, UserID],
+        force: bool = False) -> None:
+    ...
+
+
+def pkglist_unblock(
+        taginfo: Union[str, TagID],
+        pkginfo: Union[str, PackageID],
+        force: bool = False) -> None:
+    ...
+
+
+def policy_data_from_task(
+        task_id: TaskID) -> Dict[str, Any]:
+    ...
+
+
+def policy_data_from_task_args(
+        method: str,
+        arglist: List) -> Dict[str, Any]:
+    ...
+
+
+def policy_get_brs(
+        data: Dict[str, Any]) -> Set[Optional[BuildrootID]]:
+    ...
+
+
+@overload
+def policy_get_build_tags(
+        data: Dict[str, Any]) -> List[str]:
+    ...
+
+
+@overload
+def policy_get_build_tags(
+        data: Dict[str, Any],
+        taginfo: Literal[False]) -> List[str]:
+    ...
+
+
+@overload
+def policy_get_build_tags(
+        data: Dict[str, Any],
+        taginfo: Literal[True]) -> List[TagInfo]:
+    ...
+
+
+@overload
+def policy_get_build_tags(
+        data: Dict[str, Any],
+        taginfo: bool = False) -> Union[List[TagInfo], List[str]]:
+    ...
+
+
+def policy_get_build_types(
+        data: Dict[str, Any]) -> Set[str]:
+    ...
+
+
+def policy_get_cgs(
+        data: Dict[str, Any]) -> Set[Optional[str]]:
+    ...
+
+
+def policy_get_pkg(
+        data: Dict[str, Any]) -> PackageInfo:
+    ...
+
+
+def policy_get_release(
+        data: Dict[str, Any]) -> str:
+    ...
+
+
+def policy_get_user(
+        data: Dict[str, Any]) -> Optional[UserInfo]:
+    ...
+
+
+def policy_get_version(
+        data: Dict[str, Any]) -> str:
+    ...
+
+
+def query_buildroots(
+        hostID: Optional[int] = None,
+        tagID: Optional[TagID] = None,
+        state: Union[BuildrootState, List[BuildrootState], None] = None,
+        rpmID: Optional[RPMID] = None,
+        archiveID: Optional[ArchiveID] = None,
+        taskID: Optional[TaskID] = None,
+        buildrootID: Optional[BuildrootID] = None,
+        repoID: Optional[RepoID] = None,
+        queryOpts: Optional[QueryOptions] = None) -> List[BuildrootInfo]:
+    ...
+
+
+def query_history(
+        tables: Optional[List[str]] = None,
+        **kwargs) -> List[HistoryEntry]:
+    ...
+
+
 def query_rpm_sigs(
-        rpm_id: Union[int, str, BuildNVR, None] = None,
+        rpm_id: Union[RPMID, str, BuildNVR, None] = None,
         sigkey: Optional[str] = None,
         queryOpts: Optional[QueryOptions] = None) -> List[RPMSignature]:
+    ...
+
+
+def readDescendantsData(
+        tag_id: TagID,
+        event: Optional[EventID] = None) -> TagInheritance:
     ...
 
 
@@ -667,6 +1996,91 @@ def readFullInheritanceRecurse(
         noconfig: bool,
         pfilter: List[str],
         reverse: bool) -> TagFullInheritance:
+    ...
+
+
+def readInheritanceData(
+        tag_id: TagID,
+        event: Optional[EventID] = None) -> TagInheritance:
+    ...
+
+
+def readPackageList(
+        tagID: Optional[TagID] = None,
+        userID: Optional[UserID] = None,
+        pkgID: Optional[PackageID] = None,
+        event: Optional[EventID] = None,
+        inherit: bool = False,
+        with_dups: bool = False,
+        with_owners: bool = True,
+        with_blocked: bool = True) -> Dict[PackageID, TagPackageInfo]:
+    ...
+
+
+def readTaggedArchives(
+        tag: TagID,
+        package: Union[str, PackageID, None] = None,
+        event: Optional[EventID] = None,
+        inherit: bool = False,
+        latest: bool = True,
+        type: Optional[str] = None,
+        extra: bool = True) -> Tuple[List[ArchiveInfo], List[BuildInfo]]:
+    ...
+
+
+def readTaggedBuilds(
+        tag: TagID,
+        event: Optional[EventID] = None,
+        inherit: bool = False,
+        latest: bool = False,
+        package: Optional[str] = None,
+        owner: Optional[str] = None,
+        type: Optional[str] = None,
+        extra: bool = False,
+        draft: Optional[bool] = None) -> List[BuildInfo]:
+    ...
+
+
+@overload
+def readTaggedRPMS(
+        tag: Union[str, TagID],
+        package: Optional[str] = None,
+        arch: Union[Arch, List[Arch], None] = None,
+        event: Optional[EventID] = None,
+        inherit: bool = False,
+        latest: Union[bool, int] = True,
+        rpmsigs: bool = False,
+        owner: Optional[str] = None,
+        type: Optional[str] = None,
+        extra: bool = True) -> Tuple[List[RPMInfo], List[BuildInfo]]:
+    ...
+
+
+@overload
+def readTaggedRPMS(
+        tag: Union[str, TagID],
+        package: Optional[str] = None,
+        arch: Union[Arch, List[Arch], None] = None,
+        event: Optional[EventID] = None,
+        inherit: bool = False,
+        latest: Union[bool, int] = True,
+        rpmsigs: bool = False,
+        owner: Optional[str] = None,
+        type: Optional[str] = None,
+        extra: bool = True,
+        draft: Optional[bool] = None) \
+        -> Tuple[List[RPMInfo], List[BuildInfo]]:
+    # :since: koji 1.34
+    ...
+
+
+def readTagGroups(
+        tag: Union[str, TagID],
+        event: Optional[EventID] = None,
+        inherit: bool = True,
+        incl_pkgs: bool = True,
+        incl_reqs: bool = True,
+        incl_blocked: bool = False) -> List[TagGroupInfo]:
     ...
 
 
@@ -732,12 +2146,12 @@ def rename_channel(
 
 
 def repo_delete(
-        repo_id: int) -> int:
+        repo_id: RepoID) -> int:
     ...
 
 
 def repo_expire(
-        repo_id: int) -> None:
+        repo_id: RepoID) -> None:
     ...
 
 
@@ -749,7 +2163,7 @@ def repo_expire_older(
 
 
 def repo_info(
-        repo_id: int,
+        repo_id: RepoID,
         strict: bool = False) -> RepoInfo:
     ...
 
@@ -757,30 +2171,28 @@ def repo_info(
 def repo_init(
         tag: Union[str, TagID],
         task_id: Optional[TaskID] = None,
-        with_src: bool = False,
-        with_debuginfo: bool = False,
         event: Optional[EventID] = None,
-        with_separate_src: bool = False) -> Tuple[int, int]:
+        opts: Optional[RepoOpts] = None) -> Tuple[RepoID, EventID]:
     ...
 
 
 def repo_problem(
-        repo_id: int) -> None:
+        repo_id: RepoID) -> None:
     ...
 
 
 def repo_ready(
-        repo_id: int) -> None:
+        repo_id: RepoID) -> None:
     ...
 
 
 def repo_references(
-        repo_id: int) -> List[BuildrootReference]:
+        repo_id: RepoID) -> List[BuildrootReference]:
     ...
 
 
 def repo_set_state(
-        repo_id: int,
+        repo_id: RepoID,
         state: RepoState,
         check: bool = True) -> None:
     ...
@@ -793,7 +2205,7 @@ def reset_build(
 
 def revoke_cg_access(
         user: Union[str, UserID],
-        cg: Union[str, int]) -> None:
+        cg: Union[str, CGID]) -> None:
     ...
 
 
@@ -833,16 +2245,30 @@ def set_user_status(
 
 def tag_changed_since_event(
         event: EventID,
-        taglist: List[int]) -> bool:
+        taglist: List[TagID]) -> bool:
+    ...
+
+
+def tag_first_change_event(
+        tag: Union[str, TagID],
+        after: Optional[EventID] = None,
+        inherit: bool = True) -> Optional[EventID]:
+    ...
+
+
+def tag_last_change_event(
+        tag: Union[str, TagID],
+        before: Optional[EventID] = None,
+        inherit: bool = True) -> Optional[EventID]:
     ...
 
 
 def tag_notification(
         is_successful: bool,
-        tag_id: TagID,
-        from_id: int,
+        tag_id: Union[str, TagID, None],
+        from_id: Union[str, TagID, None],
         build_id: BuildID,
-        user_id: UserID,
+        user_id: Union[str, UserID, None],
         ignore_success: bool = False,
         failure_msg: str = '') -> None:
     ...

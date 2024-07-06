@@ -27,6 +27,8 @@ from datetime import datetime
 from enum import IntEnum
 from koji import (
     AUTHTYPES, BR_STATES, BR_TYPES, BUILD_STATES, CHECKSUM_TYPES,
+    DEP_CONFLICT, DEP_ENHANCE, DEP_OBSOLETE, DEP_PROVIDE, DEP_RECOMMEND,
+    DEP_REQUIRE, DEP_SUGGEST, DEP_SUPPLEMENT,
     REPO_STATES, RPM_SIGTAG_DSA, RPM_SIGTAG_GPG, RPM_SIGTAG_MD5,
     RPM_SIGTAG_PGP, RPM_SIGTAG_RSA, TASK_STATES, USERTYPES, USER_STATUS,
     ClientSession, PathInfo, )
@@ -38,17 +40,24 @@ from typing_extensions import TypedDict
 
 
 __all__ = (
+    "ArchiveFileInfo",
     "ArchiveInfo",
-    "ArchiveTypeInfo",
+    "ATypeID",
+    "ATypeInfo",
     "AuthType",
     "BuildID",
     "BuildInfo",
+    "BuildLogEntry",
+    "BuildLogs",
     "BuildNVR",
+    "BuildrootID",
     "BuildrootInfo",
     "BuildrootReference",
     "BuildrootState",
     "BuildrootType",
     "BuildState",
+    "BuildSpecifier",
+    "BTypeID",
     "BTypeInfo",
     "ChangelogEntry",
     "ChannelID",
@@ -56,18 +65,23 @@ __all__ = (
     "ChecksumType",
     "CGID",
     "CGInfo",
+    "CGInitInfo",
     "CLIHandler",
     "CLIProtocol",
     "ExternalRepoID",
     "ExternalRepoInfo",
     "EventID",
     "EventInfo",
+    "FilterOptions",
     "GOptions",
     "HistoryEntry",
+    "HostID",
     "HostInfo",
     "ListTasksOptions",
     "MavenInfo",
     "NamedID",
+    "NotificationID",
+    "OldNew",
     "PackageID",
     "PackageInfo",
     "PermID",
@@ -76,7 +90,9 @@ __all__ = (
     "QueryOptions",
     "RepoID",
     "RepoInfo",
+    "RepoOptions",
     "RepoState",
+    "RPMFileInfo",
     "RPMID",
     "RPMInfo",
     "RPMNVRA",
@@ -91,10 +107,12 @@ __all__ = (
     "TagInfo",
     "TagInheritance",
     "TagInheritanceEntry",
+    "TagGroupID",
     "TagGroupInfo",
     "TagGroupPackage",
     "TagGroupReq",
     "TagPackageInfo",
+    "TagPackageSimple",
     "TargetID",
     "TargetInfo",
     "TaskID",
@@ -106,23 +124,38 @@ __all__ = (
     "UserInfo",
     "UserStatus",
     "UserType",
+    "WinInfo",
 )
 
 
 ArchiveID = NewType("ArchiveID", int)
+ATypeID = NewType("ATypeID", int)
 BuildID = NewType("BuildID", int)
+BuildrootID = NewType("BuildrootID", int)
+BTypeID = NewType("BTypeID", int)
 CGID = NewType("CGID", int)
 ChannelID = NewType("ChannelID", int)
 ExternalRepoID = NewType("ExternalRepoID", int)
 EventID = NewType("EventID", int)
+HostID = NewType("HostID", int)
+NotificationID = NewType("NotificationID", int)
 PackageID = NewType("PackageID", int)
 PermID = NewType("PermID", int)
 RepoID = NewType("RepoID", int)
 RPMID = NewType("RPMID", int)
+TagGroupID = NewType("TagGroupID", int)
 TagID = NewType("TagID", int)
 TargetID = NewType("TargetID", int)
 TaskID = NewType("TaskID", int)
 UserID = NewType("UserID", int)
+
+
+Data = Dict[str, Any]
+
+
+class OldNew(TypedDict):
+    old: str
+    new: str
 
 
 class NamedID(TypedDict):
@@ -224,6 +257,17 @@ class RepoState(IntEnum):
     PROBLEM = REPO_STATES['PROBLEM']
 
 
+class RPMDepType(IntEnum):
+    CONFLICT = DEP_CONFLICT
+    ENHANCE = DEP_ENHANCE
+    OBSOLETE = DEP_OBSOLETE
+    PROVIDE = DEP_PROVIDE
+    RECOMMEND = DEP_RECOMMEND
+    REQUIRE = DEP_REQUIRE
+    SUGGEST = DEP_SUGGEST
+    SUPPLEMENT = DEP_SUPPLEMENT
+
+
 class RPMSigTag(IntEnum):
     DSA = RPM_SIGTAG_DSA
     GPG = RPM_SIGTAG_GPG
@@ -280,13 +324,13 @@ class ArchiveInfo(TypedDict):
     btype: str
     """ Name of this archive's koji BType. eg. 'maven' or 'image' """
 
-    btype_id: int
+    btype_id: BTypeID
     """ ID of this archive's koji BType """
 
     build_id: BuildID
     """ ID of koji build owning this archive """
 
-    buildroot_id: int
+    buildroot_id: BuildrootID
     """ ID of the koji buildroot used to produce this archive """
 
     checksum: str
@@ -343,7 +387,18 @@ class ArchiveInfo(TypedDict):
     """ Only present on Image archives """
 
 
-class ArchiveTypeInfo(TypedDict):
+class ArchiveFileInfo(TypedDict):
+    archive_id: ArchiveID
+    """ owning archive record """
+
+    name: str
+    """ filename inside of archive """
+
+    size: int
+    """ uncompressed file size """
+
+
+class ATypeInfo(TypedDict):
 
     description: str
     """ short title of the type """
@@ -351,7 +406,7 @@ class ArchiveTypeInfo(TypedDict):
     extensions: str
     """ space separated extensions for this type """
 
-    id: int
+    id: ATypeID
     """ the internal ID of the archive type """
 
     name: str
@@ -359,9 +414,9 @@ class ArchiveTypeInfo(TypedDict):
 
 
 class BuildrootReference(TypedDict):
-    create_event: int
-    host_id: int
-    id: int
+    create_event: EventID
+    host_id: HostID
+    id: BuildrootID
     state: BuildrootState
 
 
@@ -369,33 +424,33 @@ class BuildrootInfo(TypedDict):
     arch: str
     br_type: BuildrootType
 
-    cg_id: Optional[int]
+    cg_id: Optional[CGID]
     cg_name: Optional[str]
     cg_version: Optional[str]
 
     container_arch: str
     container_type: str
 
-    create_event_id: int
+    create_event_id: EventID
     create_event_time: str
     create_ts: float
 
     extra: Optional[dict]
 
     host_arch: Optional[str]
-    host_id: int
+    host_id: HostID
     host_name: str
     host_os: Optional[str]
 
-    id: int
+    id: BuildrootID
 
-    repo_create_event_id: int
+    repo_create_event_id: EventID
     repo_create_event_time: str
 
-    repo_id: int
+    repo_id: RepoID
     repo_state: RepoState
 
-    retire_event_id: int
+    retire_event_id: EventID
     retire_event_time: str
     retire_ts: float
 
@@ -432,11 +487,11 @@ class BuildInfo(BuildNVR):
     build_id: BuildID
     """ The internal ID for the build record """
 
-    cg_id: int
+    cg_id: Optional[CGID]
     """ The ID of the content generator which has reserved or produced
     this build """
 
-    cg_name: str
+    cg_name: Optional[str]
     """ The name of the content generator which has reserved or produced
     this build """
 
@@ -475,13 +530,13 @@ class BuildInfo(BuildNVR):
     """ The unique NVR of the build, comprised of the name, version, and
     release separated by hyphens """
 
-    owner_id: int
+    owner_id: UserID
     """ ID of the koji user that owns this build """
 
     owner_name: str
     """ name of the koji user that owns this build """
 
-    package_id: int
+    package_id: PackageID
     """ The corresponding package ID for this build. """
 
     package_name: str
@@ -521,6 +576,23 @@ class BuildInfo(BuildNVR):
     information """
 
 
+class BuildLogEntry(TypedDict):
+    dir: str
+    """ log's immediate parent subdir """
+
+    name: str
+    """ log's file name """
+
+    path: str
+    """ log's path under topdir """
+
+
+BuildLogs = List[BuildLogEntry]
+
+
+BuildSpecifier = Union[str, BuildID, BuildNVR]
+
+
 class TagBuildInfo(BuildInfo):
     """
     Form of BuildInfo as returned by ``listTagged``
@@ -536,7 +608,7 @@ class TagBuildInfo(BuildInfo):
 
 
 class BTypeInfo(TypedDict):
-    id: int
+    id: BTypeID
     """ the internal ID of the btype """
 
     name: str
@@ -567,7 +639,7 @@ class RPMInfo(RPMNVRA):
     build_id: BuildID
     """ The ID of the build owning this RPM """
 
-    buildroot_id: int
+    buildroot_id: BuildrootID
     """ The buildroot used by the task which produced this RPM """
 
     buildtime: int
@@ -588,7 +660,7 @@ class RPMInfo(RPMNVRA):
     extra: dict
     """ Optional extra data """
 
-    id: int
+    id: RPMID
     """ The internal ID for this RPM """
 
     metadata_only: bool
@@ -639,7 +711,7 @@ class HostInfo(TypedDict):
     enabled: bool
     """ whether this host is configured by the hub to take tasks """
 
-    id: int
+    id: HostID
     """ internal identifier """
 
     name: str
@@ -654,7 +726,7 @@ class HostInfo(TypedDict):
     capacity and a given task's weight, this can determine whether a
     task will 'fit' on the host """
 
-    user_id: int
+    user_id: UserID
     """ the user ID of this host's account. Hosts have a user account of
     type HOST, which is how they authenticate with the hub """
 
@@ -666,7 +738,7 @@ class UserGroup(TypedDict):
     :since: 2.2.0
     """
 
-    group_id: int
+    group_id: UserID
     """ the ID of the group """
 
     name: str
@@ -724,6 +796,15 @@ class CGInfo(TypedDict):
     this content generator """
 
 
+class CGInitInfo(TypedDict):
+    """
+    see ``CGInitBuild`` XMLRPC call
+    """
+
+    build_id: BuildID
+    token: str
+
+
 class PermInfo(TypedDict):
     id: PermID
     name: str
@@ -772,6 +853,16 @@ class RepoInfo(TypedDict):
     """ ID of the task which generated this repository """
 
 
+class RepoOptions(TypedDict):
+    """
+    opts used by ``host.repoInit`` XMLRPC call
+    """
+
+    debuginfo: bool
+    separate_src: bool
+    src: bool
+
+
 class ExternalRepoInfo(TypedDict):
 
     id: ExternalRepoID
@@ -797,6 +888,9 @@ class TagExternalRepoEntry(TypedDict):
 
 
 TagExternalRepos = List[TagExternalRepoEntry]
+"""
+The external repos associated with a tag.
+"""
 
 
 class TargetInfo(TypedDict):
@@ -949,7 +1043,19 @@ class PackageInfo(TypedDict):
     """
 
 
-class TagPackageInfo(TypedDict):
+class TagPackageSimple(TypedDict):
+    """
+    ``listPackagesSimple`` XMLRPC call.
+    """
+
+    package_id: PackageID
+    """ ID of the package """
+
+    package_name: str
+    """ name of the package """
+
+
+class TagPackageInfo(TagPackageSimple):
     """
     ``listPackages`` XMLRPC call.
     """
@@ -965,12 +1071,6 @@ class TagPackageInfo(TypedDict):
 
     owner_name: str
     """ name of the user who is the owner of the package for this tag """
-
-    package_id: PackageID
-    """ ID of the package """
-
-    package_name: str
-    """ name of the package """
 
     tag_id: TagID
     """ ID of the package listing's tag """
@@ -1009,7 +1109,7 @@ class TagGroupInfo(TypedDict):
     description: str
     display_name: str
     exported: bool
-    group_id: int
+    group_id: TagGroupID
     grouplist: List[TagGroupReq]
     is_default: bool
     langonly: str
@@ -1032,7 +1132,7 @@ class TaskInfo(TypedDict):
     task.  False if this task is no longer being waited-for. None if
     the task was never waited-for. """
 
-    channel_id: int
+    channel_id: ChannelID
     """ internal ID of the channel from which a host will be selected to
     take this task """
 
@@ -1099,7 +1199,7 @@ class TaskInfo(TypedDict):
 
 
 class ChannelInfo(TypedDict):
-    id: int
+    id: ChannelID
     """ internal channel ID """
 
     name: str
@@ -1166,6 +1266,18 @@ class QueryOptions(TypedDict, total=False):
     asList: bool
 
 
+class FilterOptions(TypedDict, total=False):
+    """
+    the ``filterOpts`` argument for for ``filterResults`` and
+    ``countAndFilterResults` XMLRPC calls
+    """
+
+    order: str
+    offset: int
+    limit: int
+    noneGreatest: bool
+
+
 class ListTasksOptions(TypedDict, total=False):
     """
     Specific filter dictionary for listTasks API call
@@ -1204,6 +1316,10 @@ class MavenInfo(TypedDict):
     version: str
 
 
+class WinInfo(TypedDict):
+    platform: str
+
+
 class POMInfo(TypedDict):
     groupId: str
     artifactId: str
@@ -1231,6 +1347,39 @@ class SessionInfo(TypedDict):
     authtype: AuthType
     callnum: Optional[int]
     exclusive: bool
+
+
+class RPMFileInfo(TypedDict):
+    """
+    Information about a file embedded inside an RPM's CPIO archive
+    """
+
+    digest: str
+    digest_algo: ChecksumType  # TODO: see filedigestAlgo
+    md5: str
+    name: str
+    size: int
+    flags: int
+    user: int
+    group: int
+    mtime: int
+    mode: int
+
+    rpm_id: Optional[RPMID]
+    """
+    the RPMInfo for the RPM that contains this file
+    """
+
+
+class RPMDepInfo(TypedDict):
+    """
+    ``getRPMDeps`` XMLRPC result
+    """
+
+    name: str
+    version: str
+    flags: int
+    type: RPMDepType
 
 
 # The end.
