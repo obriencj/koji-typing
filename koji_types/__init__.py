@@ -740,7 +740,7 @@ class UserGroup(TypedDict):
     :since: 2.2.0
     """
 
-    group_id: UserID
+    id: UserID
     """ the ID of the group """
 
     name: str

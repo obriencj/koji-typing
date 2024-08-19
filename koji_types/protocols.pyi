@@ -789,9 +789,18 @@ class ClientSession(Protocol):
         # :since: koji 1.23
         ...
 
+    @overload
     def getLastEvent(
             self,
             before: Union[int, float, None] = None) -> EventInfo:
+        ...
+
+    @overload
+    def getLastEvent(
+            self,
+            before: Union[int, float, None] = None,
+            strict: bool = True) -> EventInfo:
+        # :since: koji 1.35
         ...
 
     @overload
