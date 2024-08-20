@@ -54,7 +54,6 @@ kojihub.kojixmlrpc.log_handler
 
 # TODO, as-yet un-stubbed
 
-koji.server
 kojihub.db
 kojihub.repos
 kojihub.scheduler
