@@ -22,6 +22,7 @@ Typing annotations stub for kojihub.kojihub
 """
 
 
+from datetime import datetime
 from koji import ParameterError
 from koji.policy import BaseSimpleTest, MatchTest
 from koji_types import (
@@ -44,7 +45,7 @@ from koji_types.arch import Arch
 from koji_types.hub import RepoOpts
 from logging import ERROR, INFO, WARNING, Logger
 from typing import (
-    Any, Callable, Dict, Iterator, List, Literal, Optional, Set,
+    Any, Callable, Dict, Iterator, List, Literal, NoReturn, Optional, Set,
     Tuple, Type, TypeVar, Union, overload, )
 
 
@@ -456,22 +457,10 @@ class HostExports:
             rpm_results: Any) -> None:
         ...
 
-    @staticmethod
-    def createBuildTarget(
-            name: str,
-            build_tag: Union[str, TagID],
-            dest_tag: Union[str, TagID]) -> None:
-        ...
-
     def createMavenBuild(
             self,
             build_info: BuildInfo,
             maven_info: MavenInfo) -> None:
-        ...
-
-    @staticmethod
-    def deleteBuildTarget(
-            buildTargetInfo: Union[str, TargetID]) -> None:
         ...
 
     def distRepoMove(
@@ -703,17 +692,7 @@ class HostExports:
             tasks: Optional[List[TaskID]]) -> None:
         ...
 
-    def taskUnwait(
-            self,
-            parent: TaskID) -> None:
-        ...
-
     def taskWait(
-            self,
-            parent: TaskID) -> Tuple[List[int], List[int]]:
-        ...
-
-    def taskWaitCheck(
             self,
             parent: TaskID) -> Tuple[List[int], List[int]]:
         ...
@@ -756,9 +735,6 @@ class HostExports:
             project: bool = False,
             ignore_unknown: bool = False,
             extra_deps: Optional[List[Union[int, str]]] = None) -> None:
-        ...
-
-    def verify(self) -> bool:
         ...
 
     def writeSignedRPM(
@@ -1336,12 +1312,6 @@ class RootExports:
     def evalPolicy(
             name: str,
             data: Dict[str, Any]) -> str:
-        ...
-
-    def exclusiveSession(self, *args, **kwargs) -> None:
-        ...
-
-    def failBuild(self, task_id: int, build_id: int) -> None:
         ...
 
     def fault(self) -> NoReturn:
@@ -2085,13 +2055,6 @@ class RootExports:
             basename: str) -> RPMInfo:
         ...
 
-    def initWinBuild(
-            self,
-            task_id: TaskID,
-            build_info: BuildNVR,
-            win_info: Dict[str, Any]) -> None:
-        ...
-
     @staticmethod
     def listArchives(
             buildID: Optional[BuildID] = None,
@@ -2458,17 +2421,6 @@ class RootExports:
             force: bool = False) -> BuildInfo:
         ...
 
-    @overload
-    @staticmethod
-    def queryHistory(
-            tables: Optional[List[str]] = None,
-            *,
-            queryOpts: Optional[QueryOptions] = None,
-            **kwargs: Any) -> Dict[str, List[Dict[str, Any]]]:
-        # :since: koji 1.34
-        ...
-
-    @overload  # type: ignore
     @staticmethod
     def queryHistory(
             tables: Optional[List[str]] = None,
@@ -2648,14 +2600,6 @@ class RootExports:
             remove: bool = False) -> None:
         ...
 
-    def ssl_login(
-            self,
-            cert: Optional[str] = None,
-            ca: Optional[str] = None,
-            serverca: Optional[str] = None,
-            proxyuser: Optional[str] = None) -> bool:
-        ...
-
     def tagBuild(
             self,
             tag: Union[str, TagID],
@@ -2719,12 +2663,6 @@ class RootExports:
             name: Optional[str] = None,
             queryOpts: Optional[QueryOptions] = None,
             draft: Optional[bool] = None) -> List[BuildNVR]:
-        ...
-
-    def updateHost(
-            self,
-            task_load: float,
-            ready: bool) -> None:
         ...
 
     def updateNotification(

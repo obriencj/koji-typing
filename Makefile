@@ -95,11 +95,11 @@ flake8:	requires-tox	## Launches flake8 via tox
 	@$(TOX) -qe flake8
 
 
-mypy:	requires-tox flake8	## Launches stubtest via tox
+mypy:	requires-tox flake8 protocols	## Launches stubtest via tox
 	@$(TOX) -qe mypy
 
 
-koji-git: requires-tox flake8 tools/koji	## Launches stubtest via tox with koji from git
+koji-git: requires-tox flake8 protocols tools/koji	## Launches stubtest via tox with koji from git
 	@$(TOX) -qe koji-git
 
 
@@ -115,8 +115,21 @@ tools/koji:	requires-git
 	fi
 
 
-kojihub: requires-tox tools/koji
+kojihub: requires-tox protocols tools/koji
 	@$(TOX) -qe kojihub
+
+
+##@ Development Workflow
+
+koji_types/protocols.pyi:	kojihub-stubs/kojihub.pyi koji_types/protocols.in
+	@$(PYTHON) tools/prototempl.py
+
+
+protocols:	koji_types/protocols.pyi	## regenerates protocols stub if needed
+
+
+build:	clean-built protocols
+	@$(TOX) -qe build
 
 
 ##@ Workflow Features
