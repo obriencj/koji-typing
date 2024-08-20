@@ -55,14 +55,6 @@ results.
 
 [MyPy]: https://mypy-lang.org
 
-Due to the dynamic nature of the `MultiCallSession` in koji, these
-stubs optionally rely on the [`preoccupied.proxytype`][proxytype]
-plugin. This is a purely analysis-time dependency. However in order to
-generate accurate analysis of calls made against a `MultiCallSession`
-this plugin will need to be enabled.
-
-[proxytype]: https://github.com/obriencj/python-proxytype
-
 
 ## Caveats
 
