@@ -48,6 +48,9 @@ OUTPUT_PATH = "koji_types/protocols.pyi"
 
 
 class UnparseBetter(_Unparser):
+    # TODO: make it so this outputs a format that doesn't make my eyes
+    # bleed. Then we won't need to skip the generated protocols.pyi in
+    # flake8 anymore.
     pass
 
 
@@ -100,6 +103,15 @@ def pop_staticmethod(node):
     return True
 
 
+def pop_ellipsis(node):
+    if node.body:
+        last = node.body[-1]
+        if isinstance(last, Expr) \
+           and isinstance(last.value, Constant) \
+           and last.value.value == ...:
+            node.body.pop()
+
+
 def inject_self(node):
     node.args = copy(node.args)
     node.args.args = copy(node.args.args)
@@ -112,13 +124,7 @@ def inject_self(node):
 
 
 def update_session(node, orig):
-    # remove the ellipsis if any
-    if node.body:
-        last = node.body[-1]
-        if isinstance(last, Expr) \
-           and isinstance(last.value, Constant) \
-           and last.value.value == ...:
-            node.body.pop()
+    pop_ellipsis(node)
 
     for fn in orig.body:
         if not isinstance(fn, FunctionDef):
@@ -132,29 +138,14 @@ def update_session(node, orig):
 
 
 def update_multicall(node, orig):
-    if node.body:
-        last = node.body[-1]
-        if isinstance(last, Expr) \
-           and isinstance(last.value, Constant) \
-           and last.value.value == ...:
-            node.body.pop()
+    pop_ellipsis(node)
 
     for fn in orig.body:
         if not isinstance(fn, FunctionDef):
             continue
 
-        vc = Name("VirtualCall")
-        vc.lineno = 0
-        vc.col_offset = 0
-        vc.ctx = None
-
-        ss = Subscript(vc, fn.returns)
-        ss.lineno = 0
-        ss.col_offset = 0
-        ss.ctx = None
-
         fn = copy(fn)
-        fn.returns = ss
+        fn.returns = Subscript(Name("VirtualCall"), fn.returns)
 
         node.body.append(fn)
 
@@ -189,6 +180,7 @@ def cli(options):
 
 
 def create_parser(name):
+    # just in case I have any ideas for the future
     parser = ArgumentParser(name)
     return parser
 
