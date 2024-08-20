@@ -28,7 +28,7 @@ from .db import (
 
 from koji_types import (
     AuthType, PermID, UserData, UserID, UserStatus, UserType, )
-from koji_types.hub import SessionInfo
+from koji_types.hub import SessionAuth
 from typing import (
     Any, Dict, List, Literal, Optional, Union, Tuple, overload, )
 from logging import Logger
@@ -91,7 +91,7 @@ class Session:
             hostip: str,
             authtype: AuthType,
             master: Optional[int] = None,
-            renew: bool = False) -> SessionInfo:
+            renew: bool = False) -> SessionAuth:
         ...
 
     def createUser(
@@ -159,7 +159,7 @@ class Session:
             password,
             opts: Optional[Dict[str, Any]] = None,
             renew: bool = False,
-            exclusive: bool = False) -> SessionInfo:
+            exclusive: bool = False) -> SessionAuth:
         ...
 
     def logout(
@@ -202,11 +202,11 @@ class Session:
             proxyuser: Optional[str] = None,
             proxyauthtype: Optional[str] = None,
             renew: bool = False,
-            exclusive: Optional[bool] = None) -> None:
+            exclusive: Optional[bool] = None) -> SessionAuth:
         ...
 
     def subsession(
-            self) -> SessionInfo:
+            self) -> SessionAuth:
         ...
 
     def validate(self) -> bool:
@@ -261,7 +261,7 @@ def get_user_perms(
     ...
 
 
-def login(*args, **opts) -> SessionInfo:
+def login(*args, **opts) -> SessionAuth:
     ...
 
 
@@ -277,11 +277,11 @@ def sharedSession() -> None:
     ...
 
 
-def sslLogin(*args, **opts) -> SessionInfo:
+def sslLogin(*args, **opts) -> SessionAuth:
     ...
 
 
-def subsession():
+def subsession() -> SessionAuth:
     ...
 
 

@@ -42,7 +42,6 @@ from koji_types import (
     TagPackageSimple, TargetID, TargetInfo, TaskID, TaskInfo, TaskState,
     UserGroup, UserID, UserInfo, UserStatus, UserType, WinInfo, )
 from koji_types.arch import Arch
-from koji_types.hub import RepoOpts
 from logging import ERROR, INFO, WARNING, Logger
 from typing import (
     Any, Callable, Dict, Iterator, List, Literal, NoReturn, Optional, Set,
@@ -4400,7 +4399,7 @@ def repo_init(
         tag: Union[str, TagID],
         task_id: Optional[TaskID] = None,
         event: Optional[EventID] = None,
-        opts: Optional[RepoOpts] = None) -> Tuple[RepoID, EventID]:
+        opts: Optional[RepoOptions] = None) -> Tuple[RepoID, EventID]:
     ...
 
 

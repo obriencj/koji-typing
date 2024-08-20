@@ -24,15 +24,18 @@ from typing_extensions import TypedDict
 
 
 __all__ = (
-    "SessionInfo",
+    "SessionAuth",
 )
 
 
-SessionInfo = TypedDict("SessionInfo", {
+SessionAuth = TypedDict("SessionAuth", {
     "session-id": int,
     "session-key": str,
     "header-auth": bool,
 })
+"""
+Used by kojihub.auth
+"""
 
 
 # The end.
