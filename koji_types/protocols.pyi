@@ -18,579 +18,253 @@ Koji Types - Client Session Protocol method declarations
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
 """
-
-
-from . import (
-    ArchiveFileInfo, ArchiveID, ArchiveInfo, ATypeID, ATypeInfo,
-    BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR,
-    BuildrootID, BuildrootInfo, BuildrootState,
-    BuildState, BTypeInfo, ChangelogEntry, ChannelID, ChannelInfo,
-    ChecksumType,
-    CGID, CGInfo, CGInitInfo,
-    ExternalRepoID, ExternalRepoInfo,
-    EventID, EventInfo, FaultInfo, FilterOptions,
-    HostID, HostInfo, ListTasksOptions, MavenInfo,
-    NamedID, NotificationID, OldNew, PackageID, PackageInfo,
-    PermID, PermInfo, POMInfo, QueryOptions,
-    RepoID, RepoInfo, RepoOptions, RepoState,
-    RPMDepType, RPMDepInfo,
-    RPMFileInfo, RPMID, RPMInfo, RPMNVRA,
-    RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
-    TagGroupID, TagGroupInfo, TagID, TagInfo, TagInheritance,
-    TagExternalRepos, TagPackageInfo, TagPackageSimple,
-    TargetID, TargetInfo,
-    TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserStatus, UserType,
-    WinInfo, )
+from . import ArchiveFileInfo, ArchiveID, ArchiveInfo, ATypeID, ATypeInfo, BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR, BuildrootID, BuildrootInfo, BuildrootState, BuildState, BTypeInfo, ChangelogEntry, ChannelID, ChannelInfo, ChecksumType, CGID, CGInfo, CGInitInfo, ExternalRepoID, ExternalRepoInfo, EventID, EventInfo, FaultInfo, FilterOptions, HostID, HostInfo, ListTasksOptions, MavenInfo, NamedID, NotificationID, OldNew, PackageID, PackageInfo, PermID, PermInfo, POMInfo, QueryOptions, RepoID, RepoInfo, RepoOptions, RepoState, RPMDepType, RPMDepInfo, RPMFileInfo, RPMID, RPMInfo, RPMNVRA, RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo, TagGroupID, TagGroupInfo, TagID, TagInfo, TagInheritance, TagExternalRepos, TagPackageInfo, TagPackageSimple, TargetID, TargetInfo, TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserStatus, UserType, WinInfo
 from .arch import Arch
-
 from datetime import datetime
 from koji import VirtualCall
-from typing import (
-    Any, Dict, List, Literal, NoReturn, Optional, Tuple,
-    Union, overload, )
-from typing_extensions import Protocol
-from preoccupied.proxytype import proxytype
+from typing import Any, Dict, List, Literal, NoReturn, Optional, Tuple, Union, overload
 
+class ClientSession:
 
-class ClientSession(Protocol):
-
-    @staticmethod
-    def CGImport(
-            metadata: Union[str, Dict[str, Any]],
-            directory: str,
-            token: Optional[str] = None) -> BuildInfo:
+    def CGImport(self, metadata: Union[str, Dict[str, Any]], directory: str, token: Optional[str]=None) -> BuildInfo:
         ...
 
-    @staticmethod
-    def CGInitBuild(
-            cg: str,
-            data: Dict[str, Any]) -> CGInitInfo:
+    def CGInitBuild(self, cg: str, data: Dict[str, Any]) -> CGInitInfo:
         ...
 
-    @staticmethod
-    def CGRefundBuild(
-            cg: str,
-            build_id: BuildID,
-            token: str,
-            state: BuildState = BuildState.FAILED) -> None:
+    def CGRefundBuild(self, cg: str, build_id: BuildID, token: str, state: BuildState=BuildState.FAILED) -> None:
         ...
 
-    @staticmethod
-    def addArchiveType(
-            name: str,
-            description: str,
-            extensions: str,
-            compression_type: Optional[str] = None) -> None:
+    def addArchiveType(self, name: str, description: str, extensions: str, compression_type: Optional[str]=None) -> None:
         ...
 
-    @staticmethod
-    def addBType(
-            name: str) -> None:
+    def addBType(self, name: str) -> None:
         ...
 
-    @staticmethod
-    def addChannel(
-            channel_name: str,
-            description: Optional[str] = None) -> ChannelID:
+    def addChannel(self, channel_name: str, description: Optional[str]=None) -> ChannelID:
         ...
 
-    def addExternalRepoToTag(
-            self,
-            tag_info: Union[str, TagID],
-            repo_info: Union[str, ExternalRepoID],
-            priority: int,
-            merge_mode: str = 'koji',
-            arches: Optional[List[Arch]] = None) -> None:
+    def addExternalRepoToTag(self, tag_info: Union[str, TagID], repo_info: Union[str, ExternalRepoID], priority: int, merge_mode: str='koji', arches: Optional[List[Arch]]=None) -> None:
         ...
 
-    def addExternalRPM(
-            self,
-            rpminfo: Dict[str, Any],
-            external_repo: Union[str, ExternalRepoID],
-            strict: bool = True) -> None:
+    def addExternalRPM(self, rpminfo: Dict[str, Any], external_repo: Union[str, ExternalRepoID], strict: bool=True) -> None:
         ...
 
-    @staticmethod
-    def addGroupMember(
-            group: Union[str, UserID],
-            user: Union[str, UserID],
-            strict: bool = True) -> None:
+    def addGroupMember(self, group: Union[str, UserID], user: Union[str, UserID], strict: bool=True) -> None:
         ...
 
-    def addHost(
-            self,
-            hostname: str,
-            arches: List[Arch],
-            krb_principal: Optional[str] = None,
-            force: bool = False) -> HostID:
+    def addHost(self, hostname: str, arches: List[Arch], krb_principal: Optional[str]=None, force: bool=False) -> HostID:
         ...
 
-    @staticmethod
-    def addHostToChannel(
-            hostname: Union[str, HostID],
-            channel_name: str,
-            create: bool = False,
-            force: bool = False) -> None:
+    def addHostToChannel(self, hostname: Union[str, HostID], channel_name: str, create: bool=False, force: bool=False) -> None:
         ...
 
-    def addRPMSig(
-            self,
-            an_rpm: str,
-            data: bytes) -> None:
+    def addRPMSig(self, an_rpm: str, data: bytes) -> None:
         ...
 
-    def addUserKrbPrincipal(
-            self,
-            user: Union[str, UserID],
-            krb_principal: str) -> int:
+    def addUserKrbPrincipal(self, user: Union[str, UserID], krb_principal: str) -> int:
         ...
 
-    @staticmethod
-    def addVolume(
-            name: str,
-            strict: bool = True) -> NamedID:
+    def addVolume(self, name: str, strict: bool=True) -> NamedID:
         ...
 
-    def applyVolumePolicy(
-            self,
-            build: BuildSpecifier,
-            strict: bool = False) -> None:
+    def applyVolumePolicy(self, build: BuildSpecifier, strict: bool=False) -> None:
         ...
 
-    @staticmethod
-    def assignTask(
-            task_id: TaskID,
-            host: str,
-            force: bool = False,
-            override: bool = False) -> bool:
+    def assignTask(self, task_id: TaskID, host: str, force: bool=False, override: bool=False) -> bool:
         ...
 
-    def build(
-            self,
-            src: str,
-            target: str,
-            opts: Optional[Dict[str, Any]] = None,
-            priority: Optional[int] = None,
-            channel: Optional[str] = None) -> int:
+    def build(self, src: str, target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: Optional[str]=None) -> int:
         ...
 
-    def buildImage(
-            self,
-            name: str,
-            version: str,
-            arch: Arch,
-            target: str,
-            ksfile: str,
-            img_type: str,
-            opts: Optional[Dict[str, Any]] = None,
-            priority: Optional[int] = None) -> int:
+    def buildImage(self, name: str, version: str, arch: Arch, target: str, ksfile: str, img_type: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None) -> int:
         ...
 
-    def buildImageIndirection(
-            self,
-            opts: Optional[Dict[str, Any]] = None,
-            priority: Optional[int] = None) -> TaskID:
+    def buildImageIndirection(self, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None) -> TaskID:
         ...
 
-    def buildImageOz(
-            self,
-            name: str,
-            version: str,
-            arches: List[Arch],
-            target: str,
-            inst_tree: str,
-            opts: Optional[Dict[str, Any]] = None,
-            priority: Optional[int] = None) -> TaskID:
+    def buildImageOz(self, name: str, version: str, arches: List[Arch], target: str, inst_tree: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None) -> TaskID:
         ...
 
-    def buildReferences(
-            self,
-            build: BuildID,
-            limit: Optional[int] = None,
-            lazy: bool = False) -> Dict[str, Any]:
+    def buildReferences(self, build: BuildID, limit: Optional[int]=None, lazy: bool=False) -> Dict[str, Any]:
         ...
 
-    def cancelBuild(
-            self,
-            buildID: BuildID,
-            strict: bool = False) -> bool:
+    def cancelBuild(self, buildID: BuildID, strict: bool=False) -> bool:
         ...
 
-    def cancelTask(
-            self,
-            task_id: TaskID,
-            recurse: bool = True) -> None:
+    def cancelTask(self, task_id: TaskID, recurse: bool=True) -> None:
         ...
 
-    def cancelTaskChildren(
-            self,
-            task_id: TaskID) -> None:
+    def cancelTaskChildren(self, task_id: TaskID) -> None:
         ...
 
-    def cancelTaskFull(
-            self,
-            task_id: TaskID,
-            strict: bool = True) -> None:
+    def cancelTaskFull(self, task_id: TaskID, strict: bool=True) -> None:
         ...
 
-    def chainBuild(
-            self,
-            srcs: List[str],
-            target: str,
-            opts: Optional[Dict[str, Any]] = None,
-            priority: Optional[int] = None,
-            channel: Optional[str] = None) -> int:
+    def chainBuild(self, srcs: List[str], target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: Optional[str]=None) -> int:
         ...
 
-    def chainMaven(
-            self,
-            builds: List[Dict[str, Any]],
-            target: str,
-            opts: Optional[Dict[str, Any]] = None,
-            priority: Optional[int] = None,
-            channel: str = 'maven') -> int:
+    def chainMaven(self, builds: List[Dict[str, Any]], target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: str='maven') -> int:
         ...
 
-    @staticmethod
-    def changeBuildVolume(
-            build: Union[str, BuildID],
-            volume: str,
-            strict: bool = True) -> None:
+    def changeBuildVolume(self, build: Union[str, BuildID], volume: str, strict: bool=True) -> None:
         ...
 
-    @staticmethod
-    def checkTagAccess(
-            tag_id: Union[str, TagID],
-            user_id: Union[str, UserID, None] = None) \
-            -> Tuple[bool, bool, str]:
+    def checkTagAccess(self, tag_id: Union[str, TagID], user_id: Union[str, UserID, None]=None) -> Tuple[bool, bool, str]:
         ...
 
-    def checkTagPackage(
-            self,
-            tag: Union[str, TagID],
-            pkg: Union[str, PackageID]) -> bool:
+    def checkTagPackage(self, tag: Union[str, TagID], pkg: Union[str, PackageID]) -> bool:
         ...
 
-    def checkUpload(
-            self,
-            path: str,
-            name: str,
-            verify: Optional[ChecksumType] = None,
-            tail: Optional[int] = None,
-            volume: Optional[str] = None) -> Dict[str, Any]:
+    def checkUpload(self, path: str, name: str, verify: Optional[ChecksumType]=None, tail: Optional[int]=None, volume: Optional[str]=None) -> Dict[str, Any]:
         ...
 
-    def count(
-            self,
-            methodName: str,
-            *args: Any,
-            **kw: Any) -> int:
+    def count(self, methodName: str, *args: Any, **kw: Any) -> int:
         ...
 
     @overload
-    def countAndFilterResults(
-            self,
-            methodName: str,
-            *args,
-            filterOpts: FilterOptions,
-            **kw) -> Tuple[int, List[Dict[str, Any]]]:
+    def countAndFilterResults(self, methodName: str, *args, filterOpts: FilterOptions, **kw) -> Tuple[int, List[Dict[str, Any]]]:
         ...
 
     @overload
-    def countAndFilterResults(
-            self,
-            methodName: str,
-            *args,
-            **kw) -> Tuple[int, List[Dict[str, Any]]]:
+    def countAndFilterResults(self, methodName: str, *args, **kw) -> Tuple[int, List[Dict[str, Any]]]:
         ...
 
-    @staticmethod
-    def createBuildTarget(
-            name: str,
-            build_tag: Union[str, TagID],
-            dest_tag: Union[str, TagID]) -> None:
+    def createBuildTarget(self, name: str, build_tag: Union[str, TagID], dest_tag: Union[str, TagID]) -> None:
         ...
 
-    def createEmptyBuild(
-            self,
-            name: str,
-            version: str,
-            release: str,
-            epoch: str,
-            owner: Union[str, UserID, None] = None,
-            draft: bool = False) -> BuildID:
+    def createEmptyBuild(self, name: str, version: str, release: str, epoch: str, owner: Union[str, UserID, None]=None, draft: bool=False) -> BuildID:
         ...
 
-    @staticmethod
-    def createExternalRepo(
-            name: str,
-            url: str) -> ExternalRepoInfo:
+    def createExternalRepo(self, name: str, url: str) -> ExternalRepoInfo:
         ...
 
-    def createImageBuild(
-            self,
-            build_info: BuildSpecifier) -> None:
+    def createImageBuild(self, build_info: BuildSpecifier) -> None:
         ...
 
-    def createMavenBuild(
-            self,
-            build_info: BuildSpecifier,
-            maven_info: MavenInfo) -> None:
+    def createMavenBuild(self, build_info: BuildSpecifier, maven_info: MavenInfo) -> None:
         ...
 
-    def createNotification(
-            self,
-            user_id: UserID,
-            package_id: PackageID,
-            tag_id: TagID,
-            success_only: bool) -> None:
+    def createNotification(self, user_id: UserID, package_id: PackageID, tag_id: TagID, success_only: bool) -> None:
         ...
 
-    def createNotificationBlock(
-            self,
-            user_id: UserID,
-            package_id: Optional[PackageID] = None,
-            tag_id: Optional[TagID] = None) -> None:
+    def createNotificationBlock(self, user_id: UserID, package_id: Optional[PackageID]=None, tag_id: Optional[TagID]=None) -> None:
         ...
 
-    @staticmethod
-    def createTag(
-            name: str,
-            parent: Optional[Union[int, str]] = None,
-            arches: Optional[str] = None,
-            perm: Optional[str] = None,
-            locked: bool = False,
-            maven_support: bool = False,
-            maven_include_all: bool = False,
-            extra: Optional[Dict[str, str]] = None) -> int:
+    def createTag(self, name: str, parent: Optional[Union[int, str]]=None, arches: Optional[str]=None, perm: Optional[str]=None, locked: bool=False, maven_support: bool=False, maven_include_all: bool=False, extra: Optional[Dict[str, str]]=None) -> int:
         ...
 
-    def createUser(
-            self,
-            username: str,
-            status: Optional[UserStatus] = None,
-            krb_principal: Optional[str] = None) -> UserID:
+    def createUser(self, username: str, status: Optional[UserStatus]=None, krb_principal: Optional[str]=None) -> UserID:
         ...
 
-    def createWinBuild(
-            self,
-            build_info: BuildSpecifier,
-            win_info: WinInfo) -> None:
+    def createWinBuild(self, build_info: BuildSpecifier, win_info: WinInfo) -> None:
         ...
 
-    @staticmethod
-    def deleteBuild(
-            build: BuildSpecifier,
-            strict: bool = True,
-            min_ref_age: int = 604800) -> bool:
+    def deleteBuild(self, build: BuildSpecifier, strict: bool=True, min_ref_age: int=604800) -> bool:
         ...
 
-    @staticmethod
-    def deleteBuildTarget(
-            buildTargetInfo: Union[str, TargetID]) -> None:
+    def deleteBuildTarget(self, buildTargetInfo: Union[str, TargetID]) -> None:
         ...
 
-    @staticmethod
-    def deleteExternalRepo(
-            info: Union[str, ExternalRepoID]) -> None:
+    def deleteExternalRepo(self, info: Union[str, ExternalRepoID]) -> None:
         ...
 
-    def deleteNotification(
-            self,
-            id: int) -> None:
+    def deleteNotification(self, id: int) -> None:
         ...
 
-    def deleteNotificationBlock(
-            self,
-            id: int) -> None:
+    def deleteNotificationBlock(self, id: int) -> None:
         ...
 
-    def deleteRPMSig(
-            self,
-            rpminfo: Union[str, RPMID, RPMNVRA],
-            sigkey: Optional[str] = None,
-            all_sigs: bool = False) -> None:
+    def deleteRPMSig(self, rpminfo: Union[str, RPMID, RPMNVRA], sigkey: Optional[str]=None, all_sigs: bool=False) -> None:
         ...
 
-    @staticmethod
-    def deleteTag(
-            tagInfo: Union[str, TagID]) -> None:
+    def deleteTag(self, tagInfo: Union[str, TagID]) -> None:
         ...
 
-    def disableChannel(
-            self,
-            channelname: str,
-            comment: Optional[str] = None) -> None:
+    def disableChannel(self, channelname: str, comment: Optional[str]=None) -> None:
         ...
 
-    def disableHost(
-            self,
-            hostname: str) -> None:
+    def disableHost(self, hostname: str) -> None:
         ...
 
-    def disableUser(
-            self,
-            username: Union[int, str]) -> None:
+    def disableUser(self, username: Union[int, str]) -> None:
         ...
 
-    def distRepo(
-            self,
-            tag: Union[str, TagID],
-            keys: List[str],
-            **task_opts) -> TaskID:
+    def distRepo(self, tag: Union[str, TagID], keys: List[str], **task_opts) -> TaskID:
         ...
 
-    def downloadTaskOutput(
-            self,
-            taskID: TaskID,
-            fileName: str,
-            offset: int = 0,
-            size: int = -1,
-            volume: Optional[str] = None) -> str:
+    def downloadTaskOutput(self, taskID: TaskID, fileName: str, offset: int=0, size: int=-1, volume: Optional[str]=None) -> str:
         ...
 
-    @staticmethod
-    def dropGroupMember(
-            group: Union[str, UserID],
-            user: Union[str, UserID]) -> None:
+    def dropGroupMember(self, group: Union[str, UserID], user: Union[str, UserID]) -> None:
         ...
 
     def echo(self, *args) -> List:
         ...
 
-    @staticmethod
-    def editBuildTarget(
-            buildTargetInfo: Union[str, int],
-            name: str,
-            build_tag: Union[str, int],
-            dest_tag: Union[str, int]) -> None:
+    def editBuildTarget(self, buildTargetInfo: Union[str, int], name: str, build_tag: Union[str, int], dest_tag: Union[str, int]) -> None:
         ...
 
-    @staticmethod
-    def editChannel(
-            channelInfo: Union[int, str],
-            **kw) -> bool:
+    def editChannel(self, channelInfo: Union[int, str], **kw) -> bool:
         ...
 
-    @staticmethod
-    def editExternalRepo(
-            info: Union[str, ExternalRepoID],
-            name: Optional[str] = None,
-            url: Optional[str] = None) -> None:
+    def editExternalRepo(self, info: Union[str, ExternalRepoID], name: Optional[str]=None, url: Optional[str]=None) -> None:
         ...
 
-    @staticmethod
-    def editHost(
-            hostInfo: Union[str, HostID],
-            **kw) -> bool:
+    def editHost(self, hostInfo: Union[str, HostID], **kw) -> bool:
         ...
 
-    def editPermission(
-            self,
-            permission: Union[str, PermID],
-            description: str) -> None:
+    def editPermission(self, permission: Union[str, PermID], description: str) -> None:
         ...
 
-    @staticmethod
-    def editTag(
-            tagInfo: Union[str, TagID],
-            name: Optional[str],
-            arches: Optional[str],
-            locked: Optional[bool],
-            permissionID: Optional[PermID],
-            extra: Optional[Dict[str, str]] = None) -> None:
+    def editTag(self, tagInfo: Union[str, TagID], name: Optional[str], arches: Optional[str], locked: Optional[bool], permissionID: Optional[PermID], extra: Optional[Dict[str, str]]=None) -> None:
         ...
 
-    @staticmethod
-    def editTag2(
-            tagInfo: Union[str, TagID],
-            **kwargs) -> None:
+    def editTag2(self, tagInfo: Union[str, TagID], **kwargs) -> None:
         ...
 
-    @staticmethod
-    def editTagExternalRepo(
-            tag_info: Union[str, TagID],
-            repo_info: Union[str, ExternalRepoID],
-            priority: Optional[int] = None,
-            merge_mode: Optional[str] = None,
-            arches: Optional[str] = None) -> bool:
+    def editTagExternalRepo(self, tag_info: Union[str, TagID], repo_info: Union[str, ExternalRepoID], priority: Optional[int]=None, merge_mode: Optional[str]=None, arches: Optional[str]=None) -> bool:
         ...
 
-    @staticmethod
-    def editUser(
-            userInfo: Union[str, UserID],
-            name: Optional[str] = None,
-            krb_principal_mappings: Optional[List[OldNew]] = None) -> None:
+    def editUser(self, userInfo: Union[str, UserID], name: Optional[str]=None, krb_principal_mappings: Optional[List[OldNew]]=None) -> None:
         ...
 
-    def enableChannel(
-            self,
-            channelname: str,
-            comment: Optional[str] = None) -> None:
+    def enableChannel(self, channelname: str, comment: Optional[str]=None) -> None:
         ...
 
-    def enableHost(
-            self,
-            hostname: str) -> None:
+    def enableHost(self, hostname: str) -> None:
         ...
 
-    def enableUser(
-            self,
-            username: Union[int, str]) -> None:
+    def enableUser(self, username: Union[int, str]) -> None:
         ...
 
     def error(self) -> NoReturn:
         ...
 
-    @staticmethod
-    def evalPolicy(
-            name: str,
-            data: Dict[str, Any]) -> str:
-        ...
-
-    def exclusiveSession(self, *args, **kwargs) -> None:
-        ...
-
-    def failBuild(self, task_id: int, build_id: int) -> None:
+    def evalPolicy(self, name: str, data: Dict[str, Any]) -> str:
         ...
 
     def fault(self) -> NoReturn:
         ...
 
     @overload
-    def filterResults(
-            self,
-            methodName: str,
-            *args,
-            filterOpts: FilterOptions,
-            **kw) -> List[Dict[str, Any]]:
+    def filterResults(self, methodName: str, *args, filterOpts: FilterOptions, **kw) -> List[Dict[str, Any]]:
         ...
 
     @overload
-    def filterResults(
-            self,
-            methodName: str,
-            *args,
-            **kw) -> List[Dict[str, Any]]:
+    def filterResults(self, methodName: str, *args, **kw) -> List[Dict[str, Any]]:
         ...
 
-    @staticmethod
-    def findBuildID(
-            X: BuildSpecifier,
-            strict: bool = False) -> Optional[BuildID]:
+    def findBuildID(self, X: BuildSpecifier, strict: bool=False) -> Optional[BuildID]:
         ...
 
-    def freeTask(
-            self,
-            task_id: TaskID) -> None:
+    def freeTask(self, task_id: TaskID) -> None:
         ...
 
-    @staticmethod
-    def getActiveRepos() -> List[RepoInfo]:
+    def getActiveRepos(self) -> List[RepoInfo]:
         ...
 
-    @staticmethod
-    def getAllArches() -> List[Arch]:
+    def getAllArches(self) -> List[Arch]:
         ...
 
     def getAllPerms(self) -> List[PermInfo]:
@@ -599,1213 +273,511 @@ class ClientSession(Protocol):
     def getAPIVersion(self) -> int:
         ...
 
-    @staticmethod
-    def getArchive(
-            archive_id: ArchiveID,
-            strict: bool = False) -> Optional[ArchiveInfo]:
+    def getArchive(self, archive_id: ArchiveID, strict: bool=False) -> Optional[ArchiveInfo]:
         ...
 
-    @staticmethod
-    def getArchiveFile(
-            archive_id: ArchiveID,
-            filename: str,
-            strict: bool = False) -> Optional[ArchiveFileInfo]:
+    def getArchiveFile(self, archive_id: ArchiveID, filename: str, strict: bool=False) -> Optional[ArchiveFileInfo]:
         ...
 
-    @staticmethod
-    def getArchiveType(
-            filename: Optional[str] = None,
-            type_name: Optional[str] = None,
-            type_id: Optional[ATypeID] = None,
-            strict: bool = False) -> ATypeInfo:
+    def getArchiveType(self, filename: Optional[str]=None, type_name: Optional[str]=None, type_id: Optional[ATypeID]=None, strict: bool=False) -> ATypeInfo:
         ...
 
-    @staticmethod
-    def getArchiveTypes() -> List[ATypeInfo]:
+    def getArchiveTypes(self) -> List[ATypeInfo]:
         ...
 
-    def getAverageBuildDuration(
-            self,
-            package: Union[str, PackageID],
-            age: Optional[int] = None) -> Optional[float]:
+    def getAverageBuildDuration(self, package: Union[str, PackageID], age: Optional[int]=None) -> Optional[float]:
         ...
 
-    @staticmethod
-    def getBuild(
-            buildInfo: BuildSpecifier,
-            strict: bool = False) -> BuildInfo:
+    def getBuild(self, buildInfo: BuildSpecifier, strict: bool=False) -> BuildInfo:
         ...
 
-    def getBuildConfig(
-            self,
-            tag: Union[str, TagID],
-            event: Optional[EventID] = None) -> TagInfo:
+    def getBuildConfig(self, tag: Union[str, TagID], event: Optional[EventID]=None) -> TagInfo:
         ...
 
-    @staticmethod
-    def getBuildLogs(
-            build: BuildSpecifier) -> BuildLogs:
+    def getBuildLogs(self, build: BuildSpecifier) -> BuildLogs:
         ...
 
-    def getBuildNotification(
-            self,
-            id: int,
-            strict: bool = False) -> Optional[Dict[str, Any]]:
+    def getBuildNotification(self, id: int, strict: bool=False) -> Optional[Dict[str, Any]]:
         ...
 
-    def getBuildNotificationBlock(
-            self,
-            id: int,
-            strict: bool = False) -> Optional[Dict[str, Any]]:
+    def getBuildNotificationBlock(self, id: int, strict: bool=False) -> Optional[Dict[str, Any]]:
         ...
 
-    def getBuildNotificationBlocks(
-            self,
-            userID: Union[str, UserID, None] = None) -> Dict[str, Any]:
+    def getBuildNotificationBlocks(self, userID: Union[str, UserID, None]=None) -> Dict[str, Any]:
         ...
 
-    def getBuildNotifications(
-            self,
-            userID: Union[str, UserID, None] = None) -> Dict[str, Any]:
+    def getBuildNotifications(self, userID: Union[str, UserID, None]=None) -> Dict[str, Any]:
         ...
 
-    @staticmethod
-    def getBuildroot(
-            buildrootID: BuildrootID,
-            strict: bool = False) -> BuildrootInfo:
+    def getBuildroot(self, buildrootID: BuildrootID, strict: bool=False) -> BuildrootInfo:
         ...
 
-    def getBuildrootListing(
-            self,
-            id: BuildrootID) -> List[RPMInfo]:
+    def getBuildrootListing(self, id: BuildrootID) -> List[RPMInfo]:
         ...
 
-    @staticmethod
-    def getBuildTarget(
-            info: Union[str, TargetID],
-            event: Optional[EventID] = None,
-            strict: bool = False) -> TargetInfo:
+    def getBuildTarget(self, info: Union[str, TargetID], event: Optional[EventID]=None, strict: bool=False) -> TargetInfo:
         ...
 
-    @staticmethod
-    def getBuildTargets(
-            info: Union[str, TargetID, None] = None,
-            event: Optional[EventID] = None,
-            buildTagID: Union[str, TagID, TagInfo, None] = None,
-            destTagID: Union[str, TagID, TagInfo, None] = None,
-            queryOpts: Optional[QueryOptions] = None) -> List[TargetInfo]:
+    def getBuildTargets(self, info: Union[str, TargetID, None]=None, event: Optional[EventID]=None, buildTagID: Union[str, TagID, TagInfo, None]=None, destTagID: Union[str, TagID, TagInfo, None]=None, queryOpts: Optional[QueryOptions]=None) -> List[TargetInfo]:
         ...
 
-    @staticmethod
-    def getBuildType(
-            buildInfo: BuildSpecifier,
-            strict: bool = False) -> Dict[str, dict]:
+    def getBuildType(self, buildInfo: BuildSpecifier, strict: bool=False) -> Dict[str, dict]:
         ...
 
-    def getChangelogEntries(
-            self,
-            buildID: Optional[int] = None,
-            taskID: Optional[int] = None,
-            filepath: Optional[str] = None,
-            author: Optional[str] = None,
-            before: Union[datetime, str, int, None] = None,
-            after: Union[datetime, str, int, None] = None,
-            queryOpts: Optional[QueryOptions] = None,
-            strict: bool = False) -> List[ChangelogEntry]:
+    def getChangelogEntries(self, buildID: Optional[int]=None, taskID: Optional[int]=None, filepath: Optional[str]=None, author: Optional[str]=None, before: Union[datetime, str, int, None]=None, after: Union[datetime, str, int, None]=None, queryOpts: Optional[QueryOptions]=None, strict: bool=False) -> List[ChangelogEntry]:
         ...
 
-    @staticmethod
-    def getChannel(
-            channelInfo: Union[str, ChannelID],
-            strict: bool = False) -> ChannelInfo:
+    def getChannel(self, channelInfo: Union[str, ChannelID], strict: bool=False) -> ChannelInfo:
         ...
 
     @overload
-    def getEvent(
-            self,
-            id: int) -> EventInfo:
+    def getEvent(self, id: int) -> EventInfo:
         ...
 
     @overload
-    def getEvent(
-            self,
-            id: int,
-            strict: bool = False) -> EventInfo:
-        # :since: koji 1.35
+    def getEvent(self, id: int, strict: bool=False) -> EventInfo:
         ...
 
-    @staticmethod
-    def getExternalRepo(
-            info: Union[str, ExternalRepoID],
-            strict: bool = False,
-            event: Optional[EventID] = None) -> ExternalRepoInfo:
+    def getExternalRepo(self, info: Union[str, ExternalRepoID], strict: bool=False, event: Optional[EventID]=None) -> ExternalRepoInfo:
         ...
 
-    @staticmethod
-    def getExternalRepoList(
-            tag_info: Union[str, TagID],
-            event: Optional[EventID] = None) -> TagExternalRepos:
+    def getExternalRepoList(self, tag_info: Union[str, TagID], event: Optional[EventID]=None) -> TagExternalRepos:
         ...
 
-
-    def getFullInheritance(
-            self,
-            tag: Union[str, TagID],
-            event: Optional[EventID] = None,
-            reverse: bool = False) -> TagInheritance:
+    def getFullInheritance(self, tag: Union[str, TagID], event: Optional[EventID]=None, reverse: bool=False) -> TagInheritance:
         ...
 
-    @staticmethod
-    def getGroupMembers(
-            group: Union[str, UserID]) -> List[UserInfo]:
+    def getGroupMembers(self, group: Union[str, UserID]) -> List[UserInfo]:
         ...
 
-    @staticmethod
-    def getHost(
-            hostInfo: Union[str, HostID],
-            strict: bool = False,
-            event: Optional[EventID] = None) -> HostInfo:
+    def getHost(self, hostInfo: Union[str, HostID], strict: bool=False, event: Optional[EventID]=None) -> HostInfo:
         ...
 
-    @staticmethod
-    def getImageArchive(
-            archive_id: ArchiveID,
-            strict: bool = False) -> ArchiveInfo:
+    def getImageArchive(self, archive_id: ArchiveID, strict: bool=False) -> ArchiveInfo:
         ...
 
-    @staticmethod
-    def getImageBuild(
-            buildInfo: BuildSpecifier,
-            strict: bool = False) -> Optional[Dict[str, BuildID]]:
+    def getImageBuild(self, buildInfo: BuildSpecifier, strict: bool=False) -> Optional[Dict[str, BuildID]]:
         ...
 
-    def getInheritanceData(
-            self,
-            tag: Union[str, TagID],
-            event: Optional[EventID] = None) -> TagInheritance:
+    def getInheritanceData(self, tag: Union[str, TagID], event: Optional[EventID]=None) -> TagInheritance:
         ...
 
     def getKojiVersion(self) -> str:
-        # :since: koji 1.23
         ...
 
     @overload
-    def getLastEvent(
-            self,
-            before: Union[int, float, None] = None) -> EventInfo:
+    def getLastEvent(self, before: Union[int, float, None]=None) -> EventInfo:
         ...
 
     @overload
-    def getLastEvent(
-            self,
-            before: Union[int, float, None] = None,
-            strict: bool = True) -> EventInfo:
-        # :since: koji 1.35
+    def getLastEvent(self, before: Union[int, float, None]=None, strict: bool=True) -> EventInfo:
         ...
 
     @overload
-    def getLastHostUpdate(
-            self,
-            hostID: int) -> Union[str, None]:
+    def getLastHostUpdate(self, hostID: int) -> Union[str, None]:
         ...
 
     @overload
-    def getLastHostUpdate(
-            self,
-            hostID: int,
-            ts: Literal[False]) -> Union[str, None]:
+    def getLastHostUpdate(self, hostID: int, ts: Literal[False]) -> Union[str, None]:
         ...
 
     @overload
-    def getLastHostUpdate(
-            self,
-            hostID: int,
-            ts: Literal[True]) -> Union[float, None]:
+    def getLastHostUpdate(self, hostID: int, ts: Literal[True]) -> Union[float, None]:
         ...
 
     @overload
-    def getLastHostUpdate(
-            self,
-            hostID: int,
-            ts: bool = False) -> Union[str, float, None]:
+    def getLastHostUpdate(self, hostID: int, ts: bool=False) -> Union[str, float, None]:
         ...
 
     @overload
-    def getLatestBuilds(
-            self,
-            tag: Union[str, TagID],
-            event: Optional[EventID] = None,
-            package: Optional[str] = None,
-            type: Optional[str] = None) -> List[TagBuildInfo]:
+    def getLatestBuilds(self, tag: Union[str, TagID], event: Optional[EventID]=None, package: Optional[str]=None, type: Optional[str]=None) -> List[TagBuildInfo]:
         ...
 
     @overload
-    def getLatestBuilds(
-            self,
-            tag: Union[str, TagID],
-            event: Optional[EventID] = None,
-            package: Optional[str] = None,
-            type: Optional[str] = None,
-            draft: Optional[bool] = None) -> List[TagBuildInfo]:
-        # :since: koji 1.34
+    def getLatestBuilds(self, tag: Union[str, TagID], event: Optional[EventID]=None, package: Optional[str]=None, type: Optional[str]=None, draft: Optional[bool]=None) -> List[TagBuildInfo]:
         ...
 
-    def getLatestMavenArchives(
-            self,
-            tag: Union[int, str],
-            event: Optional[int] = None,
-            inherit: bool = True) -> List[ArchiveInfo]:
+    def getLatestMavenArchives(self, tag: Union[int, str], event: Optional[int]=None, inherit: bool=True) -> List[ArchiveInfo]:
         ...
 
     @overload
-    def getLatestRPMS(
-            self,
-            tag: Union[str, TagID],
-            package: Optional[str] = None,
-            arch: Union[Arch, List[Arch], None] = None,
-            event: Optional[EventID] = None,
-            rpmsigs: bool = False,
-            type: Optional[str] = None) -> Tuple[List[RPMInfo],
-                                                 List[BuildInfo]]:
+    def getLatestRPMS(self, tag: Union[str, TagID], package: Optional[str]=None, arch: Union[Arch, List[Arch], None]=None, event: Optional[EventID]=None, rpmsigs: bool=False, type: Optional[str]=None) -> Tuple[List[RPMInfo], List[BuildInfo]]:
         ...
 
     @overload
-    def getLatestRPMS(
-            self,
-            tag: Union[str, TagID],
-            package: Optional[str] = None,
-            arch: Union[Arch, List[Arch], None] = None,
-            event: Optional[EventID] = None,
-            rpmsigs: bool = False,
-            type: Optional[str] = None,
-            draft: Optional[bool] = None) -> Tuple[List[RPMInfo],
-                                                   List[BuildInfo]]:
-        # :since: koji 1.34
+    def getLatestRPMS(self, tag: Union[str, TagID], package: Optional[str]=None, arch: Union[Arch, List[Arch], None]=None, event: Optional[EventID]=None, rpmsigs: bool=False, type: Optional[str]=None, draft: Optional[bool]=None) -> Tuple[List[RPMInfo], List[BuildInfo]]:
         ...
 
     def getLoggedInUser(self) -> UserInfo:
         ...
 
-    @staticmethod
-    def getMavenArchive(
-            archive_id: ArchiveID,
-            strict: bool = False) -> ArchiveInfo:
+    def getMavenArchive(self, archive_id: ArchiveID, strict: bool=False) -> ArchiveInfo:
         ...
 
-    @staticmethod
-    def getMavenBuild(
-            buildInfo: Union[str, BuildID],
-            strict: bool = False) -> Dict[str, Any]:
-        # TODO: need a return typedict
+    def getMavenBuild(self, buildInfo: Union[str, BuildID], strict: bool=False) -> Dict[str, Any]:
         ...
 
-    @staticmethod
-    def getNextRelease(
-            build_info: BuildNVR,
-            incr: int = 1) -> str:
+    def getNextRelease(self, build_info: BuildNVR, incr: int=1) -> str:
         ...
 
-    @staticmethod
-    def getPackage(
-            info: Union[str, PackageID],
-            strict: bool = False,
-            create: bool = False) -> Optional[NamedID]:
+    def getPackage(self, info: Union[str, PackageID], strict: bool=False, create: bool=False) -> Optional[NamedID]:
         ...
 
-    def getPackageConfig(
-            self,
-            tag: Union[str, TagID],
-            pkg: Union[str, PackageID],
-            event: Optional[EventID] = None) -> Optional[TagPackageInfo]:
+    def getPackageConfig(self, tag: Union[str, TagID], pkg: Union[str, PackageID], event: Optional[EventID]=None) -> Optional[TagPackageInfo]:
         ...
 
-    def getPackageID(
-            self,
-            name: str,
-            strict: bool = False) -> Optional[PackageID]:
+    def getPackageID(self, name: str, strict: bool=False) -> Optional[PackageID]:
         ...
 
     def getPerms(self) -> List[str]:
         ...
 
     @overload
-    @staticmethod
-    def getRepo(
-            tag: Union[int, str],
-            state: Optional[RepoState] = None,
-            event: Optional[int] = None,
-            dist: bool = False) -> RepoInfo:
+    def getRepo(self, tag: Union[int, str], state: Optional[RepoState]=None, event: Optional[int]=None, dist: bool=False) -> RepoInfo:
         ...
 
     @overload
-    @staticmethod
-    def getRepo(
-            tag: Union[int, str],
-            state: Optional[RepoState] = None,
-            event: Optional[int] = None,
-            dist: bool = False,
-            min_event: Optional[EventID] = None) -> RepoInfo:
-        # :since: koji 1.35
+    def getRepo(self, tag: Union[int, str], state: Optional[RepoState]=None, event: Optional[int]=None, dist: bool=False, min_event: Optional[EventID]=None) -> RepoInfo:
         ...
 
     @overload
-    @staticmethod
-    def getRPM(
-            rpminfo: Union[str, RPMID, RPMNVRA],
-            strict: bool = False) -> Optional[RPMInfo]:
+    def getRPM(self, rpminfo: Union[str, RPMID, RPMNVRA], strict: bool=False) -> Optional[RPMInfo]:
         ...
 
     @overload
-    @staticmethod
-    def getRPM(
-            rpminfo: Union[str, RPMID, RPMNVRA],
-            strict: bool = False,
-            *,
-            multi: Literal[False]) -> Optional[RPMInfo]:
+    def getRPM(self, rpminfo: Union[str, RPMID, RPMNVRA], strict: bool=False, *, multi: Literal[False]) -> Optional[RPMInfo]:
         ...
 
     @overload
-    @staticmethod
-    def getRPM(
-            rpminfo: Union[str, RPMID, RPMNVRA],
-            strict: bool = False,
-            *,
-            multi: Literal[True]) -> List[RPMInfo]:
+    def getRPM(self, rpminfo: Union[str, RPMID, RPMNVRA], strict: bool=False, *, multi: Literal[True]) -> List[RPMInfo]:
         ...
 
     @overload
-    @staticmethod
-    def getRPM(
-            rpminfo: Union[str, RPMID, RPMNVRA],
-            strict: bool = False,
-            multi: bool = False) -> Union[RPMInfo, List[RPMInfo], None]:
+    def getRPM(self, rpminfo: Union[str, RPMID, RPMNVRA], strict: bool=False, multi: bool=False) -> Union[RPMInfo, List[RPMInfo], None]:
         ...
 
-    def getRPMChecksums(
-            self,
-            rpm_id: RPMID,
-            checksum_types: Optional[List[ChecksumType]] = None,
-            cacheonly: bool = False) -> Dict[ChecksumType, str]:
+    def getRPMChecksums(self, rpm_id: RPMID, checksum_types: Optional[List[ChecksumType]]=None, cacheonly: bool=False) -> Dict[ChecksumType, str]:
         ...
 
-    def getRPMDeps(
-            self,
-            rpmID: RPMID,
-            depType: Optional[RPMDepType] = None,
-            queryOpts: Optional[QueryOptions] = None,
-            strict: bool = False) -> List[RPMDepInfo]:
+    def getRPMDeps(self, rpmID: RPMID, depType: Optional[RPMDepType]=None, queryOpts: Optional[QueryOptions]=None, strict: bool=False) -> List[RPMDepInfo]:
         ...
 
-    def getRPMFile(
-            self,
-            rpmID: RPMID,
-            filename: str,
-            strict: bool = False) -> Optional[RPMFileInfo]:
+    def getRPMFile(self, rpmID: RPMID, filename: str, strict: bool=False) -> Optional[RPMFileInfo]:
         ...
 
     @overload
-    def getRPMHeaders(
-            self,
-            rpmID: Optional[int] = None,
-            taskID: Optional[TaskID] = None,
-            filepath: Optional[str] = None,
-            headers: Optional[List[str]] = None) -> Dict[str, Any]:
+    def getRPMHeaders(self, rpmID: Optional[int]=None, taskID: Optional[TaskID]=None, filepath: Optional[str]=None, headers: Optional[List[str]]=None) -> Dict[str, Any]:
         ...
 
     @overload
-    def getRPMHeaders(
-            self,
-            rpmID: Optional[int] = None,
-            taskID: Optional[TaskID] = None,
-            filepath: Optional[str] = None,
-            headers: Optional[List[str]] = None,
-            strict: Optional[bool] = False) -> Dict[str, Any]:
-        # :since: koji 1.29
+    def getRPMHeaders(self, rpmID: Optional[int]=None, taskID: Optional[TaskID]=None, filepath: Optional[str]=None, headers: Optional[List[str]]=None, strict: Optional[bool]=False) -> Dict[str, Any]:
         ...
 
-    def getSessionInfo(
-            self,
-            details: bool = False,
-            user_id: Optional[UserID] = None) -> Union[None, SessionInfo,
-                                                       List[SessionInfo]]:
+    def getSessionInfo(self, details: bool=False, user_id: Optional[UserID]=None) -> Union[None, SessionInfo, List[SessionInfo]]:
         ...
 
-    @staticmethod
-    def getTag(
-            tagInfo: Union[str, TagID],
-            strict: bool = False,
-            event: Optional[EventID] = None,
-            blocked: bool = False) -> Optional[TagInfo]:
+    def getTag(self, tagInfo: Union[str, TagID], strict: bool=False, event: Optional[EventID]=None, blocked: bool=False) -> Optional[TagInfo]:
         ...
 
-    @staticmethod
-    def getTagID(
-            info: Union[str, TagID, Dict[str, Any]],
-            strict: bool = False,
-            create: bool = False) -> Optional[TagID]:
+    def getTagID(self, info: Union[str, TagID, Dict[str, Any]], strict: bool=False, create: bool=False) -> Optional[TagID]:
         ...
 
-    @staticmethod
-    def getTagExternalRepos(
-            tag_info: Union[str, TagID, None] = None,
-            repo_info: Union[str, ExternalRepoID, None] = None,
-            event: Optional[EventID] = None) -> TagExternalRepos:
+    def getTagExternalRepos(self, tag_info: Union[str, TagID, None]=None, repo_info: Union[str, ExternalRepoID, None]=None, event: Optional[EventID]=None) -> TagExternalRepos:
         ...
 
-    @staticmethod
-    def getTagGroups(
-            tag: Union[str, TagID],
-            event: Optional[EventID] = None,
-            inherit: bool = True,
-            incl_pkgs: bool = True,
-            incl_reqs: bool = True,
-            incl_blocked: bool = False) -> List[TagGroupInfo]:
+    def getTagGroups(self, tag: Union[str, TagID], event: Optional[EventID]=None, inherit: bool=True, incl_pkgs: bool=True, incl_reqs: bool=True, incl_blocked: bool=False) -> List[TagGroupInfo]:
         ...
 
-    def getTaskChildren(
-            self,
-            task_id: TaskID,
-            request: Optional[bool] = False,
-            strict: Optional[bool] = False) -> List[TaskInfo]:
+    def getTaskChildren(self, task_id: TaskID, request: Optional[bool]=False, strict: Optional[bool]=False) -> List[TaskInfo]:
         ...
 
-    def getTaskDescendents(
-            self,
-            task_id: TaskID,
-            request: bool = False) -> Dict[str, List[TaskInfo]]:
+    def getTaskDescendents(self, task_id: TaskID, request: bool=False) -> Dict[str, List[TaskInfo]]:
         ...
 
     @overload
-    def getTaskInfo(
-            self,
-            task_id: List[TaskID],
-            request: bool = False,
-            strict: bool = False) -> List[TaskInfo]:
+    def getTaskInfo(self, task_id: List[TaskID], request: bool=False, strict: bool=False) -> List[TaskInfo]:
         ...
 
     @overload
-    def getTaskInfo(
-            self,
-            task_id: TaskID,
-            request: bool = False,
-            strict: bool = False) -> TaskInfo:
+    def getTaskInfo(self, task_id: TaskID, request: bool=False, strict: bool=False) -> TaskInfo:
         ...
 
-    def getTaskRequest(
-            self,
-            taskId: TaskID) -> Dict[str, Any]:
+    def getTaskRequest(self, taskId: TaskID) -> Dict[str, Any]:
         ...
 
-    def getTaskResult(
-            self,
-            taskId: TaskID,
-            raise_fault: bool = True) -> Any:
+    def getTaskResult(self, taskId: TaskID, raise_fault: bool=True) -> Any:
         ...
 
     @overload
-    @staticmethod
-    def getUser(
-            userInfo: Union[str, UserID, None] = None,
-            strict: bool = False,
-            krb_princs: bool = True) -> UserInfo:
+    def getUser(self, userInfo: Union[str, UserID, None]=None, strict: bool=False, krb_princs: bool=True) -> UserInfo:
         ...
 
     @overload
-    @staticmethod
-    def getUser(
-            userInfo: Union[str, UserID, None] = None,
-            strict: bool = False,
-            krb_princs: bool = True,
-            groups: bool = False) -> UserInfo:
-        # :since: koji 1.34
+    def getUser(self, userInfo: Union[str, UserID, None]=None, strict: bool=False, krb_princs: bool=True, groups: bool=False) -> UserInfo:
         ...
 
-    def getUserGroups(
-            self,
-            user: Union[int, str]) -> List[UserGroup]:
-        # :since: koji 1.35
+    def getUserGroups(self, user: Union[int, str]) -> List[UserGroup]:
         ...
 
     @overload
-    def getUserPerms(
-            self,
-            userID: Union[str, UserID, None] = None) -> List[str]:
+    def getUserPerms(self, userID: Union[str, UserID, None]=None) -> List[str]:
         ...
 
     @overload
-    def getUserPerms(
-            self,
-            userID: Union[str, UserID, None] = None,
-            with_groups: bool = True) -> List[str]:
-        # :since: koji 1.34
+    def getUserPerms(self, userID: Union[str, UserID, None]=None, with_groups: bool=True) -> List[str]:
         ...
 
-    def getUserPermsInheritance(
-            self,
-            userID: Union[str, UserID]) -> Dict[str, List[str]]:
-        # :since: koji 1.34
+    def getUserPermsInheritance(self, userID: Union[str, UserID]) -> Dict[str, List[str]]:
         ...
 
-    def getVolume(
-            self,
-            volume: str,
-            strict: bool = False) -> Optional[NamedID]:
+    def getVolume(self, volume: str, strict: bool=False) -> Optional[NamedID]:
         ...
 
-    @staticmethod
-    def getWinArchive(
-            archive_id: ArchiveID,
-            strict: bool = False) -> ArchiveInfo:
+    def getWinArchive(self, archive_id: ArchiveID, strict: bool=False) -> ArchiveInfo:
         ...
 
-    @staticmethod
-    def getWinBuild(
-            buildInfo: Union[str, BuildID],
-            strict: bool = False) -> Dict[str, Any]:
+    def getWinBuild(self, buildInfo: Union[str, BuildID], strict: bool=False) -> Dict[str, Any]:
         ...
 
-    @staticmethod
-    def grantCGAccess(
-            user: Union[str, UserID],
-            cg: Union[str, CGID],
-            create: bool = False) -> None:
+    def grantCGAccess(self, user: Union[str, UserID], cg: Union[str, CGID], create: bool=False) -> None:
         ...
 
-    def grantPermission(
-            self,
-            userinfo: Union[str, UserID],
-            permission: Union[str, PermID],
-            create: bool = False,
-            description: Optional[str] = None) -> None:
+    def grantPermission(self, userinfo: Union[str, UserID], permission: Union[str, PermID], create: bool=False, description: Optional[str]=None) -> None:
         ...
 
-    @staticmethod
-    def groupListAdd(
-            taginfo: Union[str, TagID],
-            grpinfo: Union[str, TagGroupID],
-            block: bool = False,
-            force: bool = False,
-            **opts) -> None:
+    def groupListAdd(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], block: bool=False, force: bool=False, **opts) -> None:
         ...
 
-    @staticmethod
-    def groupListBlock(
-            taginfo: Union[str, TagID],
-            grpinfo: Union[str, TagGroupID]) -> None:
+    def groupListBlock(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID]) -> None:
         ...
 
-    @staticmethod
-    def groupListRemove(
-            taginfo: Union[str, TagID],
-            grpinfo: Union[str, TagGroupID],
-            force: bool = False) -> None:
+    def groupListRemove(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], force: bool=False) -> None:
         ...
 
-    @staticmethod
-    def groupListUnblock(
-            taginfo: Union[str, TagID],
-            grpinfo: Union[str, TagGroupID]) -> None:
+    def groupListUnblock(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID]) -> None:
         ...
 
-    @staticmethod
-    def groupPackageListAdd(
-            taginfo: Union[str, TagID],
-            grpinfo: Union[str, TagGroupID],
-            pkg_name: str,
-            block: bool = False,
-            force: bool = False,
-            **opts) -> None:
+    def groupPackageListAdd(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], pkg_name: str, block: bool=False, force: bool=False, **opts) -> None:
         ...
 
-    @staticmethod
-    def groupPackageListBlock(
-            taginfo: Union[str, TagID],
-            grpinfo: Union[str, TagGroupID],
-            pkg_name: str) -> None:
+    def groupPackageListBlock(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], pkg_name: str) -> None:
         ...
 
-    @staticmethod
-    def groupPackageListRemove(
-            taginfo: Union[str, TagID],
-            grpinfo: Union[str, TagGroupID],
-            pkg_name: str) -> None:
+    def groupPackageListRemove(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], pkg_name: str) -> None:
         ...
 
-    @staticmethod
-    def groupPackageListUnblock(
-            taginfo: Union[str, TagID],
-            grpinfo: Union[str, TagGroupID],
-            pkg_name: str) -> None:
+    def groupPackageListUnblock(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], pkg_name: str) -> None:
         ...
 
-    @staticmethod
-    def groupReqListAdd(
-            taginfo: Union[str, TagID],
-            grpinfo: Union[str, TagGroupID],
-            reqinfo: str,
-            block: bool = False,
-            force: bool = False,
-            **opts) -> None:
+    def groupReqListAdd(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], reqinfo: str, block: bool=False, force: bool=False, **opts) -> None:
         ...
 
-    @staticmethod
-    def groupReqListBlock(
-            taginfo: Union[str, TagID],
-            grpinfo: Union[str, TagGroupID],
-            reqinfo: str) -> None:
+    def groupReqListBlock(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], reqinfo: str) -> None:
         ...
 
-    @staticmethod
-    def groupReqListRemove(
-            taginfo: Union[str, TagID],
-            grpinfo: Union[str, TagGroupID],
-            reqinfo: str,
-            force: Optional[bool] = None) -> None:
+    def groupReqListRemove(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], reqinfo: str, force: Optional[bool]=None) -> None:
         ...
 
-    @staticmethod
-    def groupReqListUnblock(
-            taginfo: Union[str, TagID],
-            grpinfo: Union[str, TagGroupID],
-            reqinfo: str) -> None:
+    def groupReqListUnblock(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], reqinfo: str) -> None:
         ...
 
-    def hasPerm(
-            self,
-            perm: str,
-            strict: bool = False) -> bool:
+    def hasPerm(self, perm: str, strict: bool=False) -> bool:
         ...
 
-    def hello(
-            self,
-            *args) -> str:
+    def hello(self, *args) -> str:
         ...
 
-    @property
-    def host(self) -> Host:
+    def importArchive(self, filepath: str, buildinfo: BuildInfo, type: str, typeInfo: Dict[str, Any]) -> ArchiveInfo:
         ...
 
-    def importArchive(
-            self,
-            filepath: str,
-            buildinfo: BuildInfo,
-            type: str,
-            typeInfo: Dict[str, Any]) -> ArchiveInfo:
+    def importRPM(self, path: str, basename: str) -> RPMInfo:
         ...
 
-    def importRPM(
-            self,
-            path: str,
-            basename: str) -> RPMInfo:
+    def listArchives(self, buildID: Optional[BuildID]=None, buildrootID: Optional[BuildrootID]=None, componentBuildrootID: Optional[BuildrootID]=None, hostID: Optional[HostID]=None, type: Optional[str]=None, filename: Optional[str]=None, size: Optional[int]=None, checksum: Optional[int]=None, checksum_type: Optional[ChecksumType]=None, typeInfo: Optional[Dict[str, Any]]=None, queryOpts: Optional[QueryOptions]=None, imageID: Optional[int]=None, archiveID: Optional[ArchiveID]=None, strict: bool=False) -> List[ArchiveInfo]:
         ...
 
-    def initWinBuild(
-            self,
-            task_id: TaskID,
-            build_info: BuildNVR,
-            win_info: Dict[str, Any]) -> None:
+    def listArchiveFiles(self, archive_id: ArchiveID, queryOpts: Optional[QueryOptions]=None, strict: bool=False) -> List[ArchiveFileInfo]:
         ...
 
-    @staticmethod
-    def listArchives(
-            buildID: Optional[BuildID] = None,
-            buildrootID: Optional[BuildrootID] = None,
-            componentBuildrootID: Optional[BuildrootID] = None,
-            hostID: Optional[HostID] = None,
-            type: Optional[str] = None,
-            filename: Optional[str] = None,
-            size: Optional[int] = None,
-            checksum: Optional[int] = None,
-            checksum_type: Optional[ChecksumType] = None,
-            typeInfo: Optional[Dict[str, Any]] = None,
-            queryOpts: Optional[QueryOptions] = None,
-            imageID: Optional[int] = None,
-            archiveID: Optional[ArchiveID] = None,
-            strict: bool = False) -> List[ArchiveInfo]:
+    def listBTypes(self, query: Optional[NamedID]=None, queryOpts: Optional[QueryOptions]=None) -> List[BTypeInfo]:
         ...
 
-    @staticmethod
-    def listArchiveFiles(
-            archive_id: ArchiveID,
-            queryOpts: Optional[QueryOptions] = None,
-            strict: bool = False) -> List[ArchiveFileInfo]:
+    def listBuildRPMs(self, build: BuildSpecifier) -> List[RPMInfo]:
         ...
 
-    @staticmethod
-    def listBTypes(
-            query: Optional[NamedID] = None,
-            queryOpts: Optional[QueryOptions] = None) -> List[BTypeInfo]:
+    def listBuildroots(self, hostID: Optional[int]=None, tagID: Optional[TagID]=None, state: Union[BuildrootState, List[BuildrootState], None]=None, rpmID: Optional[RPMID]=None, archiveID: Optional[ArchiveID]=None, taskID: Optional[TaskID]=None, buildrootID: Optional[BuildrootID]=None, repoID: Optional[RepoID]=None, queryOpts: Optional[QueryOptions]=None) -> List[BuildrootInfo]:
         ...
 
-    def listBuildRPMs(
-            self,
-            build: BuildSpecifier) -> List[RPMInfo]:
+    def listBuilds(self, packageID: Optional[PackageID]=None, userID: Optional[UserID]=None, taskID: Optional[TaskID]=None, prefix: Optional[str]=None, state: Optional[BuildState]=None, volumeID: Optional[int]=None, source: Optional[str]=None, createdBefore: Optional[str]=None, createdAfter: Optional[str]=None, completeBefore: Optional[str]=None, completeAfter: Optional[str]=None, type: Optional[str]=None, typeInfo: Optional[Dict]=None, queryOpts: Optional[QueryOptions]=None, pattern: Optional[str]=None, cgID: Optional[CGID]=None, draft: Optional[bool]=None) -> List[BuildInfo]:
         ...
 
-    @staticmethod
-    def listBuildroots(
-            hostID: Optional[int] = None,
-            tagID: Optional[TagID] = None,
-            state: Union[BuildrootState, List[BuildrootState], None] = None,
-            rpmID: Optional[RPMID] = None,
-            archiveID: Optional[ArchiveID] = None,
-            taskID: Optional[TaskID] = None,
-            buildrootID: Optional[BuildrootID] = None,
-            repoID: Optional[RepoID] = None,
-            queryOpts: Optional[QueryOptions] = None) -> List[BuildrootInfo]:
+    def listCGs(self) -> Dict[str, CGInfo]:
         ...
 
-    def listBuilds(
-            self,
-            packageID: Optional[PackageID] = None,
-            userID: Optional[UserID] = None,
-            taskID: Optional[TaskID] = None,
-            prefix: Optional[str] = None,
-            state: Optional[BuildState] = None,
-            volumeID: Optional[int] = None,
-            source: Optional[str] = None,
-            createdBefore: Optional[str] = None,
-            createdAfter: Optional[str] = None,
-            completeBefore: Optional[str] = None,
-            completeAfter: Optional[str] = None,
-            type: Optional[str] = None,
-            typeInfo: Optional[Dict] = None,
-            queryOpts: Optional[QueryOptions] = None,
-            pattern: Optional[str] = None,
-            cgID: Optional[CGID] = None,
-            draft: Optional[bool] = None) -> List[BuildInfo]:
+    def listChannels(self, hostID: Optional[HostID]=None, event: Optional[EventID]=None, enabled: Optional[bool]=None) -> List[ChannelInfo]:
         ...
 
-    @staticmethod
-    def listCGs() -> Dict[str, CGInfo]:
+    def listExternalRepos(self, info: Union[str, ExternalRepoID, None]=None, url: Optional[str]=None, event: Optional[EventID]=None, queryOpts: Optional[QueryOptions]=None) -> List[ExternalRepoInfo]:
         ...
 
-    @staticmethod
-    def listChannels(
-            hostID: Optional[HostID] = None,
-            event: Optional[EventID] = None,
-            enabled: Optional[bool] = None) -> List[ChannelInfo]:
+    def listHosts(self, arches: Optional[List[str]]=None, channelID: Optional[int]=None, ready: Optional[bool]=None, enabled: Optional[bool]=None, userID: Optional[UserID]=None, queryOpts: Optional[QueryOptions]=None) -> List[HostInfo]:
         ...
 
-    @staticmethod
-    def listExternalRepos(
-            info: Union[str, ExternalRepoID, None] = None,
-            url: Optional[str] = None,
-            event: Optional[EventID] = None,
-            queryOpts: Optional[QueryOptions] = None) \
-            -> List[ExternalRepoInfo]:
+    def listPackages(self, tagID: Optional[TagID]=None, userID: Optional[UserID]=None, pkgID: Optional[PackageID]=None, prefix: Optional[str]=None, inherited: bool=False, with_dups: bool=False, event: Optional[EventID]=None, queryOpts: Optional[QueryOptions]=None, with_owners: bool=True, with_blocked: bool=True) -> List[TagPackageInfo]:
         ...
 
-    def listHosts(
-            self,
-            arches: Optional[List[str]] = None,
-            channelID: Optional[int] = None,
-            ready: Optional[bool] = None,
-            enabled: Optional[bool] = None,
-            userID: Optional[UserID] = None,
-            queryOpts: Optional[QueryOptions] = None) -> List[HostInfo]:
+    def listPackagesSimple(self, prefix: Optional[str]=None, queryOpts: Optional[QueryOptions]=None) -> List[TagPackageSimple]:
         ...
 
-    def listPackages(
-            self,
-            tagID: Optional[TagID] = None,
-            userID: Optional[UserID] = None,
-            pkgID: Optional[PackageID] = None,
-            prefix: Optional[str] = None,
-            inherited: bool = False,
-            with_dups: bool = False,
-            event: Optional[EventID] = None,
-            queryOpts: Optional[QueryOptions] = None,
-            with_owners: bool = True,
-            with_blocked: bool = True) -> List[TagPackageInfo]:
+    def listRPMFiles(self, rpmID: RPMID, queryOpts: Optional[QueryOptions]=None) -> List[RPMFileInfo]:
         ...
 
-    def listPackagesSimple(
-            self,
-            prefix: Optional[str] = None,
-            queryOpts: Optional[QueryOptions] = None) \
-            -> List[TagPackageSimple]:
+    def listRPMs(self, buildID: Optional[BuildID]=None, buildrootID: Optional[BuildrootID]=None, imageID: Optional[int]=None, componentBuildrootID: Optional[BuildrootID]=None, hostID: Optional[int]=None, arches: Union[Arch, List[Arch], None]=None, queryOpts: Optional[QueryOptions]=None, draft: Optional[bool]=None) -> List[RPMInfo]:
         ...
 
-    def listRPMFiles(
-            self,
-            rpmID: RPMID,
-            queryOpts: Optional[QueryOptions] = None) -> List[RPMFileInfo]:
+    def listTagged(self, tag: Union[str, TagID], event: Optional[EventID]=None, inherit: bool=False, prefix: Optional[str]=None, latest: bool=False, package: Optional[str]=None, owner: Optional[Union[str, UserID]]=None, type: Optional[str]=None, strict: bool=True, extra: bool=False, draft: Optional[bool]=None) -> List[TagBuildInfo]:
         ...
 
-    @staticmethod
-    def listRPMs(
-            buildID: Optional[BuildID] = None,
-            buildrootID: Optional[BuildrootID] = None,
-            imageID: Optional[int] = None,
-            componentBuildrootID: Optional[BuildrootID] = None,
-            hostID: Optional[int] = None,
-            arches: Union[Arch, List[Arch], None] = None,
-            queryOpts: Optional[QueryOptions] = None,
-            draft: Optional[bool] = None) -> List[RPMInfo]:
-        ...
-
-    def listTagged(
-            self,
-            tag: Union[str, TagID],
-            event: Optional[EventID] = None,
-            inherit: bool = False,
-            prefix: Optional[str] = None,
-            latest: bool = False,
-            package: Optional[str] = None,
-            owner: Optional[Union[str, UserID]] = None,
-            type: Optional[str] = None,
-            strict: bool = True,
-            extra: bool = False,
-            draft: Optional[bool] = None) -> List[TagBuildInfo]:
-        ...
-
-    def listTaggedArchives(
-            self,
-            tag: Union[str, TagID],
-            event: Optional[EventID] = None,
-            inherit: bool = False,
-            latest: bool = False,
-            package: Optional[str] = None,
-            type: Optional[str] = None,
-            strict: bool = True,
-            extra: bool = True) -> Tuple[List[ArchiveInfo],
-                                         List[BuildInfo]]:
+    def listTaggedArchives(self, tag: Union[str, TagID], event: Optional[EventID]=None, inherit: bool=False, latest: bool=False, package: Optional[str]=None, type: Optional[str]=None, strict: bool=True, extra: bool=True) -> Tuple[List[ArchiveInfo], List[BuildInfo]]:
         ...
 
     @overload
-    def listTaggedRPMS(
-            self,
-            tag: Union[str, TagID],
-            event: Optional[EventID] = None,
-            inherit: bool = False,
-            latest: bool = False,
-            package: Optional[str] = None,
-            arch: Optional[Arch] = None,
-            rpmsigs: bool = False,
-            owner: Union[str, UserID, None] = None,
-            type: Optional[str] = None,
-            strict: bool = True,
-            extra: bool = True) -> Tuple[List[RPMInfo], List[BuildInfo]]:
+    def listTaggedRPMS(self, tag: Union[str, TagID], event: Optional[EventID]=None, inherit: bool=False, latest: bool=False, package: Optional[str]=None, arch: Optional[Arch]=None, rpmsigs: bool=False, owner: Union[str, UserID, None]=None, type: Optional[str]=None, strict: bool=True, extra: bool=True) -> Tuple[List[RPMInfo], List[BuildInfo]]:
         ...
 
     @overload
-    def listTaggedRPMS(
-            self,
-            tag: Union[str, TagID],
-            event: Optional[EventID] = None,
-            inherit: bool = False,
-            latest: bool = False,
-            package: Optional[str] = None,
-            arch: Optional[Arch] = None,
-            rpmsigs: bool = False,
-            owner: Union[str, UserID, None] = None,
-            type: Optional[str] = None,
-            strict: bool = True,
-            extra: bool = True,
-            draft: Optional[bool] = None) \
-            -> Tuple[List[RPMInfo], List[BuildInfo]]:
-        # :since: koji 1.34
+    def listTaggedRPMS(self, tag: Union[str, TagID], event: Optional[EventID]=None, inherit: bool=False, latest: bool=False, package: Optional[str]=None, arch: Optional[Arch]=None, rpmsigs: bool=False, owner: Union[str, UserID, None]=None, type: Optional[str]=None, strict: bool=True, extra: bool=True, draft: Optional[bool]=None) -> Tuple[List[RPMInfo], List[BuildInfo]]:
         ...
 
-    @staticmethod
-    def listTags(
-            build: Optional[BuildSpecifier] = None,
-            package: Union[str, PackageID, None] = None,
-            perms: bool = True,
-            queryOpts: Optional[QueryOptions] = None,
-            pattern: Optional[str] = None) -> List[TagInfo]:
+    def listTags(self, build: Optional[BuildSpecifier]=None, package: Union[str, PackageID, None]=None, perms: bool=True, queryOpts: Optional[QueryOptions]=None, pattern: Optional[str]=None) -> List[TagInfo]:
         ...
 
-    @staticmethod
-    def listTaskOutput(
-            taskID: TaskID,
-            stat: bool = False,
-            all_volumes: bool = False,
-            strict: bool = False) \
-            -> Union[List[str],
-                     Dict[str, List[str]],
-                     Dict[str, Dict[str, Any]],
-                     Dict[str, Dict[str, Dict[str, Any]]]]:
+    def listTaskOutput(self, taskID: TaskID, stat: bool=False, all_volumes: bool=False, strict: bool=False) -> Union[List[str], Dict[str, List[str]], Dict[str, Dict[str, Any]], Dict[str, Dict[str, Dict[str, Any]]]]:
         ...
 
-    def listTasks(
-            self,
-            opts: Optional[ListTasksOptions] = None,
-            queryOpts: Optional[QueryOptions] = None) -> List[TaskInfo]:
+    def listTasks(self, opts: Optional[ListTasksOptions]=None, queryOpts: Optional[QueryOptions]=None) -> List[TaskInfo]:
         ...
 
     @overload
-    def listUsers(
-            self,
-            userType: UserType = UserType.NORMAL,
-            prefix: Optional[str] = None,
-            queryOpts: Optional[QueryOptions] = None) -> List[UserInfo]:
+    def listUsers(self, userType: UserType=UserType.NORMAL, prefix: Optional[str]=None, queryOpts: Optional[QueryOptions]=None) -> List[UserInfo]:
         ...
 
     @overload
-    def listUsers(
-            self,
-            userType: UserType = UserType.NORMAL,
-            prefix: Optional[str] = None,
-            queryOpts: Optional[QueryOptions] = None,
-            perm: Optional[str] = None,
-            inherited_perm: bool = False) -> List[UserInfo]:
-        # :since: koji 1.35
+    def listUsers(self, userType: UserType=UserType.NORMAL, prefix: Optional[str]=None, queryOpts: Optional[QueryOptions]=None, perm: Optional[str]=None, inherited_perm: bool=False) -> List[UserInfo]:
         ...
 
-    @staticmethod
-    def listVolumes() -> List[NamedID]:
+    def listVolumes(self) -> List[NamedID]:
         ...
 
-    def makeTask(
-            self,
-            *args,
-            **opts) -> TaskID:
+    def makeTask(self, *args, **opts) -> TaskID:
         ...
 
-    def massTag(
-            self,
-            tag: Union[str, TagID],
-            builds: List[Union[str, BuildID]]) -> None:
-        # :since: koji 1.30
+    def massTag(self, tag: Union[str, TagID], builds: List[Union[str, BuildID]]) -> None:
         ...
 
-    def mavenBuild(
-            self,
-            url: str,
-            target: str,
-            opts: Optional[Dict[str, Any]] = None,
-            priority: Optional[int] = None,
-            channel: str = 'maven') -> int:
+    def mavenBuild(self, url: str, target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: str='maven') -> int:
         ...
 
     def mavenEnabled(self) -> bool:
         ...
 
-    def mergeScratch(
-            self,
-            task_id: TaskID) -> BuildID:
+    def mergeScratch(self, task_id: TaskID) -> BuildID:
         ...
 
-    def moveAllBuilds(
-            self,
-            tag1: Union[str, TagID],
-            tag2: Union[str, TagID],
-            package: Union[str, PackageID],
-            force: bool = False) -> TaskID:
+    def moveAllBuilds(self, tag1: Union[str, TagID], tag2: Union[str, TagID], package: Union[str, PackageID], force: bool=False) -> TaskID:
         ...
 
-    def moveBuild(
-            self,
-            tag1: Union[str, TagID],
-            tag2: Union[str, TagID],
-            build: BuildSpecifier,
-            force: bool = False) -> TaskID:
+    def moveBuild(self, tag1: Union[str, TagID], tag2: Union[str, TagID], build: BuildSpecifier, force: bool=False) -> TaskID:
         ...
 
-    @staticmethod
-    def newGroup(
-            name: str) -> UserID:
+    def newGroup(self, name: str) -> UserID:
         ...
 
-    def newRepo(
-            self,
-            tag: Union[str, TagID],
-            event: Optional[EventID] = None,
-            src: bool = False,
-            debuginfo: bool = False,
-            separate_src: bool = False) -> TaskID:
+    def newRepo(self, tag: Union[str, TagID], event: Optional[EventID]=None, src: bool=False, debuginfo: bool=False, separate_src: bool=False) -> TaskID:
         ...
 
-    @staticmethod
-    def packageListAdd(
-            taginfo: Union[str, TagID],
-            pkginfo: Union[str, PackageID],
-            owner: Union[str, UserID, None] = None,
-            block: Optional[bool] = None,
-            extra_arches: Optional[str] = None,
-            force: bool = False,
-            update: bool = False) -> None:
+    def packageListAdd(self, taginfo: Union[str, TagID], pkginfo: Union[str, PackageID], owner: Union[str, UserID, None]=None, block: Optional[bool]=None, extra_arches: Optional[str]=None, force: bool=False, update: bool=False) -> None:
         ...
 
-    @staticmethod
-    def packageListBlock(
-            taginfo: Union[str, TagID],
-            pkginfo: Union[str, PackageID],
-            force: bool = False) -> None:
+    def packageListBlock(self, taginfo: Union[str, TagID], pkginfo: Union[str, PackageID], force: bool=False) -> None:
         ...
 
-    @staticmethod
-    def packageListRemove(
-            taginfo: Union[str, TagID],
-            pkginfo: Union[str, PackageID],
-            force: bool = False) -> None:
+    def packageListRemove(self, taginfo: Union[str, TagID], pkginfo: Union[str, PackageID], force: bool=False) -> None:
         ...
 
-    @staticmethod
-    def packageListSetArches(
-            taginfo: Union[str, TagID],
-            pkginfo: Union[str, PackageID],
-            arches: str,
-            force: bool = False) -> None:
+    def packageListSetArches(self, taginfo: Union[str, TagID], pkginfo: Union[str, PackageID], arches: str, force: bool=False) -> None:
         ...
 
-    @staticmethod
-    def packageListSetOwner(
-            taginfo: Union[str, TagID],
-            pkginfo: Union[str, PackageID],
-            owner: Union[str, UserID],
-            force: bool = False) -> None:
+    def packageListSetOwner(self, taginfo: Union[str, TagID], pkginfo: Union[str, PackageID], owner: Union[str, UserID], force: bool=False) -> None:
         ...
 
-    @staticmethod
-    def packageListUnblock(
-            taginfo: Union[str, TagID],
-            pkginfo: Union[str, PackageID],
-            force: bool = False) -> None:
+    def packageListUnblock(self, taginfo: Union[str, TagID], pkginfo: Union[str, PackageID], force: bool=False) -> None:
         ...
 
-    @staticmethod
-    def promoteBuild(
-            build: Union[str, int],
-            force: bool = False) -> BuildInfo:
+    def promoteBuild(self, build: Union[str, int], force: bool=False) -> BuildInfo:
         ...
 
-    @overload
-    @staticmethod
-    def queryHistory(
-            tables: Optional[List[str]] = None,
-            *,
-            queryOpts: Optional[QueryOptions] = None,
-            **kwargs: Any) -> Dict[str, List[Dict[str, Any]]]:
-        # :since: koji 1.34
+    def queryHistory(self, tables: Optional[List[str]]=None, **kwargs: Any) -> Dict[str, List[Dict[str, Any]]]:
         ...
 
-    @overload  # type: ignore
-    @staticmethod
-    def queryHistory(
-            tables: Optional[List[str]] = None,
-            **kwargs: Any) -> Dict[str, List[Dict[str, Any]]]:
+    def queryRPMSigs(self, rpm_id: Union[RPMID, str, BuildNVR, None]=None, sigkey: Optional[str]=None, queryOpts: Optional[QueryOptions]=None) -> List[RPMSignature]:
         ...
 
-    @staticmethod
-    def queryRPMSigs(
-            rpm_id: Union[RPMID, str, BuildNVR, None] = None,
-            sigkey: Optional[str] = None,
-            queryOpts: Optional[QueryOptions] = None) -> List[RPMSignature]:
+    def removeExternalRepoFromTag(self, tag_info: Union[str, TagID], repo_info: int) -> None:
         ...
 
-    def removeExternalRepoFromTag(
-            self,
-            tag_info: Union[str, TagID],
-            repo_info: int) -> None:
+    def removeHostFromChannel(self, hostname: str, channel_name: str) -> None:
         ...
 
-    @staticmethod
-    def removeHostFromChannel(
-            hostname: str,
-            channel_name: str) -> None:
+    def removeUserKrbPrincipal(self, user: Union[str, UserID], krb_principal: str) -> UserID:
         ...
 
-    def removeUserKrbPrincipal(
-            self,
-            user: Union[str, UserID],
-            krb_principal: str) -> UserID:
+    def removeVolume(self, volume: str) -> None:
         ...
 
-    @staticmethod
-    def removeVolume(
-            volume: str) -> None:
+    def renameChannel(self, old: str, new: str) -> None:
         ...
 
-    @staticmethod
-    def renameChannel(
-            old: str,
-            new: str) -> None:
+    def repoDelete(self, repo_id: RepoID) -> int:
         ...
 
-    def repoDelete(
-            self,
-            repo_id: RepoID) -> int:
+    def repoExpire(self, repo_id: RepoID) -> None:
         ...
 
-    def repoExpire(
-            self,
-            repo_id: RepoID) -> None:
+    def repoInfo(self, repo_id: RepoID, strict: bool=False) -> RepoInfo:
         ...
 
-    @staticmethod
-    def repoInfo(
-            repo_id: RepoID,
-            strict: bool = False) -> RepoInfo:
+    def repoProblem(self, repo_id: RepoID) -> None:
         ...
 
-    def repoProblem(
-            self,
-            repo_id: RepoID) -> None:
+    def resetBuild(self, build: Union[str, BuildID]) -> None:
         ...
 
-    @staticmethod
-    def resetBuild(
-            build: Union[str, BuildID]) -> None:
+    def restartHosts(self, priority: int=5, options: Optional[Dict[str, Any]]=None) -> TaskID:
         ...
 
-    def restartHosts(
-            self,
-            priority: int = 5,
-            options: Optional[Dict[str, Any]] = None) -> TaskID:
+    def resubmitTask(self, taskID: int) -> int:
         ...
 
-    def resubmitTask(
-            self,
-            taskID: int) -> int:
+    def revokeCGAccess(self, user: Union[str, UserID], cg: Union[str, CGID]) -> None:
         ...
 
-    @staticmethod
-    def revokeCGAccess(
-            user: Union[str, UserID],
-            cg: Union[str, CGID]) -> None:
+    def revokePermission(self, userinfo: Union[str, UserID], permission: Union[str, PermID]) -> None:
         ...
 
-    def revokePermission(
-            self,
-            userinfo: Union[str, UserID],
-            permission: Union[str, PermID]) -> None:
+    def search(self, terms: str, type: str, matchType: str, queryOpts: Optional[QueryOptions]=None) -> List[SearchResult]:
         ...
 
-    def search(
-            self,
-            terms: str,
-            type: str,
-            matchType: str,
-            queryOpts: Optional[QueryOptions] = None) -> List[SearchResult]:
+    def setBuildOwner(self, build: BuildSpecifier, user: Union[str, UserID]) -> None:
         ...
 
-    def setBuildOwner(
-            self,
-            build: BuildSpecifier,
-            user: Union[str, UserID]) -> None:
+    def setBuildTimestamp(self, build: BuildSpecifier, ts: Union[int, float]) -> None:
         ...
 
-    def setBuildTimestamp(
-            self,
-            build: BuildSpecifier,
-            ts: Union[int, float]) -> None:
+    def setInheritanceData(self, tag: Union[str, TagID], data: TagInheritance, clear: bool=False) -> None:
         ...
 
-    def setInheritanceData(
-            self,
-            tag: Union[str, TagID],
-            data: TagInheritance,
-            clear: bool = False) -> None:
-        ...
-
-    def setTaskPriority(
-            self,
-            task_id: TaskID,
-            priority: int,
-            recurse: bool = True) -> None:
+    def setTaskPriority(self, task_id: TaskID, priority: int, recurse: bool=True) -> None:
         ...
 
     @overload
@@ -1813,288 +785,110 @@ class ClientSession(Protocol):
         ...
 
     @overload
-    def showOpts(
-            self,
-            as_string: Literal[True]) -> str:
+    def showOpts(self, as_string: Literal[True]) -> str:
         ...
 
     @overload
-    def showOpts(
-            self,
-            as_string: Literal[False]) -> Dict[str, Any]:
+    def showOpts(self, as_string: Literal[False]) -> Dict[str, Any]:
         ...
 
     @overload
-    def showOpts(
-            self,
-            as_string: bool = True) -> Union[str, Dict[str, Any]]:
+    def showOpts(self, as_string: bool=True) -> Union[str, Dict[str, Any]]:
         ...
 
     def showSession(self) -> str:
         ...
 
-    def snapshotTag(
-            self,
-            src: Union[str, TagID],
-            dst: Union[str, TagID],
-            config: bool = True,
-            pkgs: bool = True,
-            builds: bool = True,
-            groups: bool = True,
-            latest_only: bool = True,
-            inherit_builds: bool = True,
-            event: Optional[EventID] = None,
-            force: bool = False) -> None:
+    def snapshotTag(self, src: Union[str, TagID], dst: Union[str, TagID], config: bool=True, pkgs: bool=True, builds: bool=True, groups: bool=True, latest_only: bool=True, inherit_builds: bool=True, event: Optional[EventID]=None, force: bool=False) -> None:
         ...
 
-    def snapshotTagModify(
-            self,
-            src: Union[str, TagID],
-            dst: Union[str, TagID],
-            config: bool = True,
-            pkgs: bool = True,
-            builds: bool = True,
-            groups: bool = True,
-            latest_only: bool = True,
-            inherit_builds: bool = True,
-            event: Optional[EventID] = None,
-            force: bool = False,
-            remove: bool = False) -> None:
+    def snapshotTagModify(self, src: Union[str, TagID], dst: Union[str, TagID], config: bool=True, pkgs: bool=True, builds: bool=True, groups: bool=True, latest_only: bool=True, inherit_builds: bool=True, event: Optional[EventID]=None, force: bool=False, remove: bool=False) -> None:
         ...
 
-    def ssl_login(
-            self,
-            cert: Optional[str] = None,
-            ca: Optional[str] = None,
-            serverca: Optional[str] = None,
-            proxyuser: Optional[str] = None) -> bool:
+    def tagBuild(self, tag: Union[str, TagID], build: Union[str, BuildID], force: bool=False, fromtag: Union[str, TagID, None]=None) -> None:
         ...
 
-    def tagBuild(
-            self,
-            tag: Union[str, TagID],
-            build: Union[str, BuildID],
-            force: bool = False,
-            fromtag: Union[str, TagID, None] = None) -> None:
+    def tagBuildBypass(self, tag: Union[str, TagID], build: Union[str, BuildID], force: bool=False, notify: bool=False) -> None:
         ...
 
-    def tagBuildBypass(
-            self,
-            tag: Union[str, TagID],
-            build: Union[str, BuildID],
-            force: bool = False,
-            notify: bool = False) -> None:
+    def tagChangedSinceEvent(self, event: EventID, taglist: List[TagID]) -> bool:
         ...
 
-    @staticmethod
-    def tagChangedSinceEvent(
-            event: EventID,
-            taglist: List[TagID]) -> bool:
+    def tagFirstChangeEvent(self, tag: Union[str, TagID], after: Optional[EventID]=None, inherit: bool=True) -> Optional[EventID]:
         ...
 
-    @staticmethod
-    def tagFirstChangeEvent(
-            tag: Union[str, TagID],
-            after: Optional[EventID] = None,
-            inherit: bool = True) -> Optional[EventID]:
+    def tagLastChangeEvent(self, tag: Union[str, TagID], before: Optional[EventID]=None, inherit: bool=True) -> Optional[EventID]:
         ...
 
-    @staticmethod
-    def tagLastChangeEvent(
-            tag: Union[str, TagID],
-            before: Optional[EventID] = None,
-            inherit: bool = True) -> Optional[EventID]:
+    def taskFinished(self, taskId: TaskID) -> bool:
         ...
 
-    def taskFinished(
-            self,
-            taskId: TaskID) -> bool:
+    def untagBuild(self, tag: Union[str, TagID], build: Union[str, BuildID], strict: bool=True, force: bool=False) -> None:
         ...
 
-    def untagBuild(
-            self,
-            tag: Union[str, TagID],
-            build: Union[str, BuildID],
-            strict: bool = True,
-            force: bool = False) -> None:
+    def untagBuildBypass(self, tag: Union[str, TagID], build: Union[str, BuildID], strict: bool=True, force: bool=False, notify: bool=False) -> None:
         ...
 
-    def untagBuildBypass(
-            self,
-            tag: Union[str, TagID],
-            build: Union[str, BuildID],
-            strict: bool = True,
-            force: bool = False,
-            notify: bool = False) -> None:
+    def untaggedBuilds(self, name: Optional[str]=None, queryOpts: Optional[QueryOptions]=None, draft: Optional[bool]=None) -> List[BuildNVR]:
         ...
 
-    @staticmethod
-    def untaggedBuilds(
-            name: Optional[str] = None,
-            queryOpts: Optional[QueryOptions] = None,
-            draft: Optional[bool] = None) -> List[BuildNVR]:
+    def updateNotification(self, id: NotificationID, package_id: Union[str, PackageID, None], tag_id: Union[str, TagID, None], success_only: bool) -> None:
         ...
 
-    def updateHost(
-            self,
-            task_load: float,
-            ready: bool) -> None:
+    def uploadFile(self, path: str, name: str, size: int, md5sum: str, offset: int, data: str, volume: Optional[str]=None, checksum: Union[str, Tuple[ChecksumType, str], None]=None) -> bool:
         ...
 
-    def updateNotification(
-            self,
-            id: NotificationID,
-            package_id: Union[str, PackageID, None],
-            tag_id: Union[str, TagID, None],
-            success_only: bool) -> None:
-        ...
-
-    def uploadFile(
-            self,
-            path: str,
-            name: str,
-            size: int,
-            md5sum: str,
-            offset: int,
-            data: str,
-            volume: Optional[str] = None,
-            checksum: Union[str, Tuple[ChecksumType, str], None] = None) \
-            -> bool:
-        ...
-
-    def winBuild(
-            self,
-            vm: str,
-            url: str,
-            target: str,
-            opts: Optional[Dict[str, Any]] = None,
-            priority: Optional[int] = None,
-            channel: str = 'vm') -> int:
+    def winBuild(self, vm: str, url: str, target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: str='vm') -> int:
         ...
 
     def winEnabled(self) -> bool:
         ...
 
-    def wrapperRPM(
-            self,
-            build: Union[int, str],
-            url: str,
-            target: str,
-            priority: Optional[int] = None,
-            channel: str = 'maven',
-            opts: Optional[Dict[str, Any]] = None) -> int:
+    def wrapperRPM(self, build: Union[int, str], url: str, target: str, priority: Optional[int]=None, channel: str='maven', opts: Optional[Dict[str, Any]]=None) -> int:
         ...
 
-    def writeSignedRPM(
-            self,
-            an_rpm: str,
-            sigkey: str,
-            force: bool = False) -> None:
+    def writeSignedRPM(self, an_rpm: str, sigkey: str, force: bool=False) -> None:
         ...
 
+class Host:
 
-class Host(Protocol):
-
-    def assertPolicy(
-            self,
-            name,
-            data: Dict[str, Any],
-            default: str = 'deny') -> None:
+    def assertPolicy(self, name, data: Dict[str, Any], default: str='deny') -> None:
         ...
 
-    def checkPolicy(
-            self,
-            name: str,
-            data: Dict[str, Any],
-            default: str = 'deny',
-            strict: bool = False) -> Tuple[bool, str]:
+    def checkPolicy(self, name: str, data: Dict[str, Any], default: str='deny', strict: bool=False) -> Tuple[bool, str]:
         ...
 
-    def closeTask(
-            self,
-            task_id: TaskID,
-            response: Any) -> None:
+    def closeTask(self, task_id: TaskID, response: Any) -> None:
         ...
 
-    def completeBuild(
-            self,
-            task_id: TaskID,
-            build_id: BuildID,
-            srpm: str,
-            rpms: List[str],
-            brmap: Optional[Dict[str, BuildrootID]] = None,
-            logs: Optional[Dict[Arch, List[str]]] = None) -> BuildInfo:
+    def completeBuild(self, task_id: TaskID, build_id: BuildID, srpm: str, rpms: List[str], brmap: Optional[Dict[str, BuildrootID]]=None, logs: Optional[Dict[Arch, List[str]]]=None) -> BuildInfo:
         ...
 
-    def completeImageBuild(
-            self,
-            task_id: TaskID,
-            build_id: BuildID,
-            results: Dict[str, Dict[str, Any]]) -> None:
+    def completeImageBuild(self, task_id: TaskID, build_id: BuildID, results: Dict[str, Dict[str, Any]]) -> None:
         ...
 
-    def completeMavenBuild(
-            self,
-            task_id: TaskID,
-            build_id: BuildID,
-            maven_results: Any,
-            rpm_results: Any) -> None:
+    def completeMavenBuild(self, task_id: TaskID, build_id: BuildID, maven_results: Any, rpm_results: Any) -> None:
         ...
 
-    def completeWinBuild(
-            self,
-            task_id: TaskID,
-            build_id: BuildID,
-            results: Dict[str, Dict[str, Any]],
-            rpm_results: Any) -> None:
+    def completeWinBuild(self, task_id: TaskID, build_id: BuildID, results: Dict[str, Dict[str, Any]], rpm_results: Any) -> None:
         ...
 
-    @staticmethod
-    def createBuildTarget(
-            name: str,
-            build_tag: Union[str, TagID],
-            dest_tag: Union[str, TagID]) -> None:
+    def createMavenBuild(self, build_info: BuildInfo, maven_info: MavenInfo) -> None:
         ...
 
-    def createMavenBuild(
-            self,
-            build_info: BuildInfo,
-            maven_info: MavenInfo) -> None:
+    def distRepoMove(self, repo_id: RepoID, uploadpath: str, arch: Arch) -> None:
         ...
 
-    @staticmethod
-    def deleteBuildTarget(
-            buildTargetInfo: Union[str, TargetID]) -> None:
+    def evalPolicy(self, name: str, data: Dict[str, Any]) -> str:
         ...
 
-    def distRepoMove(
-            self,
-            repo_id: RepoID,
-            uploadpath: str,
-            arch: Arch) -> None:
+    def failBuild(self, task_id: TaskID, build_id: BuildID) -> None:
         ...
 
-    def evalPolicy(
-            self,
-            name: str,
-            data: Dict[str, Any]) -> str:
+    def failTask(self, task_id: TaskID, response: Any) -> None:
         ...
 
-    def failBuild(
-            self,
-            task_id: TaskID,
-            build_id: BuildID) -> None:
-        ...
-
-    def failTask(
-            self,
-            task_id: TaskID,
-            response: Any) -> None:
-        ...
-
-    def freeTasks(
-            self,
-            tasks: List[TaskID]) -> None:
+    def freeTasks(self, tasks: List[TaskID]) -> None:
         ...
 
     def getID(self) -> HostID:
@@ -2103,275 +897,1097 @@ class Host(Protocol):
     def getHost(self) -> Tuple[List[HostID], List[TaskID]]:
         ...
 
-    def getHostTasks(
-            self) -> List[TaskInfo]:
+    def getHostTasks(self) -> List[TaskInfo]:
         ...
 
-    def getLoadData(
-            self) -> Tuple[List[HostInfo], List[TaskInfo]]:
+    def getLoadData(self) -> Tuple[List[HostInfo], List[TaskInfo]]:
         ...
 
-    def getTasks(
-            self) -> List[TaskInfo]:
+    def getTasks(self) -> List[TaskInfo]:
         ...
 
-    def importArchive(
-            self,
-            filepath: str,
-            buildinfo: BuildInfo,
-            type: str,
-            typeInfo: Dict[str, Any]) -> None:
+    def importArchive(self, filepath: str, buildinfo: BuildInfo, type: str, typeInfo: Dict[str, Any]) -> None:
         ...
 
-    def importImage(
-            self,
-            task_id: TaskID,
-            build_info: BuildInfo,
-            results: Dict[str, Dict[str, Any]]) -> None:
+    def importImage(self, task_id: TaskID, build_info: BuildInfo, results: Dict[str, Dict[str, Any]]) -> None:
         ...
 
-    def importWrapperRPMs(
-            self,
-            task_id: TaskID,
-            build_id: BuildID,
-            rpm_results: Dict[str, List[str]]) -> None:
+    def importWrapperRPMs(self, task_id: TaskID, build_id: BuildID, rpm_results: Dict[str, List[str]]) -> None:
         ...
 
-    def initBuild(
-            self,
-            data: Dict[str, Any]) -> BuildID:
+    def initBuild(self, data: Dict[str, Any]) -> BuildID:
         ...
 
-    def initImageBuild(
-            self,
-            task_id: TaskID,
-            build_info: BuildInfo) -> BuildInfo:
+    def initImageBuild(self, task_id: TaskID, build_info: BuildInfo) -> BuildInfo:
         ...
 
-    def initMavenBuild(
-            self,
-            task_id: TaskID,
-            build_info: BuildInfo,
-            maven_info: MavenInfo) -> BuildInfo:
+    def initMavenBuild(self, task_id: TaskID, build_info: BuildInfo, maven_info: MavenInfo) -> BuildInfo:
         ...
 
-    def initWinBuild(
-            self,
-            task_id: TaskID,
-            build_info: BuildInfo,
-            win_info: WinInfo) -> BuildInfo:
+    def initWinBuild(self, task_id: TaskID, build_info: BuildInfo, win_info: WinInfo) -> BuildInfo:
         ...
 
     def isEnabled(self) -> bool:
         ...
 
-    def moveBuildToScratch(
-            self,
-            task_id: TaskID,
-            srpm: str,
-            rpms: List[str],
-            logs: Optional[Dict[str, List[str]]] = None) -> None:
+    def moveBuildToScratch(self, task_id: TaskID, srpm: str, rpms: List[str], logs: Optional[Dict[str, List[str]]]=None) -> None:
         ...
 
-    def moveImageBuildToScratch(
-            self,
-            task_id: TaskID,
-            results: Dict[str, Any]) -> None:
+    def moveImageBuildToScratch(self, task_id: TaskID, results: Dict[str, Any]) -> None:
         ...
 
-    def moveMavenBuildToScratch(
-            self,
-            task_id: TaskID,
-            results: Dict[str, Any],
-            rpm_results: Dict[str, Any]) -> None:
+    def moveMavenBuildToScratch(self, task_id: TaskID, results: Dict[str, Any], rpm_results: Dict[str, Any]) -> None:
         ...
 
-    def moveWinBuildToScratch(
-            self,
-            task_id: TaskID,
-            results: Dict[str, Any],
-            rpm_results: Dict[str, Any]) -> None:
+    def moveWinBuildToScratch(self, task_id: TaskID, results: Dict[str, Any], rpm_results: Dict[str, Any]) -> None:
         ...
 
-    def newBuildRoot(
-            self,
-            repo: RepoID,
-            arch: Arch,
-            task_id: Optional[TaskID] = None) -> BuildrootID:
+    def newBuildRoot(self, repo: RepoID, arch: Arch, task_id: Optional[TaskID]=None) -> BuildrootID:
         ...
 
-    def openTask(
-            self,
-            task_id: TaskID) -> Optional[Dict[str, Any]]:
+    def openTask(self, task_id: TaskID) -> Optional[Dict[str, Any]]:
         ...
 
-    def refuseTask(
-            self,
-            task_id: int,
-            soft: bool = True,
-            msg: str = '') -> None:
+    def refuseTask(self, task_id: int, soft: bool=True, msg: str='') -> None:
         ...
 
-    def repoDone(
-            self,
-            repo_id: RepoID,
-            data: Dict[Arch, Tuple[str, List[str]]],
-            expire: bool = False,
-            repo_json_updates: Optional[Dict[str, Any]] = None) -> None:
+    def repoDone(self, repo_id: RepoID, data: Dict[Arch, Tuple[str, List[str]]], expire: bool=False, repo_json_updates: Optional[Dict[str, Any]]=None) -> None:
         ...
 
-    def repoInit(
-            self,
-            tag: Union[str, TagID],
-            task_id: Optional[TaskID] = None,
-            event: Optional[EventID] = None,
-            opts: Optional[RepoOptions] = None) -> Tuple[RepoID, EventID]:
+    def repoInit(self, tag: Union[str, TagID], task_id: Optional[TaskID]=None, event: Optional[EventID]=None, opts: Optional[RepoOptions]=None) -> Tuple[RepoID, EventID]:
         ...
 
-    def setBuildRootList(
-            self,
-            brootid: BuildrootID,
-            rpmlist: List[RPMInfo],
-            task_id: Optional[TaskID] = None) -> None:
+    def setBuildRootList(self, brootid: BuildrootID, rpmlist: List[RPMInfo], task_id: Optional[TaskID]=None) -> None:
         ...
 
-    def setBuildRootState(
-            self,
-            brootid: BuildrootID,
-            state: BuildrootState,
-            task_id: Optional[TaskID] = None) -> None:
+    def setBuildRootState(self, brootid: BuildrootID, state: BuildrootState, task_id: Optional[TaskID]=None) -> None:
         ...
 
-    def setHostData(
-            self,
-            hostdata: Dict[str, Any]) -> None:
+    def setHostData(self, hostdata: Dict[str, Any]) -> None:
         ...
 
-    def setTaskWeight(
-            self,
-            task_id: TaskID,
-            weight: float) -> None:
+    def setTaskWeight(self, task_id: TaskID, weight: float) -> None:
         ...
 
-    def subtask(
-            self,
-            method: str,
-            arglist: List,
-            parent: int,
-            **opts) -> int:
+    def subtask(self, method: str, arglist: List, parent: int, **opts) -> int:
         ...
 
-    def subtask2(
-            self,
-            __parent: TaskID,
-            __taskopts: Dict[str, Any],
-            __method: str,
-            *args,
-            **opts) -> int:
+    def subtask2(self, __parent: TaskID, __taskopts: Dict[str, Any], __method: str, *args, **opts) -> int:
         ...
 
-    def tagBuild(
-            self,
-            task_id: TaskID,
-            tag: Union[str, TagID],
-            build: BuildSpecifier,
-            force: bool = False,
-            fromtag: Union[str, TagID, None] = None) -> None:
+    def tagBuild(self, task_id: TaskID, tag: Union[str, TagID], build: BuildSpecifier, force: bool=False, fromtag: Union[str, TagID, None]=None) -> None:
         ...
 
-    def tagNotification(
-            self,
-            is_successful: bool,
-            tag_id: Union[str, TagID, None],
-            from_id: Union[str, TagID, None],
-            build_id: BuildID,
-            user_id: Union[str, UserID, None],
-            ignore_success: bool = False,
-            failure_msg: str = '') -> None:
+    def tagNotification(self, is_successful: bool, tag_id: Union[str, TagID, None], from_id: Union[str, TagID, None], build_id: BuildID, user_id: Union[str, UserID, None], ignore_success: bool=False, failure_msg: str='') -> None:
         ...
 
-    def taskSetWait(
-            self,
-            parent: TaskID,
-            tasks: Optional[List[TaskID]]) -> None:
+    def taskSetWait(self, parent: TaskID, tasks: Optional[List[TaskID]]) -> None:
         ...
 
-    def taskUnwait(
-            self,
-            parent: TaskID) -> None:
+    def taskWait(self, parent: TaskID) -> Tuple[List[int], List[int]]:
         ...
 
-    def taskWait(
-            self,
-            parent: TaskID) -> Tuple[List[int], List[int]]:
+    def taskWaitResults(self, parent: TaskID, tasks: Optional[List[TaskID]], canfail: Optional[List[int]]=None) -> List[Tuple[int, Any]]:
         ...
 
-    def taskWaitCheck(
-            self,
-            parent: TaskID) -> Tuple[List[int], List[int]]:
+    def updateBuildrootArchives(self, brootid: BuildrootID, task_id: TaskID, archives: List[ArchiveInfo], project: bool=False) -> None:
         ...
 
-    def taskWaitResults(
-            self,
-            parent: TaskID,
-            tasks: Optional[List[TaskID]],
-            canfail: Optional[List[int]] = None) -> List[Tuple[int, Any]]:
+    def updateBuildRootList(self, brootid: BuildrootID, rpmlist: List[RPMInfo], task_id: Optional[TaskID]=None) -> None:
         ...
 
-    def updateBuildrootArchives(
-            self,
-            brootid: BuildrootID,
-            task_id: TaskID,
-            archives: List[ArchiveInfo],
-            project: bool = False) -> None:
+    def updateHost(self, task_load: float, ready: bool, data: Optional[Dict[str, Any]]=None) -> None:
         ...
 
-    def updateBuildRootList(
-            self,
-            brootid: BuildrootID,
-            rpmlist: List[RPMInfo],
-            task_id: Optional[TaskID] = None) -> None:
+    def updateMavenBuildRootList(self, brootid: BuildrootID, task_id: TaskID, mavenlist: List[Dict[str, Any]], ignore: Optional[List[Union[int, str]]]=None, project: bool=False, ignore_unknown: bool=False, extra_deps: Optional[List[Union[int, str]]]=None) -> None:
         ...
 
-    def updateHost(
-            self,
-            task_load: float,
-            ready: bool,
-            data: Optional[Dict[str, Any]] = None) -> None:
+    def writeSignedRPM(self, an_rpm: str, sigkey: str, force: bool=False) -> None:
         ...
 
-    def updateMavenBuildRootList(
-            self,
-            brootid: BuildrootID,
-            task_id: TaskID,
-            mavenlist: List[Dict[str, Any]],
-            ignore: Optional[List[Union[int, str]]] = None,
-            project: bool = False,
-            ignore_unknown: bool = False,
-            extra_deps: Optional[List[Union[int, str]]] = None) -> None:
+class MultiCallHost:
+
+    def assertPolicy(self, name, data: Dict[str, Any], default: str='deny') -> VirtualCall[None]:
         ...
 
-    def verify(self) -> bool:
+    def checkPolicy(self, name: str, data: Dict[str, Any], default: str='deny', strict: bool=False) -> VirtualCall[Tuple[bool, str]]:
         ...
 
-    def writeSignedRPM(
-            self,
-            an_rpm: str,
-            sigkey: str,
-            force: bool = False) -> None:
+    def closeTask(self, task_id: TaskID, response: Any) -> VirtualCall[None]:
         ...
 
+    def completeBuild(self, task_id: TaskID, build_id: BuildID, srpm: str, rpms: List[str], brmap: Optional[Dict[str, BuildrootID]]=None, logs: Optional[Dict[Arch, List[str]]]=None) -> VirtualCall[BuildInfo]:
+        ...
 
-@proxytype(Host, VirtualCall)
-class MultiCallHost(Protocol):
-    ...
+    def completeImageBuild(self, task_id: TaskID, build_id: BuildID, results: Dict[str, Dict[str, Any]]) -> VirtualCall[None]:
+        ...
 
+    def completeMavenBuild(self, task_id: TaskID, build_id: BuildID, maven_results: Any, rpm_results: Any) -> VirtualCall[None]:
+        ...
 
-@proxytype(ClientSession, VirtualCall)
-class MultiCallSession(Protocol):
+    def completeWinBuild(self, task_id: TaskID, build_id: BuildID, results: Dict[str, Dict[str, Any]], rpm_results: Any) -> VirtualCall[None]:
+        ...
+
+    def createMavenBuild(self, build_info: BuildInfo, maven_info: MavenInfo) -> VirtualCall[None]:
+        ...
+
+    def distRepoMove(self, repo_id: RepoID, uploadpath: str, arch: Arch) -> VirtualCall[None]:
+        ...
+
+    def evalPolicy(self, name: str, data: Dict[str, Any]) -> VirtualCall[str]:
+        ...
+
+    def failBuild(self, task_id: TaskID, build_id: BuildID) -> VirtualCall[None]:
+        ...
+
+    def failTask(self, task_id: TaskID, response: Any) -> VirtualCall[None]:
+        ...
+
+    def freeTasks(self, tasks: List[TaskID]) -> VirtualCall[None]:
+        ...
+
+    def getID(self) -> VirtualCall[HostID]:
+        ...
+
+    def getHost(self) -> VirtualCall[Tuple[List[HostID], List[TaskID]]]:
+        ...
+
+    def getHostTasks(self) -> VirtualCall[List[TaskInfo]]:
+        ...
+
+    def getLoadData(self) -> VirtualCall[Tuple[List[HostInfo], List[TaskInfo]]]:
+        ...
+
+    def getTasks(self) -> VirtualCall[List[TaskInfo]]:
+        ...
+
+    def importArchive(self, filepath: str, buildinfo: BuildInfo, type: str, typeInfo: Dict[str, Any]) -> VirtualCall[None]:
+        ...
+
+    def importImage(self, task_id: TaskID, build_info: BuildInfo, results: Dict[str, Dict[str, Any]]) -> VirtualCall[None]:
+        ...
+
+    def importWrapperRPMs(self, task_id: TaskID, build_id: BuildID, rpm_results: Dict[str, List[str]]) -> VirtualCall[None]:
+        ...
+
+    def initBuild(self, data: Dict[str, Any]) -> VirtualCall[BuildID]:
+        ...
+
+    def initImageBuild(self, task_id: TaskID, build_info: BuildInfo) -> VirtualCall[BuildInfo]:
+        ...
+
+    def initMavenBuild(self, task_id: TaskID, build_info: BuildInfo, maven_info: MavenInfo) -> VirtualCall[BuildInfo]:
+        ...
+
+    def initWinBuild(self, task_id: TaskID, build_info: BuildInfo, win_info: WinInfo) -> VirtualCall[BuildInfo]:
+        ...
+
+    def isEnabled(self) -> VirtualCall[bool]:
+        ...
+
+    def moveBuildToScratch(self, task_id: TaskID, srpm: str, rpms: List[str], logs: Optional[Dict[str, List[str]]]=None) -> VirtualCall[None]:
+        ...
+
+    def moveImageBuildToScratch(self, task_id: TaskID, results: Dict[str, Any]) -> VirtualCall[None]:
+        ...
+
+    def moveMavenBuildToScratch(self, task_id: TaskID, results: Dict[str, Any], rpm_results: Dict[str, Any]) -> VirtualCall[None]:
+        ...
+
+    def moveWinBuildToScratch(self, task_id: TaskID, results: Dict[str, Any], rpm_results: Dict[str, Any]) -> VirtualCall[None]:
+        ...
+
+    def newBuildRoot(self, repo: RepoID, arch: Arch, task_id: Optional[TaskID]=None) -> VirtualCall[BuildrootID]:
+        ...
+
+    def openTask(self, task_id: TaskID) -> VirtualCall[Optional[Dict[str, Any]]]:
+        ...
+
+    def refuseTask(self, task_id: int, soft: bool=True, msg: str='') -> VirtualCall[None]:
+        ...
+
+    def repoDone(self, repo_id: RepoID, data: Dict[Arch, Tuple[str, List[str]]], expire: bool=False, repo_json_updates: Optional[Dict[str, Any]]=None) -> VirtualCall[None]:
+        ...
+
+    def repoInit(self, tag: Union[str, TagID], task_id: Optional[TaskID]=None, event: Optional[EventID]=None, opts: Optional[RepoOptions]=None) -> VirtualCall[Tuple[RepoID, EventID]]:
+        ...
+
+    def setBuildRootList(self, brootid: BuildrootID, rpmlist: List[RPMInfo], task_id: Optional[TaskID]=None) -> VirtualCall[None]:
+        ...
+
+    def setBuildRootState(self, brootid: BuildrootID, state: BuildrootState, task_id: Optional[TaskID]=None) -> VirtualCall[None]:
+        ...
+
+    def setHostData(self, hostdata: Dict[str, Any]) -> VirtualCall[None]:
+        ...
+
+    def setTaskWeight(self, task_id: TaskID, weight: float) -> VirtualCall[None]:
+        ...
+
+    def subtask(self, method: str, arglist: List, parent: int, **opts) -> VirtualCall[int]:
+        ...
+
+    def subtask2(self, __parent: TaskID, __taskopts: Dict[str, Any], __method: str, *args, **opts) -> VirtualCall[int]:
+        ...
+
+    def tagBuild(self, task_id: TaskID, tag: Union[str, TagID], build: BuildSpecifier, force: bool=False, fromtag: Union[str, TagID, None]=None) -> VirtualCall[None]:
+        ...
+
+    def tagNotification(self, is_successful: bool, tag_id: Union[str, TagID, None], from_id: Union[str, TagID, None], build_id: BuildID, user_id: Union[str, UserID, None], ignore_success: bool=False, failure_msg: str='') -> VirtualCall[None]:
+        ...
+
+    def taskSetWait(self, parent: TaskID, tasks: Optional[List[TaskID]]) -> VirtualCall[None]:
+        ...
+
+    def taskWait(self, parent: TaskID) -> VirtualCall[Tuple[List[int], List[int]]]:
+        ...
+
+    def taskWaitResults(self, parent: TaskID, tasks: Optional[List[TaskID]], canfail: Optional[List[int]]=None) -> VirtualCall[List[Tuple[int, Any]]]:
+        ...
+
+    def updateBuildrootArchives(self, brootid: BuildrootID, task_id: TaskID, archives: List[ArchiveInfo], project: bool=False) -> VirtualCall[None]:
+        ...
+
+    def updateBuildRootList(self, brootid: BuildrootID, rpmlist: List[RPMInfo], task_id: Optional[TaskID]=None) -> VirtualCall[None]:
+        ...
+
+    def updateHost(self, task_load: float, ready: bool, data: Optional[Dict[str, Any]]=None) -> VirtualCall[None]:
+        ...
+
+    def updateMavenBuildRootList(self, brootid: BuildrootID, task_id: TaskID, mavenlist: List[Dict[str, Any]], ignore: Optional[List[Union[int, str]]]=None, project: bool=False, ignore_unknown: bool=False, extra_deps: Optional[List[Union[int, str]]]=None) -> VirtualCall[None]:
+        ...
+
+    def writeSignedRPM(self, an_rpm: str, sigkey: str, force: bool=False) -> VirtualCall[None]:
+        ...
+
+class MultiCallSession:
 
     @property
     def host(self) -> MultiCallHost:
+        ...
+
+    def CGImport(self, metadata: Union[str, Dict[str, Any]], directory: str, token: Optional[str]=None) -> VirtualCall[BuildInfo]:
+        ...
+
+    def CGInitBuild(self, cg: str, data: Dict[str, Any]) -> VirtualCall[CGInitInfo]:
+        ...
+
+    def CGRefundBuild(self, cg: str, build_id: BuildID, token: str, state: BuildState=BuildState.FAILED) -> VirtualCall[None]:
+        ...
+
+    def addArchiveType(self, name: str, description: str, extensions: str, compression_type: Optional[str]=None) -> VirtualCall[None]:
+        ...
+
+    def addBType(self, name: str) -> VirtualCall[None]:
+        ...
+
+    def addChannel(self, channel_name: str, description: Optional[str]=None) -> VirtualCall[ChannelID]:
+        ...
+
+    def addExternalRepoToTag(self, tag_info: Union[str, TagID], repo_info: Union[str, ExternalRepoID], priority: int, merge_mode: str='koji', arches: Optional[List[Arch]]=None) -> VirtualCall[None]:
+        ...
+
+    def addExternalRPM(self, rpminfo: Dict[str, Any], external_repo: Union[str, ExternalRepoID], strict: bool=True) -> VirtualCall[None]:
+        ...
+
+    def addGroupMember(self, group: Union[str, UserID], user: Union[str, UserID], strict: bool=True) -> VirtualCall[None]:
+        ...
+
+    def addHost(self, hostname: str, arches: List[Arch], krb_principal: Optional[str]=None, force: bool=False) -> VirtualCall[HostID]:
+        ...
+
+    def addHostToChannel(self, hostname: Union[str, HostID], channel_name: str, create: bool=False, force: bool=False) -> VirtualCall[None]:
+        ...
+
+    def addRPMSig(self, an_rpm: str, data: bytes) -> VirtualCall[None]:
+        ...
+
+    def addUserKrbPrincipal(self, user: Union[str, UserID], krb_principal: str) -> VirtualCall[int]:
+        ...
+
+    def addVolume(self, name: str, strict: bool=True) -> VirtualCall[NamedID]:
+        ...
+
+    def applyVolumePolicy(self, build: BuildSpecifier, strict: bool=False) -> VirtualCall[None]:
+        ...
+
+    def assignTask(self, task_id: TaskID, host: str, force: bool=False, override: bool=False) -> VirtualCall[bool]:
+        ...
+
+    def build(self, src: str, target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: Optional[str]=None) -> VirtualCall[int]:
+        ...
+
+    def buildImage(self, name: str, version: str, arch: Arch, target: str, ksfile: str, img_type: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None) -> VirtualCall[int]:
+        ...
+
+    def buildImageIndirection(self, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None) -> VirtualCall[TaskID]:
+        ...
+
+    def buildImageOz(self, name: str, version: str, arches: List[Arch], target: str, inst_tree: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None) -> VirtualCall[TaskID]:
+        ...
+
+    def buildReferences(self, build: BuildID, limit: Optional[int]=None, lazy: bool=False) -> VirtualCall[Dict[str, Any]]:
+        ...
+
+    def cancelBuild(self, buildID: BuildID, strict: bool=False) -> VirtualCall[bool]:
+        ...
+
+    def cancelTask(self, task_id: TaskID, recurse: bool=True) -> VirtualCall[None]:
+        ...
+
+    def cancelTaskChildren(self, task_id: TaskID) -> VirtualCall[None]:
+        ...
+
+    def cancelTaskFull(self, task_id: TaskID, strict: bool=True) -> VirtualCall[None]:
+        ...
+
+    def chainBuild(self, srcs: List[str], target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: Optional[str]=None) -> VirtualCall[int]:
+        ...
+
+    def chainMaven(self, builds: List[Dict[str, Any]], target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: str='maven') -> VirtualCall[int]:
+        ...
+
+    def changeBuildVolume(self, build: Union[str, BuildID], volume: str, strict: bool=True) -> VirtualCall[None]:
+        ...
+
+    def checkTagAccess(self, tag_id: Union[str, TagID], user_id: Union[str, UserID, None]=None) -> VirtualCall[Tuple[bool, bool, str]]:
+        ...
+
+    def checkTagPackage(self, tag: Union[str, TagID], pkg: Union[str, PackageID]) -> VirtualCall[bool]:
+        ...
+
+    def checkUpload(self, path: str, name: str, verify: Optional[ChecksumType]=None, tail: Optional[int]=None, volume: Optional[str]=None) -> VirtualCall[Dict[str, Any]]:
+        ...
+
+    def count(self, methodName: str, *args: Any, **kw: Any) -> VirtualCall[int]:
+        ...
+
+    @overload
+    def countAndFilterResults(self, methodName: str, *args, filterOpts: FilterOptions, **kw) -> VirtualCall[Tuple[int, List[Dict[str, Any]]]]:
+        ...
+
+    @overload
+    def countAndFilterResults(self, methodName: str, *args, **kw) -> VirtualCall[Tuple[int, List[Dict[str, Any]]]]:
+        ...
+
+    def createBuildTarget(self, name: str, build_tag: Union[str, TagID], dest_tag: Union[str, TagID]) -> VirtualCall[None]:
+        ...
+
+    def createEmptyBuild(self, name: str, version: str, release: str, epoch: str, owner: Union[str, UserID, None]=None, draft: bool=False) -> VirtualCall[BuildID]:
+        ...
+
+    def createExternalRepo(self, name: str, url: str) -> VirtualCall[ExternalRepoInfo]:
+        ...
+
+    def createImageBuild(self, build_info: BuildSpecifier) -> VirtualCall[None]:
+        ...
+
+    def createMavenBuild(self, build_info: BuildSpecifier, maven_info: MavenInfo) -> VirtualCall[None]:
+        ...
+
+    def createNotification(self, user_id: UserID, package_id: PackageID, tag_id: TagID, success_only: bool) -> VirtualCall[None]:
+        ...
+
+    def createNotificationBlock(self, user_id: UserID, package_id: Optional[PackageID]=None, tag_id: Optional[TagID]=None) -> VirtualCall[None]:
+        ...
+
+    def createTag(self, name: str, parent: Optional[Union[int, str]]=None, arches: Optional[str]=None, perm: Optional[str]=None, locked: bool=False, maven_support: bool=False, maven_include_all: bool=False, extra: Optional[Dict[str, str]]=None) -> VirtualCall[int]:
+        ...
+
+    def createUser(self, username: str, status: Optional[UserStatus]=None, krb_principal: Optional[str]=None) -> VirtualCall[UserID]:
+        ...
+
+    def createWinBuild(self, build_info: BuildSpecifier, win_info: WinInfo) -> VirtualCall[None]:
+        ...
+
+    def deleteBuild(self, build: BuildSpecifier, strict: bool=True, min_ref_age: int=604800) -> VirtualCall[bool]:
+        ...
+
+    def deleteBuildTarget(self, buildTargetInfo: Union[str, TargetID]) -> VirtualCall[None]:
+        ...
+
+    def deleteExternalRepo(self, info: Union[str, ExternalRepoID]) -> VirtualCall[None]:
+        ...
+
+    def deleteNotification(self, id: int) -> VirtualCall[None]:
+        ...
+
+    def deleteNotificationBlock(self, id: int) -> VirtualCall[None]:
+        ...
+
+    def deleteRPMSig(self, rpminfo: Union[str, RPMID, RPMNVRA], sigkey: Optional[str]=None, all_sigs: bool=False) -> VirtualCall[None]:
+        ...
+
+    def deleteTag(self, tagInfo: Union[str, TagID]) -> VirtualCall[None]:
+        ...
+
+    def disableChannel(self, channelname: str, comment: Optional[str]=None) -> VirtualCall[None]:
+        ...
+
+    def disableHost(self, hostname: str) -> VirtualCall[None]:
+        ...
+
+    def disableUser(self, username: Union[int, str]) -> VirtualCall[None]:
+        ...
+
+    def distRepo(self, tag: Union[str, TagID], keys: List[str], **task_opts) -> VirtualCall[TaskID]:
+        ...
+
+    def downloadTaskOutput(self, taskID: TaskID, fileName: str, offset: int=0, size: int=-1, volume: Optional[str]=None) -> VirtualCall[str]:
+        ...
+
+    def dropGroupMember(self, group: Union[str, UserID], user: Union[str, UserID]) -> VirtualCall[None]:
+        ...
+
+    def echo(self, *args) -> VirtualCall[List]:
+        ...
+
+    def editBuildTarget(self, buildTargetInfo: Union[str, int], name: str, build_tag: Union[str, int], dest_tag: Union[str, int]) -> VirtualCall[None]:
+        ...
+
+    def editChannel(self, channelInfo: Union[int, str], **kw) -> VirtualCall[bool]:
+        ...
+
+    def editExternalRepo(self, info: Union[str, ExternalRepoID], name: Optional[str]=None, url: Optional[str]=None) -> VirtualCall[None]:
+        ...
+
+    def editHost(self, hostInfo: Union[str, HostID], **kw) -> VirtualCall[bool]:
+        ...
+
+    def editPermission(self, permission: Union[str, PermID], description: str) -> VirtualCall[None]:
+        ...
+
+    def editTag(self, tagInfo: Union[str, TagID], name: Optional[str], arches: Optional[str], locked: Optional[bool], permissionID: Optional[PermID], extra: Optional[Dict[str, str]]=None) -> VirtualCall[None]:
+        ...
+
+    def editTag2(self, tagInfo: Union[str, TagID], **kwargs) -> VirtualCall[None]:
+        ...
+
+    def editTagExternalRepo(self, tag_info: Union[str, TagID], repo_info: Union[str, ExternalRepoID], priority: Optional[int]=None, merge_mode: Optional[str]=None, arches: Optional[str]=None) -> VirtualCall[bool]:
+        ...
+
+    def editUser(self, userInfo: Union[str, UserID], name: Optional[str]=None, krb_principal_mappings: Optional[List[OldNew]]=None) -> VirtualCall[None]:
+        ...
+
+    def enableChannel(self, channelname: str, comment: Optional[str]=None) -> VirtualCall[None]:
+        ...
+
+    def enableHost(self, hostname: str) -> VirtualCall[None]:
+        ...
+
+    def enableUser(self, username: Union[int, str]) -> VirtualCall[None]:
+        ...
+
+    def error(self) -> VirtualCall[NoReturn]:
+        ...
+
+    def evalPolicy(self, name: str, data: Dict[str, Any]) -> VirtualCall[str]:
+        ...
+
+    def fault(self) -> VirtualCall[NoReturn]:
+        ...
+
+    @overload
+    def filterResults(self, methodName: str, *args, filterOpts: FilterOptions, **kw) -> VirtualCall[List[Dict[str, Any]]]:
+        ...
+
+    @overload
+    def filterResults(self, methodName: str, *args, **kw) -> VirtualCall[List[Dict[str, Any]]]:
+        ...
+
+    def findBuildID(self, X: BuildSpecifier, strict: bool=False) -> VirtualCall[Optional[BuildID]]:
+        ...
+
+    def freeTask(self, task_id: TaskID) -> VirtualCall[None]:
+        ...
+
+    def getActiveRepos(self) -> VirtualCall[List[RepoInfo]]:
+        ...
+
+    def getAllArches(self) -> VirtualCall[List[Arch]]:
+        ...
+
+    def getAllPerms(self) -> VirtualCall[List[PermInfo]]:
+        ...
+
+    def getAPIVersion(self) -> VirtualCall[int]:
+        ...
+
+    def getArchive(self, archive_id: ArchiveID, strict: bool=False) -> VirtualCall[Optional[ArchiveInfo]]:
+        ...
+
+    def getArchiveFile(self, archive_id: ArchiveID, filename: str, strict: bool=False) -> VirtualCall[Optional[ArchiveFileInfo]]:
+        ...
+
+    def getArchiveType(self, filename: Optional[str]=None, type_name: Optional[str]=None, type_id: Optional[ATypeID]=None, strict: bool=False) -> VirtualCall[ATypeInfo]:
+        ...
+
+    def getArchiveTypes(self) -> VirtualCall[List[ATypeInfo]]:
+        ...
+
+    def getAverageBuildDuration(self, package: Union[str, PackageID], age: Optional[int]=None) -> VirtualCall[Optional[float]]:
+        ...
+
+    def getBuild(self, buildInfo: BuildSpecifier, strict: bool=False) -> VirtualCall[BuildInfo]:
+        ...
+
+    def getBuildConfig(self, tag: Union[str, TagID], event: Optional[EventID]=None) -> VirtualCall[TagInfo]:
+        ...
+
+    def getBuildLogs(self, build: BuildSpecifier) -> VirtualCall[BuildLogs]:
+        ...
+
+    def getBuildNotification(self, id: int, strict: bool=False) -> VirtualCall[Optional[Dict[str, Any]]]:
+        ...
+
+    def getBuildNotificationBlock(self, id: int, strict: bool=False) -> VirtualCall[Optional[Dict[str, Any]]]:
+        ...
+
+    def getBuildNotificationBlocks(self, userID: Union[str, UserID, None]=None) -> VirtualCall[Dict[str, Any]]:
+        ...
+
+    def getBuildNotifications(self, userID: Union[str, UserID, None]=None) -> VirtualCall[Dict[str, Any]]:
+        ...
+
+    def getBuildroot(self, buildrootID: BuildrootID, strict: bool=False) -> VirtualCall[BuildrootInfo]:
+        ...
+
+    def getBuildrootListing(self, id: BuildrootID) -> VirtualCall[List[RPMInfo]]:
+        ...
+
+    def getBuildTarget(self, info: Union[str, TargetID], event: Optional[EventID]=None, strict: bool=False) -> VirtualCall[TargetInfo]:
+        ...
+
+    def getBuildTargets(self, info: Union[str, TargetID, None]=None, event: Optional[EventID]=None, buildTagID: Union[str, TagID, TagInfo, None]=None, destTagID: Union[str, TagID, TagInfo, None]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[TargetInfo]]:
+        ...
+
+    def getBuildType(self, buildInfo: BuildSpecifier, strict: bool=False) -> VirtualCall[Dict[str, dict]]:
+        ...
+
+    def getChangelogEntries(self, buildID: Optional[int]=None, taskID: Optional[int]=None, filepath: Optional[str]=None, author: Optional[str]=None, before: Union[datetime, str, int, None]=None, after: Union[datetime, str, int, None]=None, queryOpts: Optional[QueryOptions]=None, strict: bool=False) -> VirtualCall[List[ChangelogEntry]]:
+        ...
+
+    def getChannel(self, channelInfo: Union[str, ChannelID], strict: bool=False) -> VirtualCall[ChannelInfo]:
+        ...
+
+    @overload
+    def getEvent(self, id: int) -> VirtualCall[EventInfo]:
+        ...
+
+    @overload
+    def getEvent(self, id: int, strict: bool=False) -> VirtualCall[EventInfo]:
+        ...
+
+    def getExternalRepo(self, info: Union[str, ExternalRepoID], strict: bool=False, event: Optional[EventID]=None) -> VirtualCall[ExternalRepoInfo]:
+        ...
+
+    def getExternalRepoList(self, tag_info: Union[str, TagID], event: Optional[EventID]=None) -> VirtualCall[TagExternalRepos]:
+        ...
+
+    def getFullInheritance(self, tag: Union[str, TagID], event: Optional[EventID]=None, reverse: bool=False) -> VirtualCall[TagInheritance]:
+        ...
+
+    def getGroupMembers(self, group: Union[str, UserID]) -> VirtualCall[List[UserInfo]]:
+        ...
+
+    def getHost(self, hostInfo: Union[str, HostID], strict: bool=False, event: Optional[EventID]=None) -> VirtualCall[HostInfo]:
+        ...
+
+    def getImageArchive(self, archive_id: ArchiveID, strict: bool=False) -> VirtualCall[ArchiveInfo]:
+        ...
+
+    def getImageBuild(self, buildInfo: BuildSpecifier, strict: bool=False) -> VirtualCall[Optional[Dict[str, BuildID]]]:
+        ...
+
+    def getInheritanceData(self, tag: Union[str, TagID], event: Optional[EventID]=None) -> VirtualCall[TagInheritance]:
+        ...
+
+    def getKojiVersion(self) -> VirtualCall[str]:
+        ...
+
+    @overload
+    def getLastEvent(self, before: Union[int, float, None]=None) -> VirtualCall[EventInfo]:
+        ...
+
+    @overload
+    def getLastEvent(self, before: Union[int, float, None]=None, strict: bool=True) -> VirtualCall[EventInfo]:
+        ...
+
+    @overload
+    def getLastHostUpdate(self, hostID: int) -> VirtualCall[Union[str, None]]:
+        ...
+
+    @overload
+    def getLastHostUpdate(self, hostID: int, ts: Literal[False]) -> VirtualCall[Union[str, None]]:
+        ...
+
+    @overload
+    def getLastHostUpdate(self, hostID: int, ts: Literal[True]) -> VirtualCall[Union[float, None]]:
+        ...
+
+    @overload
+    def getLastHostUpdate(self, hostID: int, ts: bool=False) -> VirtualCall[Union[str, float, None]]:
+        ...
+
+    @overload
+    def getLatestBuilds(self, tag: Union[str, TagID], event: Optional[EventID]=None, package: Optional[str]=None, type: Optional[str]=None) -> VirtualCall[List[TagBuildInfo]]:
+        ...
+
+    @overload
+    def getLatestBuilds(self, tag: Union[str, TagID], event: Optional[EventID]=None, package: Optional[str]=None, type: Optional[str]=None, draft: Optional[bool]=None) -> VirtualCall[List[TagBuildInfo]]:
+        ...
+
+    def getLatestMavenArchives(self, tag: Union[int, str], event: Optional[int]=None, inherit: bool=True) -> VirtualCall[List[ArchiveInfo]]:
+        ...
+
+    @overload
+    def getLatestRPMS(self, tag: Union[str, TagID], package: Optional[str]=None, arch: Union[Arch, List[Arch], None]=None, event: Optional[EventID]=None, rpmsigs: bool=False, type: Optional[str]=None) -> VirtualCall[Tuple[List[RPMInfo], List[BuildInfo]]]:
+        ...
+
+    @overload
+    def getLatestRPMS(self, tag: Union[str, TagID], package: Optional[str]=None, arch: Union[Arch, List[Arch], None]=None, event: Optional[EventID]=None, rpmsigs: bool=False, type: Optional[str]=None, draft: Optional[bool]=None) -> VirtualCall[Tuple[List[RPMInfo], List[BuildInfo]]]:
+        ...
+
+    def getLoggedInUser(self) -> VirtualCall[UserInfo]:
+        ...
+
+    def getMavenArchive(self, archive_id: ArchiveID, strict: bool=False) -> VirtualCall[ArchiveInfo]:
+        ...
+
+    def getMavenBuild(self, buildInfo: Union[str, BuildID], strict: bool=False) -> VirtualCall[Dict[str, Any]]:
+        ...
+
+    def getNextRelease(self, build_info: BuildNVR, incr: int=1) -> VirtualCall[str]:
+        ...
+
+    def getPackage(self, info: Union[str, PackageID], strict: bool=False, create: bool=False) -> VirtualCall[Optional[NamedID]]:
+        ...
+
+    def getPackageConfig(self, tag: Union[str, TagID], pkg: Union[str, PackageID], event: Optional[EventID]=None) -> VirtualCall[Optional[TagPackageInfo]]:
+        ...
+
+    def getPackageID(self, name: str, strict: bool=False) -> VirtualCall[Optional[PackageID]]:
+        ...
+
+    def getPerms(self) -> VirtualCall[List[str]]:
+        ...
+
+    @overload
+    def getRepo(self, tag: Union[int, str], state: Optional[RepoState]=None, event: Optional[int]=None, dist: bool=False) -> VirtualCall[RepoInfo]:
+        ...
+
+    @overload
+    def getRepo(self, tag: Union[int, str], state: Optional[RepoState]=None, event: Optional[int]=None, dist: bool=False, min_event: Optional[EventID]=None) -> VirtualCall[RepoInfo]:
+        ...
+
+    @overload
+    def getRPM(self, rpminfo: Union[str, RPMID, RPMNVRA], strict: bool=False) -> VirtualCall[Optional[RPMInfo]]:
+        ...
+
+    @overload
+    def getRPM(self, rpminfo: Union[str, RPMID, RPMNVRA], strict: bool=False, *, multi: Literal[False]) -> VirtualCall[Optional[RPMInfo]]:
+        ...
+
+    @overload
+    def getRPM(self, rpminfo: Union[str, RPMID, RPMNVRA], strict: bool=False, *, multi: Literal[True]) -> VirtualCall[List[RPMInfo]]:
+        ...
+
+    @overload
+    def getRPM(self, rpminfo: Union[str, RPMID, RPMNVRA], strict: bool=False, multi: bool=False) -> VirtualCall[Union[RPMInfo, List[RPMInfo], None]]:
+        ...
+
+    def getRPMChecksums(self, rpm_id: RPMID, checksum_types: Optional[List[ChecksumType]]=None, cacheonly: bool=False) -> VirtualCall[Dict[ChecksumType, str]]:
+        ...
+
+    def getRPMDeps(self, rpmID: RPMID, depType: Optional[RPMDepType]=None, queryOpts: Optional[QueryOptions]=None, strict: bool=False) -> VirtualCall[List[RPMDepInfo]]:
+        ...
+
+    def getRPMFile(self, rpmID: RPMID, filename: str, strict: bool=False) -> VirtualCall[Optional[RPMFileInfo]]:
+        ...
+
+    @overload
+    def getRPMHeaders(self, rpmID: Optional[int]=None, taskID: Optional[TaskID]=None, filepath: Optional[str]=None, headers: Optional[List[str]]=None) -> VirtualCall[Dict[str, Any]]:
+        ...
+
+    @overload
+    def getRPMHeaders(self, rpmID: Optional[int]=None, taskID: Optional[TaskID]=None, filepath: Optional[str]=None, headers: Optional[List[str]]=None, strict: Optional[bool]=False) -> VirtualCall[Dict[str, Any]]:
+        ...
+
+    def getSessionInfo(self, details: bool=False, user_id: Optional[UserID]=None) -> VirtualCall[Union[None, SessionInfo, List[SessionInfo]]]:
+        ...
+
+    def getTag(self, tagInfo: Union[str, TagID], strict: bool=False, event: Optional[EventID]=None, blocked: bool=False) -> VirtualCall[Optional[TagInfo]]:
+        ...
+
+    def getTagID(self, info: Union[str, TagID, Dict[str, Any]], strict: bool=False, create: bool=False) -> VirtualCall[Optional[TagID]]:
+        ...
+
+    def getTagExternalRepos(self, tag_info: Union[str, TagID, None]=None, repo_info: Union[str, ExternalRepoID, None]=None, event: Optional[EventID]=None) -> VirtualCall[TagExternalRepos]:
+        ...
+
+    def getTagGroups(self, tag: Union[str, TagID], event: Optional[EventID]=None, inherit: bool=True, incl_pkgs: bool=True, incl_reqs: bool=True, incl_blocked: bool=False) -> VirtualCall[List[TagGroupInfo]]:
+        ...
+
+    def getTaskChildren(self, task_id: TaskID, request: Optional[bool]=False, strict: Optional[bool]=False) -> VirtualCall[List[TaskInfo]]:
+        ...
+
+    def getTaskDescendents(self, task_id: TaskID, request: bool=False) -> VirtualCall[Dict[str, List[TaskInfo]]]:
+        ...
+
+    @overload
+    def getTaskInfo(self, task_id: List[TaskID], request: bool=False, strict: bool=False) -> VirtualCall[List[TaskInfo]]:
+        ...
+
+    @overload
+    def getTaskInfo(self, task_id: TaskID, request: bool=False, strict: bool=False) -> VirtualCall[TaskInfo]:
+        ...
+
+    def getTaskRequest(self, taskId: TaskID) -> VirtualCall[Dict[str, Any]]:
+        ...
+
+    def getTaskResult(self, taskId: TaskID, raise_fault: bool=True) -> VirtualCall[Any]:
+        ...
+
+    @overload
+    def getUser(self, userInfo: Union[str, UserID, None]=None, strict: bool=False, krb_princs: bool=True) -> VirtualCall[UserInfo]:
+        ...
+
+    @overload
+    def getUser(self, userInfo: Union[str, UserID, None]=None, strict: bool=False, krb_princs: bool=True, groups: bool=False) -> VirtualCall[UserInfo]:
+        ...
+
+    def getUserGroups(self, user: Union[int, str]) -> VirtualCall[List[UserGroup]]:
+        ...
+
+    @overload
+    def getUserPerms(self, userID: Union[str, UserID, None]=None) -> VirtualCall[List[str]]:
+        ...
+
+    @overload
+    def getUserPerms(self, userID: Union[str, UserID, None]=None, with_groups: bool=True) -> VirtualCall[List[str]]:
+        ...
+
+    def getUserPermsInheritance(self, userID: Union[str, UserID]) -> VirtualCall[Dict[str, List[str]]]:
+        ...
+
+    def getVolume(self, volume: str, strict: bool=False) -> VirtualCall[Optional[NamedID]]:
+        ...
+
+    def getWinArchive(self, archive_id: ArchiveID, strict: bool=False) -> VirtualCall[ArchiveInfo]:
+        ...
+
+    def getWinBuild(self, buildInfo: Union[str, BuildID], strict: bool=False) -> VirtualCall[Dict[str, Any]]:
+        ...
+
+    def grantCGAccess(self, user: Union[str, UserID], cg: Union[str, CGID], create: bool=False) -> VirtualCall[None]:
+        ...
+
+    def grantPermission(self, userinfo: Union[str, UserID], permission: Union[str, PermID], create: bool=False, description: Optional[str]=None) -> VirtualCall[None]:
+        ...
+
+    def groupListAdd(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], block: bool=False, force: bool=False, **opts) -> VirtualCall[None]:
+        ...
+
+    def groupListBlock(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID]) -> VirtualCall[None]:
+        ...
+
+    def groupListRemove(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], force: bool=False) -> VirtualCall[None]:
+        ...
+
+    def groupListUnblock(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID]) -> VirtualCall[None]:
+        ...
+
+    def groupPackageListAdd(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], pkg_name: str, block: bool=False, force: bool=False, **opts) -> VirtualCall[None]:
+        ...
+
+    def groupPackageListBlock(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], pkg_name: str) -> VirtualCall[None]:
+        ...
+
+    def groupPackageListRemove(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], pkg_name: str) -> VirtualCall[None]:
+        ...
+
+    def groupPackageListUnblock(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], pkg_name: str) -> VirtualCall[None]:
+        ...
+
+    def groupReqListAdd(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], reqinfo: str, block: bool=False, force: bool=False, **opts) -> VirtualCall[None]:
+        ...
+
+    def groupReqListBlock(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], reqinfo: str) -> VirtualCall[None]:
+        ...
+
+    def groupReqListRemove(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], reqinfo: str, force: Optional[bool]=None) -> VirtualCall[None]:
+        ...
+
+    def groupReqListUnblock(self, taginfo: Union[str, TagID], grpinfo: Union[str, TagGroupID], reqinfo: str) -> VirtualCall[None]:
+        ...
+
+    def hasPerm(self, perm: str, strict: bool=False) -> VirtualCall[bool]:
+        ...
+
+    def hello(self, *args) -> VirtualCall[str]:
+        ...
+
+    def importArchive(self, filepath: str, buildinfo: BuildInfo, type: str, typeInfo: Dict[str, Any]) -> VirtualCall[ArchiveInfo]:
+        ...
+
+    def importRPM(self, path: str, basename: str) -> VirtualCall[RPMInfo]:
+        ...
+
+    def listArchives(self, buildID: Optional[BuildID]=None, buildrootID: Optional[BuildrootID]=None, componentBuildrootID: Optional[BuildrootID]=None, hostID: Optional[HostID]=None, type: Optional[str]=None, filename: Optional[str]=None, size: Optional[int]=None, checksum: Optional[int]=None, checksum_type: Optional[ChecksumType]=None, typeInfo: Optional[Dict[str, Any]]=None, queryOpts: Optional[QueryOptions]=None, imageID: Optional[int]=None, archiveID: Optional[ArchiveID]=None, strict: bool=False) -> VirtualCall[List[ArchiveInfo]]:
+        ...
+
+    def listArchiveFiles(self, archive_id: ArchiveID, queryOpts: Optional[QueryOptions]=None, strict: bool=False) -> VirtualCall[List[ArchiveFileInfo]]:
+        ...
+
+    def listBTypes(self, query: Optional[NamedID]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[BTypeInfo]]:
+        ...
+
+    def listBuildRPMs(self, build: BuildSpecifier) -> VirtualCall[List[RPMInfo]]:
+        ...
+
+    def listBuildroots(self, hostID: Optional[int]=None, tagID: Optional[TagID]=None, state: Union[BuildrootState, List[BuildrootState], None]=None, rpmID: Optional[RPMID]=None, archiveID: Optional[ArchiveID]=None, taskID: Optional[TaskID]=None, buildrootID: Optional[BuildrootID]=None, repoID: Optional[RepoID]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[BuildrootInfo]]:
+        ...
+
+    def listBuilds(self, packageID: Optional[PackageID]=None, userID: Optional[UserID]=None, taskID: Optional[TaskID]=None, prefix: Optional[str]=None, state: Optional[BuildState]=None, volumeID: Optional[int]=None, source: Optional[str]=None, createdBefore: Optional[str]=None, createdAfter: Optional[str]=None, completeBefore: Optional[str]=None, completeAfter: Optional[str]=None, type: Optional[str]=None, typeInfo: Optional[Dict]=None, queryOpts: Optional[QueryOptions]=None, pattern: Optional[str]=None, cgID: Optional[CGID]=None, draft: Optional[bool]=None) -> VirtualCall[List[BuildInfo]]:
+        ...
+
+    def listCGs(self) -> VirtualCall[Dict[str, CGInfo]]:
+        ...
+
+    def listChannels(self, hostID: Optional[HostID]=None, event: Optional[EventID]=None, enabled: Optional[bool]=None) -> VirtualCall[List[ChannelInfo]]:
+        ...
+
+    def listExternalRepos(self, info: Union[str, ExternalRepoID, None]=None, url: Optional[str]=None, event: Optional[EventID]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[ExternalRepoInfo]]:
+        ...
+
+    def listHosts(self, arches: Optional[List[str]]=None, channelID: Optional[int]=None, ready: Optional[bool]=None, enabled: Optional[bool]=None, userID: Optional[UserID]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[HostInfo]]:
+        ...
+
+    def listPackages(self, tagID: Optional[TagID]=None, userID: Optional[UserID]=None, pkgID: Optional[PackageID]=None, prefix: Optional[str]=None, inherited: bool=False, with_dups: bool=False, event: Optional[EventID]=None, queryOpts: Optional[QueryOptions]=None, with_owners: bool=True, with_blocked: bool=True) -> VirtualCall[List[TagPackageInfo]]:
+        ...
+
+    def listPackagesSimple(self, prefix: Optional[str]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[TagPackageSimple]]:
+        ...
+
+    def listRPMFiles(self, rpmID: RPMID, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[RPMFileInfo]]:
+        ...
+
+    def listRPMs(self, buildID: Optional[BuildID]=None, buildrootID: Optional[BuildrootID]=None, imageID: Optional[int]=None, componentBuildrootID: Optional[BuildrootID]=None, hostID: Optional[int]=None, arches: Union[Arch, List[Arch], None]=None, queryOpts: Optional[QueryOptions]=None, draft: Optional[bool]=None) -> VirtualCall[List[RPMInfo]]:
+        ...
+
+    def listTagged(self, tag: Union[str, TagID], event: Optional[EventID]=None, inherit: bool=False, prefix: Optional[str]=None, latest: bool=False, package: Optional[str]=None, owner: Optional[Union[str, UserID]]=None, type: Optional[str]=None, strict: bool=True, extra: bool=False, draft: Optional[bool]=None) -> VirtualCall[List[TagBuildInfo]]:
+        ...
+
+    def listTaggedArchives(self, tag: Union[str, TagID], event: Optional[EventID]=None, inherit: bool=False, latest: bool=False, package: Optional[str]=None, type: Optional[str]=None, strict: bool=True, extra: bool=True) -> VirtualCall[Tuple[List[ArchiveInfo], List[BuildInfo]]]:
+        ...
+
+    @overload
+    def listTaggedRPMS(self, tag: Union[str, TagID], event: Optional[EventID]=None, inherit: bool=False, latest: bool=False, package: Optional[str]=None, arch: Optional[Arch]=None, rpmsigs: bool=False, owner: Union[str, UserID, None]=None, type: Optional[str]=None, strict: bool=True, extra: bool=True) -> VirtualCall[Tuple[List[RPMInfo], List[BuildInfo]]]:
+        ...
+
+    @overload
+    def listTaggedRPMS(self, tag: Union[str, TagID], event: Optional[EventID]=None, inherit: bool=False, latest: bool=False, package: Optional[str]=None, arch: Optional[Arch]=None, rpmsigs: bool=False, owner: Union[str, UserID, None]=None, type: Optional[str]=None, strict: bool=True, extra: bool=True, draft: Optional[bool]=None) -> VirtualCall[Tuple[List[RPMInfo], List[BuildInfo]]]:
+        ...
+
+    def listTags(self, build: Optional[BuildSpecifier]=None, package: Union[str, PackageID, None]=None, perms: bool=True, queryOpts: Optional[QueryOptions]=None, pattern: Optional[str]=None) -> VirtualCall[List[TagInfo]]:
+        ...
+
+    def listTaskOutput(self, taskID: TaskID, stat: bool=False, all_volumes: bool=False, strict: bool=False) -> VirtualCall[Union[List[str], Dict[str, List[str]], Dict[str, Dict[str, Any]], Dict[str, Dict[str, Dict[str, Any]]]]]:
+        ...
+
+    def listTasks(self, opts: Optional[ListTasksOptions]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[TaskInfo]]:
+        ...
+
+    @overload
+    def listUsers(self, userType: UserType=UserType.NORMAL, prefix: Optional[str]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[UserInfo]]:
+        ...
+
+    @overload
+    def listUsers(self, userType: UserType=UserType.NORMAL, prefix: Optional[str]=None, queryOpts: Optional[QueryOptions]=None, perm: Optional[str]=None, inherited_perm: bool=False) -> VirtualCall[List[UserInfo]]:
+        ...
+
+    def listVolumes(self) -> VirtualCall[List[NamedID]]:
+        ...
+
+    def makeTask(self, *args, **opts) -> VirtualCall[TaskID]:
+        ...
+
+    def massTag(self, tag: Union[str, TagID], builds: List[Union[str, BuildID]]) -> VirtualCall[None]:
+        ...
+
+    def mavenBuild(self, url: str, target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: str='maven') -> VirtualCall[int]:
+        ...
+
+    def mavenEnabled(self) -> VirtualCall[bool]:
+        ...
+
+    def mergeScratch(self, task_id: TaskID) -> VirtualCall[BuildID]:
+        ...
+
+    def moveAllBuilds(self, tag1: Union[str, TagID], tag2: Union[str, TagID], package: Union[str, PackageID], force: bool=False) -> VirtualCall[TaskID]:
+        ...
+
+    def moveBuild(self, tag1: Union[str, TagID], tag2: Union[str, TagID], build: BuildSpecifier, force: bool=False) -> VirtualCall[TaskID]:
+        ...
+
+    def newGroup(self, name: str) -> VirtualCall[UserID]:
+        ...
+
+    def newRepo(self, tag: Union[str, TagID], event: Optional[EventID]=None, src: bool=False, debuginfo: bool=False, separate_src: bool=False) -> VirtualCall[TaskID]:
+        ...
+
+    def packageListAdd(self, taginfo: Union[str, TagID], pkginfo: Union[str, PackageID], owner: Union[str, UserID, None]=None, block: Optional[bool]=None, extra_arches: Optional[str]=None, force: bool=False, update: bool=False) -> VirtualCall[None]:
+        ...
+
+    def packageListBlock(self, taginfo: Union[str, TagID], pkginfo: Union[str, PackageID], force: bool=False) -> VirtualCall[None]:
+        ...
+
+    def packageListRemove(self, taginfo: Union[str, TagID], pkginfo: Union[str, PackageID], force: bool=False) -> VirtualCall[None]:
+        ...
+
+    def packageListSetArches(self, taginfo: Union[str, TagID], pkginfo: Union[str, PackageID], arches: str, force: bool=False) -> VirtualCall[None]:
+        ...
+
+    def packageListSetOwner(self, taginfo: Union[str, TagID], pkginfo: Union[str, PackageID], owner: Union[str, UserID], force: bool=False) -> VirtualCall[None]:
+        ...
+
+    def packageListUnblock(self, taginfo: Union[str, TagID], pkginfo: Union[str, PackageID], force: bool=False) -> VirtualCall[None]:
+        ...
+
+    def promoteBuild(self, build: Union[str, int], force: bool=False) -> VirtualCall[BuildInfo]:
+        ...
+
+    def queryHistory(self, tables: Optional[List[str]]=None, **kwargs: Any) -> VirtualCall[Dict[str, List[Dict[str, Any]]]]:
+        ...
+
+    def queryRPMSigs(self, rpm_id: Union[RPMID, str, BuildNVR, None]=None, sigkey: Optional[str]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[RPMSignature]]:
+        ...
+
+    def removeExternalRepoFromTag(self, tag_info: Union[str, TagID], repo_info: int) -> VirtualCall[None]:
+        ...
+
+    def removeHostFromChannel(self, hostname: str, channel_name: str) -> VirtualCall[None]:
+        ...
+
+    def removeUserKrbPrincipal(self, user: Union[str, UserID], krb_principal: str) -> VirtualCall[UserID]:
+        ...
+
+    def removeVolume(self, volume: str) -> VirtualCall[None]:
+        ...
+
+    def renameChannel(self, old: str, new: str) -> VirtualCall[None]:
+        ...
+
+    def repoDelete(self, repo_id: RepoID) -> VirtualCall[int]:
+        ...
+
+    def repoExpire(self, repo_id: RepoID) -> VirtualCall[None]:
+        ...
+
+    def repoInfo(self, repo_id: RepoID, strict: bool=False) -> VirtualCall[RepoInfo]:
+        ...
+
+    def repoProblem(self, repo_id: RepoID) -> VirtualCall[None]:
+        ...
+
+    def resetBuild(self, build: Union[str, BuildID]) -> VirtualCall[None]:
+        ...
+
+    def restartHosts(self, priority: int=5, options: Optional[Dict[str, Any]]=None) -> VirtualCall[TaskID]:
+        ...
+
+    def resubmitTask(self, taskID: int) -> VirtualCall[int]:
+        ...
+
+    def revokeCGAccess(self, user: Union[str, UserID], cg: Union[str, CGID]) -> VirtualCall[None]:
+        ...
+
+    def revokePermission(self, userinfo: Union[str, UserID], permission: Union[str, PermID]) -> VirtualCall[None]:
+        ...
+
+    def search(self, terms: str, type: str, matchType: str, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[SearchResult]]:
+        ...
+
+    def setBuildOwner(self, build: BuildSpecifier, user: Union[str, UserID]) -> VirtualCall[None]:
+        ...
+
+    def setBuildTimestamp(self, build: BuildSpecifier, ts: Union[int, float]) -> VirtualCall[None]:
+        ...
+
+    def setInheritanceData(self, tag: Union[str, TagID], data: TagInheritance, clear: bool=False) -> VirtualCall[None]:
+        ...
+
+    def setTaskPriority(self, task_id: TaskID, priority: int, recurse: bool=True) -> VirtualCall[None]:
+        ...
+
+    @overload
+    def showOpts(self) -> VirtualCall[str]:
+        ...
+
+    @overload
+    def showOpts(self, as_string: Literal[True]) -> VirtualCall[str]:
+        ...
+
+    @overload
+    def showOpts(self, as_string: Literal[False]) -> VirtualCall[Dict[str, Any]]:
+        ...
+
+    @overload
+    def showOpts(self, as_string: bool=True) -> VirtualCall[Union[str, Dict[str, Any]]]:
+        ...
+
+    def showSession(self) -> VirtualCall[str]:
+        ...
+
+    def snapshotTag(self, src: Union[str, TagID], dst: Union[str, TagID], config: bool=True, pkgs: bool=True, builds: bool=True, groups: bool=True, latest_only: bool=True, inherit_builds: bool=True, event: Optional[EventID]=None, force: bool=False) -> VirtualCall[None]:
+        ...
+
+    def snapshotTagModify(self, src: Union[str, TagID], dst: Union[str, TagID], config: bool=True, pkgs: bool=True, builds: bool=True, groups: bool=True, latest_only: bool=True, inherit_builds: bool=True, event: Optional[EventID]=None, force: bool=False, remove: bool=False) -> VirtualCall[None]:
+        ...
+
+    def tagBuild(self, tag: Union[str, TagID], build: Union[str, BuildID], force: bool=False, fromtag: Union[str, TagID, None]=None) -> VirtualCall[None]:
+        ...
+
+    def tagBuildBypass(self, tag: Union[str, TagID], build: Union[str, BuildID], force: bool=False, notify: bool=False) -> VirtualCall[None]:
+        ...
+
+    def tagChangedSinceEvent(self, event: EventID, taglist: List[TagID]) -> VirtualCall[bool]:
+        ...
+
+    def tagFirstChangeEvent(self, tag: Union[str, TagID], after: Optional[EventID]=None, inherit: bool=True) -> VirtualCall[Optional[EventID]]:
+        ...
+
+    def tagLastChangeEvent(self, tag: Union[str, TagID], before: Optional[EventID]=None, inherit: bool=True) -> VirtualCall[Optional[EventID]]:
+        ...
+
+    def taskFinished(self, taskId: TaskID) -> VirtualCall[bool]:
+        ...
+
+    def untagBuild(self, tag: Union[str, TagID], build: Union[str, BuildID], strict: bool=True, force: bool=False) -> VirtualCall[None]:
+        ...
+
+    def untagBuildBypass(self, tag: Union[str, TagID], build: Union[str, BuildID], strict: bool=True, force: bool=False, notify: bool=False) -> VirtualCall[None]:
+        ...
+
+    def untaggedBuilds(self, name: Optional[str]=None, queryOpts: Optional[QueryOptions]=None, draft: Optional[bool]=None) -> VirtualCall[List[BuildNVR]]:
+        ...
+
+    def updateNotification(self, id: NotificationID, package_id: Union[str, PackageID, None], tag_id: Union[str, TagID, None], success_only: bool) -> VirtualCall[None]:
+        ...
+
+    def uploadFile(self, path: str, name: str, size: int, md5sum: str, offset: int, data: str, volume: Optional[str]=None, checksum: Union[str, Tuple[ChecksumType, str], None]=None) -> VirtualCall[bool]:
+        ...
+
+    def winBuild(self, vm: str, url: str, target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: str='vm') -> VirtualCall[int]:
+        ...
+
+    def winEnabled(self) -> VirtualCall[bool]:
+        ...
+
+    def wrapperRPM(self, build: Union[int, str], url: str, target: str, priority: Optional[int]=None, channel: str='maven', opts: Optional[Dict[str, Any]]=None) -> VirtualCall[int]:
+        ...
+
+    def writeSignedRPM(self, an_rpm: str, sigkey: str, force: bool=False) -> VirtualCall[None]:
         ...
 
 
