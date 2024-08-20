@@ -56,7 +56,6 @@ kojihub.kojixmlrpc.log_handler
 
 koji.server
 kojihub.db
-kojihub.kojihub.RootExports
 kojihub.repos
 kojihub.scheduler
 
