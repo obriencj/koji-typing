@@ -33,7 +33,7 @@ loading of the hypothetical module.
 [issue]: https://pagure.io/koji/issue/3708
 
 
-## Runtime package `koji_types`
+## Runtime package
 
 The runtime-available `koji_types` package provides a number of
 `TypedDict` definitions which provide structure for the numerous
@@ -43,13 +43,13 @@ order to later perform anaylsis. It also provides some Pythonic
 enumerations for some koji constant values.
 
 
-## Static analysis package `koji-stubs`
+## Static analysis package
 
-Following [PEP-561] guidelines, `koij-stubs` provides partial stub
-annotations for use during static analysis with tools like
-[MyPy]. This package relies on the `koji_types` package definitions in
-order to supply accurate signatures for many of the dict-based
-results.
+Following [PEP-561] guidelines the packages `koij-stubs`,
+`koji_cli-stubs`, and `kojihub-stubs` provide partial stub annotations
+for use during static analysis with tools like [MyPy]. These all rely
+on the `koji_types` package definitions in order to supply accurate
+signatures for many of the dict-based results.
 
 [PEP-561]: https://peps.python.org/pep-0561/
 
@@ -58,15 +58,11 @@ results.
 
 ## Caveats
 
-As mentioned above, static analysis against a `MultiCallSession` has
-an additional test-time dependency.
-
-In addition, I have not been able to figure out how to provide typing
-annotations to correctly reflect the return type change of
-`ClientSession` calls which support a `queryOpts` in the use case of
-`countOnly = True`. In those calls the return type is actually an
-`int` but I haven't found a way to provide an override annotation that
-shows this.
+I have not been able to figure out how to provide typing annotations
+to correctly reflect the return type change of `ClientSession` calls
+which support a `queryOpts` in the use case of `countOnly = True`. In
+those calls the return type is actually an `int` but I haven't found a
+way to provide an override annotation that shows this.
 
 ```python
 # here the return type is List[UserInfo]
