@@ -122,7 +122,7 @@ kojihub: requires-tox protocols tools/koji
 ##@ Development Workflow
 
 koji_types/protocols.pyi:	kojihub-stubs/kojihub.pyi koji_types/protocols.in
-	@$(PYTHON) tools/prototempl.py
+	@$(PYTHON) tools/transmute.py
 
 
 protocols:	koji_types/protocols.pyi	## regenerates protocols stub if needed
