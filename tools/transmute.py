@@ -15,17 +15,17 @@
 
 
 """
-Protocol Templater
+Transmute RootExports into ClientSession protocols
 
-This is a build-time tool which generates `koji_types/protocols.pyi`
+This is a development tool which generates `koji_types/protocols.pyi`
 based on the type signatures found in `kojihub-stubs/kojihub.pyi`
 
 This script is meant to be invoked by the top-level Makefile, via eg.
-`make protocol`
+`make protocols`
 
 The generated `protocols.pyi` file should be committed in git when it
 changes. This script is only a dependency for active development of
-this project, not for the build process.
+this project, not for the build or packaging processes.
 
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
@@ -55,6 +55,11 @@ class UnparseBetter(_Unparser):
 
 
 def load_heading(filename):
+    """
+    Just reading all of the leading copyright comments from the
+    given file
+    """
+
     found = []
     with open(filename, "rt") as f:
         for line in f:
@@ -74,12 +79,8 @@ def load_ast(filename):
 def dump_ast(filename, tree, heading, footer):
     with open(filename, "wt") as f:
         f.write(heading)
-        format_ast(f, tree)
+        f.write(UnparseBetter().visit(tree))
         f.write(footer)
-
-
-def format_ast(f, tree):
-    f.write(UnparseBetter().visit(tree))
 
 
 def find_classdef(mod, name):
@@ -91,7 +92,29 @@ def find_classdef(mod, name):
         raise Exception(f"node {name} not found")
 
 
+def inject_self(node):
+    """
+    inserts a self parameter into a method's signature. Used when
+    converting from a staticmethod to a normal one.
+    """
+
+    node.args = copy(node.args)
+    node.args.args = copy(node.args.args)
+
+    selfarg = arg('self')
+    selfarg.lineno = 0
+    selfarg.col_offset = 0
+
+    node.args.args.insert(0, selfarg)
+
+
 def pop_staticmethod(node):
+    """
+    Looks for a @staticmethod decorator and removes it. Returns
+    True if we found one to remove, False if there wasn't such a
+    decorator in the first place.
+    """
+
     for offset, dec in enumerate(node.decorator_list):
         if isinstance(dec, Name) and dec.id == "staticmethod":
             break
@@ -104,23 +127,16 @@ def pop_staticmethod(node):
 
 
 def pop_ellipsis(node):
+    """
+    Remove the ellipsis body from our template classes
+    """
+
     if node.body:
         last = node.body[-1]
         if isinstance(last, Expr) \
            and isinstance(last.value, Constant) \
            and last.value.value == ...:
             node.body.pop()
-
-
-def inject_self(node):
-    node.args = copy(node.args)
-    node.args.args = copy(node.args.args)
-
-    selfarg = arg('self')
-    selfarg.lineno = 0
-    selfarg.col_offset = 0
-
-    node.args.args.insert(0, selfarg)
 
 
 def update_session(node, orig):
@@ -140,27 +156,38 @@ def update_session(node, orig):
 def update_multicall(node, orig):
     pop_ellipsis(node)
 
+    vc = Name("VirtualCall")
+
     for fn in orig.body:
         if not isinstance(fn, FunctionDef):
             continue
 
         fn = copy(fn)
-        fn.returns = Subscript(Name("VirtualCall"), fn.returns)
+        fn.returns = Subscript(vc, fn.returns)
 
         node.body.append(fn)
 
 
-def update_template(tmpl, root):
+def transmute(tmpl, root):
+    """
+    Here we'll produce four class definitions: ClientSession,
+    Host, MultiCallSession, and MultiCallHost. These will be generated
+    by modifying the original definitions found in the RootExports and
+    HostExports classes in kojihub.
+    """
 
     session = find_classdef(tmpl, "ClientSession")
     host = find_classdef(tmpl, "Host")
 
-    # generate our session and host from the root exports
+    # generate our session and host from the root exports. Primarily we're
+    # just copying everythin over, but if we find a staticmethod we will
+    # convert that into a normal method.
     update_session(session, find_classdef(root, "RootExports"))
     update_session(host, find_classdef(root, "HostExports"))
 
-    # then further generate our multicall variations from the session
-    # and host we just manifested
+    # then we further generate our multicall variations from the
+    # session and host we just manifested. These have their return
+    # types wrapped up in a VirtualCall
     update_multicall(find_classdef(tmpl, "MultiCallSession"),
                      session)
     update_multicall(find_classdef(tmpl, "MultiCallHost"),
@@ -172,7 +199,7 @@ def cli(options):
     tmpl = load_ast(TEMPLATE_PATH)
     root = load_ast(KOJIHUB_PATH)
 
-    update_template(tmpl, root)
+    transmute(tmpl, root)
 
     dump_ast(OUTPUT_PATH, tmpl,
              heading=heading,
@@ -180,8 +207,11 @@ def cli(options):
 
 
 def create_parser(name):
-    # just in case I have any ideas for the future
     parser = ArgumentParser(name)
+
+    # just in case I have any ideas for the future. For now this takes
+    # no arguments.
+
     return parser
 
 
