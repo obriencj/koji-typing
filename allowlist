@@ -14,12 +14,6 @@ koji.POMHandler
 koji.MultiCallHack.__set__
 
 
-# this one has a default at runtime which depends on the system
-# architecture, but our stub just declares it as 'noarch'
-
-koji.arch.getMultiArchInfo
-
-
 # this one confuses stubtest because it uses double-underscore
 # argument names, which is interpreted as positional-only in older
 # typing styles
@@ -35,14 +29,10 @@ kojihub.auth.Session.host_id
 kojihub.auth.Session.perms
 
 
-# another method with double-underscored argument names
+# more methods with double-underscored argument names
 
 kojihub.HostExports.subtask2
 kojihub.kojihub.HostExports.subtask2
-
-
-# uses a double-underscored argument name
-
 kojihub.kojixmlrpc.HandlerAccess.call
 
 

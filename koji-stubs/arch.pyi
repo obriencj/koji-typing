@@ -137,7 +137,7 @@ def getCanonX86Arch(
 
 
 def getMultiArchInfo(
-        arch: Arch = 'noarch') -> Optional[List[Arch]]:
+        arch: Arch = ...) -> Optional[List[Arch]]:
     ...
 
 
