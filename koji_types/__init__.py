@@ -504,7 +504,7 @@ class BuildInfo(BuildNVR):
     completion_ts: float
     """ UTC timestamp indicating when this build was completed """
 
-    creation_event_id: int
+    creation_event_id: EventID
     """ koji event ID at the creation of this build record """
 
     creation_time: str
@@ -650,7 +650,7 @@ class RPMInfo(RPMNVRA):
     epoch: str
     """ The RPM's epoch field, or None if not defined """
 
-    external_repo_id: int
+    external_repo_id: ExternalRepoID
     """ The external repo ID for this RPM record, or 0 if the RPM was
     built in this koji instance rather than being a reference to an
     external repository """
@@ -684,7 +684,7 @@ class RPMSignature(TypedDict):
     ``queryRPMSigs`` XMLRPC API.
     """
 
-    rpm_id: int
+    rpm_id: RPMID
 
     sigkey: str
 
@@ -954,7 +954,7 @@ class TagInfo(TypedDict):
     """ name of the required permission to associate builds with this tag,
     or None """
 
-    perm_id: int
+    perm_id: PermID
     """ ID of the required permission to associate builds with this tag,
     or None """
 
@@ -1068,7 +1068,7 @@ class TagPackageInfo(TagPackageSimple):
     extra_arches: str
     """ additional architectures, separated by spaces """
 
-    owner_id: int
+    owner_id: UserID
     """ ID of the user who is the owner of the package for this tag """
 
     owner_name: str
@@ -1153,7 +1153,7 @@ class TaskInfo(TypedDict):
     create_ts: float
     """ UTC timestamp indicating when this task was created """
 
-    host_id: int
+    host_id: HostID
     """ host which has taken this task, or None """
 
     id: TaskID
@@ -1251,7 +1251,7 @@ class GOptions(Values):
     weburl: str
 
 
-HistoryEntry = Tuple[int, str, bool, Dict[str, Any]]
+HistoryEntry = Tuple[int, str, bool, Data]
 
 
 class QueryOptions(TypedDict, total=False):
