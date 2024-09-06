@@ -23,24 +23,19 @@ Koji Types - Client Session Protocol method declarations
 from . import (
     ArchiveFileInfo, ArchiveID, ArchiveInfo, ATypeID, ATypeInfo,
     BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR,
-    BuildrootID, BuildrootInfo, BuildrootState,
-    BuildState, BTypeInfo, ChangelogEntry, ChannelID, ChannelInfo,
-    ChecksumType,
-    CGID, CGInfo, CGInitInfo,
-    Data, ExternalRepoID, ExternalRepoInfo,
-    EventID, EventInfo, FaultInfo, FilterOptions,
-    HostID, HostInfo, ListTasksOptions, MavenInfo,
-    NamedID, NotificationID, OldNew, PackageID, PackageInfo,
-    PermID, PermInfo, POMInfo, QueryOptions,
-    RepoID, RepoInfo, RepoOptions, RepoState,
-    RPMDepType, RPMDepInfo,
-    RPMFileInfo, RPMID, RPMInfo, RPMNVRA,
+    BuildrootID, BuildrootInfo, BuildrootState, BuildState, BTypeInfo,
+    ChangelogEntry, ChannelID, ChannelInfo, ChecksumType, CGID,
+    CGInfo, CGInitInfo, Data, ExternalRepoID, ExternalRepoInfo,
+    EventID, EventInfo, FaultInfo, FilterOptions, HostID, HostInfo,
+    Identifier, ListTasksOptions, MavenInfo, NamedID, NotificationID,
+    OldNew, PackageID, PackageInfo, PermID, PermInfo, POMInfo,
+    QueryOptions, RepoID, RepoInfo, RepoOptions, RepoState,
+    RPMDepType, RPMDepInfo, RPMFileInfo, RPMID, RPMInfo, RPMNVRA,
     RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
     TagGroupID, TagGroupInfo, TagID, TagInfo, TagInheritance,
-    TagExternalRepos, TagPackageInfo, TagPackageSimple,
-    TargetID, TargetInfo,
-    TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserStatus, UserType,
-    WinInfo, )
+    TagExternalRepos, TagPackageInfo, TagPackageSimple, TargetID,
+    TargetInfo, TaskID, TaskInfo, UserGroup, UserID, UserInfo,
+    UserStatus, UserType, WinInfo, )
 from .arch import Arch
 
 from datetime import datetime

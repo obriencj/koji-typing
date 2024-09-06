@@ -129,27 +129,32 @@ __all__ = (
 )
 
 
-ArchiveID = NewType("ArchiveID", int)
-ATypeID = NewType("ATypeID", int)
-BuildID = NewType("BuildID", int)
-BuildrootID = NewType("BuildrootID", int)
-BTypeID = NewType("BTypeID", int)
-CGID = NewType("CGID", int)
-ChannelID = NewType("ChannelID", int)
-ExternalRepoID = NewType("ExternalRepoID", int)
-EventID = NewType("EventID", int)
-HostID = NewType("HostID", int)
-NotificationID = NewType("NotificationID", int)
-PackageID = NewType("PackageID", int)
-PermID = NewType("PermID", int)
-RepoID = NewType("RepoID", int)
-RepoRequestID = NewType("RepoRequestID", int)
-RPMID = NewType("RPMID", int)
-TagGroupID = NewType("TagGroupID", int)
-TagID = NewType("TagID", int)
-TargetID = NewType("TargetID", int)
-TaskID = NewType("TaskID", int)
-UserID = NewType("UserID", int)
+Identifier = NewType("Identifier", int)
+"""
+An int used as a unique identifier for a particular koji data type
+"""
+
+ArchiveID = NewType("ArchiveID", Identifier)
+ATypeID = NewType("ATypeID", Identifier)
+BuildID = NewType("BuildID", Identifier)
+BuildrootID = NewType("BuildrootID", Identifier)
+BTypeID = NewType("BTypeID", Identifier)
+CGID = NewType("CGID", Identifier)
+ChannelID = NewType("ChannelID", Identifier)
+ExternalRepoID = NewType("ExternalRepoID", Identifier)
+EventID = NewType("EventID", Identifier)
+HostID = NewType("HostID", Identifier)
+NotificationID = NewType("NotificationID", Identifier)
+PackageID = NewType("PackageID", Identifier)
+PermID = NewType("PermID", Identifier)
+RepoID = NewType("RepoID", Identifier)
+RepoRequestID = NewType("RepoRequestID", Identifier)
+RPMID = NewType("RPMID", Identifier)
+TagGroupID = NewType("TagGroupID", Identifier)
+TagID = NewType("TagID", Identifier)
+TargetID = NewType("TargetID", Identifier)
+TaskID = NewType("TaskID", Identifier)
+UserID = NewType("UserID", Identifier)
 
 
 Data = Dict[str, Any]
@@ -161,7 +166,7 @@ class OldNew(TypedDict):
 
 
 class NamedID(TypedDict):
-    id: int
+    id: Identifier
     name: str
 
 

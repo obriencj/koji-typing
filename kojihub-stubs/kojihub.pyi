@@ -26,21 +26,23 @@ from datetime import datetime
 from koji import ParameterError
 from koji.policy import BaseSimpleTest, MatchTest
 from koji_types import (
-    ArchiveFileInfo, ArchiveID, ArchiveInfo, ATypeID, ATypeInfo,
-    BTypeInfo, BuildID, BuildInfo, BuildLogs, BuildNVR, BuildrootID,
-    BuildrootInfo, BuildrootReference, BuildrootState, BuildSpecifier,
-    BuildState, CGID, CGInfo, CGInitInfo, ChangelogEntry, ChannelID,
-    ChannelInfo, ChecksumType, Data, EventID, EventInfo, ExternalRepoID,
-    ExternalRepoInfo, FaultInfo, FilterOptions, HistoryEntry, HostID,
-    HostInfo, ListTasksOptions, MavenInfo, NamedID, NotificationID,
+    ArchiveFileInfo, ArchiveID, ArchiveInfo,
+    ATypeID, ATypeInfo, BTypeInfo, BuildID, BuildInfo, BuildLogs,
+    BuildNVR, BuildrootID, BuildrootInfo, BuildrootReference,
+    BuildrootState, BuildSpecifier, BuildState, CGID, CGInfo,
+    CGInitInfo, ChangelogEntry, ChannelID, ChannelInfo, ChecksumType,
+    Data, EventID, EventInfo, ExternalRepoID, ExternalRepoInfo,
+    FaultInfo, FilterOptions, HistoryEntry, HostID, HostInfo,
+    Identifier, ListTasksOptions, MavenInfo, NamedID, NotificationID,
     OldNew, PackageID, PackageInfo, PermID, PermInfo, POMInfo,
-    QueryOptions, RepoID, RepoInfo, RepoOptions, RepoState, RPMDepInfo,
-    RPMDepType, RPMFileInfo, RPMID, RPMInfo, RPMNVRA, RPMSignature,
-    RPMSigTag, SearchResult, SessionInfo, TagBuildInfo, TagExternalRepos,
-    TagFullInheritance, TagFullInheritanceEntry, TagGroupID,
-    TagGroupInfo, TagID, TagInfo, TagInheritance, TagPackageInfo,
-    TagPackageSimple, TargetID, TargetInfo, TaskID, TaskInfo, TaskState,
-    UserGroup, UserID, UserInfo, UserStatus, UserType, WinInfo, )
+    QueryOptions, RepoID, RepoInfo, RepoOptions, RepoState,
+    RPMDepInfo, RPMDepType, RPMFileInfo, RPMID, RPMInfo, RPMNVRA,
+    RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo,
+    TagExternalRepos, TagFullInheritance, TagFullInheritanceEntry,
+    TagGroupID, TagGroupInfo, TagID, TagInfo, TagInheritance,
+    TagPackageInfo, TagPackageSimple, TargetID, TargetInfo, TaskID,
+    TaskInfo, TaskState, UserGroup, UserID, UserInfo, UserStatus,
+    UserType, WinInfo, )
 from koji_types.arch import Arch
 from logging import ERROR, INFO, WARNING, Logger
 from typing import (
@@ -1127,7 +1129,7 @@ class RootExports:
             locked: bool = False,
             maven_support: bool = False,
             maven_include_all: bool = False,
-            extra: Optional[Dict[str, str]] = None) -> int:
+            extra: Optional[Dict[str, str]] = None) -> TagID:
         ...
 
     def createUser(
@@ -1184,18 +1186,18 @@ class RootExports:
 
     def disableChannel(
             self,
-            channelname: str,
+            channelname: Union[str, ChannelID],
             comment: Optional[str] = None) -> None:
         ...
 
     def disableHost(
             self,
-            hostname: str) -> None:
+            hostname: Union[str, HostID]) -> None:
         ...
 
     def disableUser(
             self,
-            username: Union[int, str]) -> None:
+            username: Union[str, UserID]) -> None:
         ...
 
     def distRepo(
@@ -1225,15 +1227,15 @@ class RootExports:
 
     @staticmethod
     def editBuildTarget(
-            buildTargetInfo: Union[str, int],
+            buildTargetInfo: Union[str, TargetID],
             name: str,
-            build_tag: Union[str, int],
-            dest_tag: Union[str, int]) -> None:
+            build_tag: Union[str, TagID],
+            dest_tag: Union[str, TagID]) -> None:
         ...
 
     @staticmethod
     def editChannel(
-            channelInfo: Union[int, str],
+            channelInfo: Union[str, ChannelID],
             **kw) -> bool:
         ...
 
@@ -1301,7 +1303,7 @@ class RootExports:
 
     def enableUser(
             self,
-            username: Union[int, str]) -> None:
+            username: Union[str, UserID]) -> None:
         ...
 
     def error(self) -> NoReturn:
@@ -1690,18 +1692,18 @@ class RootExports:
     @overload
     @staticmethod
     def getRepo(
-            tag: Union[int, str],
+            tag: Union[str, TagID],
             state: Optional[RepoState] = None,
-            event: Optional[int] = None,
+            event: Optional[EventID] = None,
             dist: bool = False) -> RepoInfo:
         ...
 
     @overload
     @staticmethod
     def getRepo(
-            tag: Union[int, str],
+            tag: Union[str, TagID],
             state: Optional[RepoState] = None,
-            event: Optional[int] = None,
+            event: Optional[EventID] = None,
             dist: bool = False,
             min_event: Optional[EventID] = None) -> RepoInfo:
         # :since: koji 1.35
@@ -1765,7 +1767,7 @@ class RootExports:
     @overload
     def getRPMHeaders(
             self,
-            rpmID: Optional[int] = None,
+            rpmID: Optional[RPMID] = None,
             taskID: Optional[TaskID] = None,
             filepath: Optional[str] = None,
             headers: Optional[List[str]] = None) -> Data:
@@ -1774,7 +1776,7 @@ class RootExports:
     @overload
     def getRPMHeaders(
             self,
-            rpmID: Optional[int] = None,
+            rpmID: Optional[RPMID] = None,
             taskID: Optional[TaskID] = None,
             filepath: Optional[str] = None,
             headers: Optional[List[str]] = None,
@@ -2063,7 +2065,7 @@ class RootExports:
             type: Optional[str] = None,
             filename: Optional[str] = None,
             size: Optional[int] = None,
-            checksum: Optional[int] = None,
+            checksum: Optional[str] = None,
             checksum_type: Optional[ChecksumType] = None,
             typeInfo: Optional[Data] = None,
             queryOpts: Optional[QueryOptions] = None,
@@ -2092,7 +2094,7 @@ class RootExports:
 
     @staticmethod
     def listBuildroots(
-            hostID: Optional[int] = None,
+            hostID: Optional[HostID] = None,
             tagID: Optional[TagID] = None,
             state: Union[BuildrootState, List[BuildrootState], None] = None,
             rpmID: Optional[RPMID] = None,
@@ -2147,7 +2149,7 @@ class RootExports:
     def listHosts(
             self,
             arches: Optional[List[str]] = None,
-            channelID: Optional[int] = None,
+            channelID: Optional[ChannelID] = None,
             ready: Optional[bool] = None,
             enabled: Optional[bool] = None,
             userID: Optional[UserID] = None,
@@ -2187,7 +2189,7 @@ class RootExports:
             buildrootID: Optional[BuildrootID] = None,
             imageID: Optional[int] = None,
             componentBuildrootID: Optional[BuildrootID] = None,
-            hostID: Optional[int] = None,
+            hostID: Optional[HostID] = None,
             arches: Union[Arch, List[Arch], None] = None,
             queryOpts: Optional[QueryOptions] = None,
             draft: Optional[bool] = None) -> List[RPMInfo]:
@@ -2325,7 +2327,7 @@ class RootExports:
             target: str,
             opts: Optional[Data] = None,
             priority: Optional[int] = None,
-            channel: str = 'maven') -> int:
+            channel: str = 'maven') -> TaskID:
         ...
 
     def mavenEnabled(self) -> bool:
@@ -2416,7 +2418,7 @@ class RootExports:
 
     @staticmethod
     def promoteBuild(
-            build: Union[str, int],
+            build: Union[str, BuildID],
             force: bool = False) -> BuildInfo:
         ...
 
@@ -2496,7 +2498,7 @@ class RootExports:
 
     def resubmitTask(
             self,
-            taskID: TaskID) -> int:
+            taskID: TaskID) -> TaskID:
         ...
 
     @staticmethod
@@ -2705,7 +2707,7 @@ class RootExports:
             target: str,
             priority: Optional[int] = None,
             channel: str = 'maven',
-            opts: Optional[Data] = None) -> int:
+            opts: Optional[Data] = None) -> TaskID:
         ...
 
     def writeSignedRPM(
@@ -2791,7 +2793,7 @@ class Task:
             request: bool = False) -> Optional[TaskInfo]:
         ...
 
-    def getOwner(self) -> int:
+    def getOwner(self) -> UserID:
         ...
 
     def getRequest(self) -> Data:
@@ -2847,7 +2849,7 @@ class Task:
 
     def verifyHost(
             self,
-            host_id: Optional[int] = None) -> bool:
+            host_id: Optional[HostID] = None) -> bool:
         ...
 
     def verifyOwner(
@@ -2881,10 +2883,10 @@ def _delete_event_id() -> None:
 
 
 def _edit_build_target(
-        buildTargetInfo: Union[str, int],
+        buildTargetInfo: Union[str, TargetID],
         name: str,
-        build_tag: Union[str, int],
-        dest_tag: Union[str, int]) -> None:
+        build_tag: Union[str, TagID],
+        dest_tag: Union[str, TagID]) -> None:
     ...
 
 
@@ -2901,7 +2903,7 @@ def _import_wrapper(
 
 
 def _promote_build(
-        build: Union[str, int],
+        build: Union[str, BuildID],
         force: bool = False) -> BuildInfo:
     ...
 
@@ -3016,7 +3018,7 @@ def apply_volume_policy(
 
 def assert_cg(
         cg: str,
-        user: Union[int, str, None] = None) -> None:
+        user: Union[str, UserID, None] = None) -> None:
     ...
 
 
@@ -3056,7 +3058,7 @@ def calculate_chsum(
 
 
 def cancel_build(
-        build_id: Union[str, int],
+        build_id: BuildSpecifier,
         cancel_task: bool = True) -> bool:
     ...
 
@@ -3224,7 +3226,7 @@ def delete_tag(
 
 
 def dist_repo_init(
-        tag: Union[int, str],
+        tag: Union[str, TagID],
         keys: List[str],
         task_opts: Data) -> Tuple[int, int]:
     ...
@@ -3243,15 +3245,15 @@ def drop_group_member(
 
 
 def edit_build_target(
-        buildTargetInfo: Union[str, int],
+        buildTargetInfo: Union[str, TargetID],
         name: str,
-        build_tag: Union[str, int],
-        dest_tag: Union[str, int]) -> None:
+        build_tag: Union[str, TagID],
+        dest_tag: Union[str, TagID]) -> None:
     ...
 
 
 def edit_channel(
-        channelInfo: Union[int, str],
+        channelInfo: Union[str, ChannelID],
         **kw) -> bool:
     ...
 
@@ -3382,7 +3384,7 @@ def get_build_target(
 
 
 def get_build_target_id(
-        info: str,
+        info: Union[str, TargetID, Data],
         strict: bool = False,
         create: bool = False) -> Optional[TargetID]:
     ...
@@ -3416,9 +3418,9 @@ def get_channel(
 
 
 def get_channel_id(
-        info: Union[str, int, Data],
+        info: Union[str, ChannelID, Data],
         strict: bool = False,
-        create: bool = False) -> Optional[int]:
+        create: bool = False) -> Optional[ChannelID]:
     ...
 
 
@@ -3453,7 +3455,7 @@ def get_external_repos(
 def get_group_id(
         info: Union[str, UserID, Data],
         strict: bool = False,
-        create: bool = False) -> int:
+        create: bool = False) -> Optional[UserID]:
     ...
 
 
@@ -3471,9 +3473,9 @@ def get_host(
 
 def get_id(
         table: str,
-        info: Union[str, int, Data],
+        info: Union[str, Identifier, Data],
         strict: bool = False,
-        create: bool = False) -> Optional[int]:
+        create: bool = False) -> Optional[Identifier]:
     ...
 
 
