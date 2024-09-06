@@ -56,17 +56,12 @@ class UnparseBetter(_Unparser):
 
 def load_heading(filename):
     """
-    Just reading all of the leading copyright comments from the
-    given file
+    Just reading all of the leading non-empty lines from the given
+    file, which in our case should just be the copyright comments
     """
 
-    found = []
-    with open(filename, "rt") as f:
-        for line in f:
-            if not line.startswith("#"):
-                break
-            found.append(line)
-
+    with open(filename) as f:
+        found = list(iter(f.readline, "\n"))
     found.append("\n\n")
     return "".join(found)
 
