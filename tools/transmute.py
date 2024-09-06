@@ -174,9 +174,9 @@ def transmute(tmpl, root):
     session = find_classdef(tmpl, "ClientSession")
     host = find_classdef(tmpl, "Host")
 
-    # generate our session and host from the root exports. Primarily we're
-    # just copying everythin over, but if we find a staticmethod we will
-    # convert that into a normal method.
+    # generate our session and host from the root exports. Primarily
+    # we're just copying everythin over, but if we find a staticmethod
+    # we will convert that into a normal method.
     update_session(session, find_classdef(root, "RootExports"))
     update_session(host, find_classdef(root, "HostExports"))
 
