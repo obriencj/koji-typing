@@ -602,7 +602,7 @@ class HostExports:
 
     def refuseTask(
             self,
-            task_id: int,
+            task_id: TaskID,
             soft: bool = True,
             msg: str = '') -> None:
         ...
@@ -652,7 +652,7 @@ class HostExports:
             self,
             method: str,
             arglist: List,
-            parent: int,
+            parent: TaskID,
             **opts) -> int:
         ...
 
@@ -1482,13 +1482,13 @@ class RootExports:
     @overload
     def getEvent(
             self,
-            id: int) -> EventInfo:
+            id: EventID) -> EventInfo:
         ...
 
     @overload
     def getEvent(
             self,
-            id: int,
+            id: EventID,
             strict: bool = False) -> EventInfo:
         # :since: koji 1.35
         ...
@@ -1565,27 +1565,27 @@ class RootExports:
     @overload
     def getLastHostUpdate(
             self,
-            hostID: int) -> Union[str, None]:
+            hostID: HostID) -> Union[str, None]:
         ...
 
     @overload
     def getLastHostUpdate(
             self,
-            hostID: int,
+            hostID: HostID,
             ts: Literal[False]) -> Union[str, None]:
         ...
 
     @overload
     def getLastHostUpdate(
             self,
-            hostID: int,
+            hostID: HostID,
             ts: Literal[True]) -> Union[float, None]:
         ...
 
     @overload
     def getLastHostUpdate(
             self,
-            hostID: int,
+            hostID: HostID,
             ts: bool = False) -> Union[str, float, None]:
         ...
 
@@ -2496,7 +2496,7 @@ class RootExports:
 
     def resubmitTask(
             self,
-            taskID: int) -> int:
+            taskID: TaskID) -> int:
         ...
 
     @staticmethod
@@ -2719,12 +2719,12 @@ class RootExports:
 class Task:
 
     fields: Tuple[Tuple[str, str], ...]
-    id: int
+    id: TaskID
     logger: Logger
 
     def __init__(
             self,
-            id: Any):
+            id: TaskID):
         ...
 
     def _close(
@@ -2741,12 +2741,12 @@ class Task:
 
     def assertHost(
             self,
-            host_id: int) -> None:
+            host_id: HostID) -> None:
         ...
 
     def assertOwner(
             self,
-            user_id: Optional[int] = None) -> None:
+            user_id: Optional[UserID] = None) -> None:
         ...
 
     def assign(
@@ -2816,14 +2816,14 @@ class Task:
 
     def lock(
             self,
-            host_id: int,
+            host_id: HostID,
             newstate: str = 'OPEN',
             force: bool = False) -> bool:
         ...
 
     def open(
             self,
-            host_id: int) -> Optional[Dict[str, Any]]:
+            host_id: HostID) -> Optional[Dict[str, Any]]:
         ...
 
     def runCallbacks(
@@ -3169,7 +3169,7 @@ def create_external_repo(
 
 
 def create_rpm_checksum(
-        rpm_id: int,
+        rpm_id: RPMID,
         sigkey: str,
         chsum_dict: Dict[ChecksumType, str]) -> None:
     ...

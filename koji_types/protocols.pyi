@@ -331,11 +331,11 @@ class ClientSession:
         ...
 
     @overload
-    def getEvent(self, id: int) -> EventInfo:
+    def getEvent(self, id: EventID) -> EventInfo:
         ...
 
     @overload
-    def getEvent(self, id: int, strict: bool=False) -> EventInfo:
+    def getEvent(self, id: EventID, strict: bool=False) -> EventInfo:
         ...
 
     def getExternalRepo(self, info: Union[str, ExternalRepoID], strict: bool=False, event: Optional[EventID]=None) -> ExternalRepoInfo:
@@ -374,19 +374,19 @@ class ClientSession:
         ...
 
     @overload
-    def getLastHostUpdate(self, hostID: int) -> Union[str, None]:
+    def getLastHostUpdate(self, hostID: HostID) -> Union[str, None]:
         ...
 
     @overload
-    def getLastHostUpdate(self, hostID: int, ts: Literal[False]) -> Union[str, None]:
+    def getLastHostUpdate(self, hostID: HostID, ts: Literal[False]) -> Union[str, None]:
         ...
 
     @overload
-    def getLastHostUpdate(self, hostID: int, ts: Literal[True]) -> Union[float, None]:
+    def getLastHostUpdate(self, hostID: HostID, ts: Literal[True]) -> Union[float, None]:
         ...
 
     @overload
-    def getLastHostUpdate(self, hostID: int, ts: bool=False) -> Union[str, float, None]:
+    def getLastHostUpdate(self, hostID: HostID, ts: bool=False) -> Union[str, float, None]:
         ...
 
     @overload
@@ -756,7 +756,7 @@ class ClientSession:
     def restartHosts(self, priority: int=5, options: Optional[Dict[str, Any]]=None) -> TaskID:
         ...
 
-    def resubmitTask(self, taskID: int) -> int:
+    def resubmitTask(self, taskID: TaskID) -> int:
         ...
 
     def revokeCGAccess(self, user: Union[str, UserID], cg: Union[str, CGID]) -> None:
@@ -948,7 +948,7 @@ class Host:
     def openTask(self, task_id: TaskID) -> Optional[Dict[str, Any]]:
         ...
 
-    def refuseTask(self, task_id: int, soft: bool=True, msg: str='') -> None:
+    def refuseTask(self, task_id: TaskID, soft: bool=True, msg: str='') -> None:
         ...
 
     def repoDone(self, repo_id: RepoID, data: Dict[Arch, Tuple[str, List[str]]], expire: bool=False, repo_json_updates: Optional[Dict[str, Any]]=None) -> None:
@@ -969,7 +969,7 @@ class Host:
     def setTaskWeight(self, task_id: TaskID, weight: float) -> None:
         ...
 
-    def subtask(self, method: str, arglist: List, parent: int, **opts) -> int:
+    def subtask(self, method: str, arglist: List, parent: TaskID, **opts) -> int:
         ...
 
     def subtask2(self, __parent: TaskID, __taskopts: Dict[str, Any], __method: str, *args, **opts) -> int:
@@ -1103,7 +1103,7 @@ class MultiCallHost:
     def openTask(self, task_id: TaskID) -> VirtualCall[Optional[Dict[str, Any]]]:
         ...
 
-    def refuseTask(self, task_id: int, soft: bool=True, msg: str='') -> VirtualCall[None]:
+    def refuseTask(self, task_id: TaskID, soft: bool=True, msg: str='') -> VirtualCall[None]:
         ...
 
     def repoDone(self, repo_id: RepoID, data: Dict[Arch, Tuple[str, List[str]]], expire: bool=False, repo_json_updates: Optional[Dict[str, Any]]=None) -> VirtualCall[None]:
@@ -1124,7 +1124,7 @@ class MultiCallHost:
     def setTaskWeight(self, task_id: TaskID, weight: float) -> VirtualCall[None]:
         ...
 
-    def subtask(self, method: str, arglist: List, parent: int, **opts) -> VirtualCall[int]:
+    def subtask(self, method: str, arglist: List, parent: TaskID, **opts) -> VirtualCall[int]:
         ...
 
     def subtask2(self, __parent: TaskID, __taskopts: Dict[str, Any], __method: str, *args, **opts) -> VirtualCall[int]:
@@ -1471,11 +1471,11 @@ class MultiCallSession:
         ...
 
     @overload
-    def getEvent(self, id: int) -> VirtualCall[EventInfo]:
+    def getEvent(self, id: EventID) -> VirtualCall[EventInfo]:
         ...
 
     @overload
-    def getEvent(self, id: int, strict: bool=False) -> VirtualCall[EventInfo]:
+    def getEvent(self, id: EventID, strict: bool=False) -> VirtualCall[EventInfo]:
         ...
 
     def getExternalRepo(self, info: Union[str, ExternalRepoID], strict: bool=False, event: Optional[EventID]=None) -> VirtualCall[ExternalRepoInfo]:
@@ -1514,19 +1514,19 @@ class MultiCallSession:
         ...
 
     @overload
-    def getLastHostUpdate(self, hostID: int) -> VirtualCall[Union[str, None]]:
+    def getLastHostUpdate(self, hostID: HostID) -> VirtualCall[Union[str, None]]:
         ...
 
     @overload
-    def getLastHostUpdate(self, hostID: int, ts: Literal[False]) -> VirtualCall[Union[str, None]]:
+    def getLastHostUpdate(self, hostID: HostID, ts: Literal[False]) -> VirtualCall[Union[str, None]]:
         ...
 
     @overload
-    def getLastHostUpdate(self, hostID: int, ts: Literal[True]) -> VirtualCall[Union[float, None]]:
+    def getLastHostUpdate(self, hostID: HostID, ts: Literal[True]) -> VirtualCall[Union[float, None]]:
         ...
 
     @overload
-    def getLastHostUpdate(self, hostID: int, ts: bool=False) -> VirtualCall[Union[str, float, None]]:
+    def getLastHostUpdate(self, hostID: HostID, ts: bool=False) -> VirtualCall[Union[str, float, None]]:
         ...
 
     @overload
@@ -1896,7 +1896,7 @@ class MultiCallSession:
     def restartHosts(self, priority: int=5, options: Optional[Dict[str, Any]]=None) -> VirtualCall[TaskID]:
         ...
 
-    def resubmitTask(self, taskID: int) -> VirtualCall[int]:
+    def resubmitTask(self, taskID: TaskID) -> VirtualCall[int]:
         ...
 
     def revokeCGAccess(self, user: Union[str, UserID], cg: Union[str, CGID]) -> VirtualCall[None]:
