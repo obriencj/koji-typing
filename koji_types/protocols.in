@@ -27,7 +27,7 @@ from . import (
     BuildState, BTypeInfo, ChangelogEntry, ChannelID, ChannelInfo,
     ChecksumType,
     CGID, CGInfo, CGInitInfo,
-    ExternalRepoID, ExternalRepoInfo,
+    Data, ExternalRepoID, ExternalRepoInfo,
     EventID, EventInfo, FaultInfo, FilterOptions,
     HostID, HostInfo, ListTasksOptions, MavenInfo,
     NamedID, NotificationID, OldNew, PackageID, PackageInfo,

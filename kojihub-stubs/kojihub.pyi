@@ -30,7 +30,7 @@ from koji_types import (
     BTypeInfo, BuildID, BuildInfo, BuildLogs, BuildNVR, BuildrootID,
     BuildrootInfo, BuildrootReference, BuildrootState, BuildSpecifier,
     BuildState, CGID, CGInfo, CGInitInfo, ChangelogEntry, ChannelID,
-    ChannelInfo, ChecksumType, EventID, EventInfo, ExternalRepoID,
+    ChannelInfo, ChecksumType, Data, EventID, EventInfo, ExternalRepoID,
     ExternalRepoInfo, FaultInfo, FilterOptions, HistoryEntry, HostID,
     HostInfo, ListTasksOptions, MavenInfo, NamedID, NotificationID,
     OldNew, PackageID, PackageInfo, PermID, PermInfo, POMInfo,
@@ -133,7 +133,7 @@ class SourceTest(MatchTest):
 
 class TagTest(MatchTest):
 
-    def get_tag(self, data: Dict[str, Any]) -> TagInfo:
+    def get_tag(self, data: Data) -> TagInfo:
         ...
 
 
@@ -159,7 +159,7 @@ class VolumeTest(MatchTest):
 
 class FromTagTest(TagTest):
 
-    def get_tag(self, data: Dict[str, Any]) -> TagInfo:
+    def get_tag(self, data: Data) -> TagInfo:
         ...
 
 
@@ -259,7 +259,7 @@ class CG_Importer:
 
     def do_import(
             self,
-            metadata: Union[str, Dict[str, Any], None],
+            metadata: Union[str, Data, None],
             directory: str,
             token: Optional[str] = None) -> BuildInfo:
         ...
@@ -272,20 +272,20 @@ class CG_Importer:
     def get_metadata(
             self,
             metadata: Union[str, Dict, None],
-            directory: str) -> Dict[str, Any]:
+            directory: str) -> Data:
         ...
 
     @classmethod
     def get_task_id_from_metadata(
             cls,
-            metadata: Dict[str, Any]) -> TaskID:
+            metadata: Data) -> TaskID:
         ...
 
     def import_archive(
             self,
             buildinfo: BuildInfo,
             brinfo: BuildrootInfo,
-            fileinfo: Dict[str, Any]) -> None:
+            fileinfo: Data) -> None:
         ...
 
     def import_brs(self) -> None:
@@ -293,19 +293,19 @@ class CG_Importer:
 
     def import_buildroot(
             self,
-            entry: Dict[str, Any]) -> BuildRoot:
+            entry: Data) -> BuildRoot:
         ...
 
     def import_components(
             self,
             archive_id: ArchiveID,
-            fileinfo: Dict[str, Any]) -> None:
+            fileinfo: Data) -> None:
         ...
 
     def import_log(
             self,
             buildinfo: BuildInfo,
-            fileinfo: Dict[str, Any]) -> None:
+            fileinfo: Data) -> None:
         ...
 
     def import_metadata(self) -> None:
@@ -318,7 +318,7 @@ class CG_Importer:
             self,
             buildinfo: BuildInfo,
             brinfo: BuildrootInfo,
-            fileinfo: Dict[str, Any]) -> None:
+            fileinfo: Data) -> None:
         ...
 
     def log(self,
@@ -349,7 +349,7 @@ class CG_Importer:
 
     def match_components(
             self,
-            components: List[Dict[str, Any]]) \
+            components: List[Data]) \
             -> Tuple[List[Dict], List[Dict]]:
         ...
 
@@ -386,7 +386,7 @@ class CG_Importer:
 
     def prep_buildroot(
             self,
-            brdata: Dict[str, Any]) -> Dict[str, Any]:
+            brdata: Data) -> Data:
         # TODO: TypedDict for this?
         ...
 
@@ -405,14 +405,14 @@ class HostExports:
     def assertPolicy(
             self,
             name,
-            data: Dict[str, Any],
+            data: Data,
             default: str = 'deny') -> None:
         ...
 
     def checkPolicy(
             self,
             name: str,
-            data: Dict[str, Any],
+            data: Data,
             default: str = 'deny',
             strict: bool = False) -> Tuple[bool, str]:
         ...
@@ -437,7 +437,7 @@ class HostExports:
             self,
             task_id: TaskID,
             build_id: BuildID,
-            results: Dict[str, Dict[str, Any]]) -> None:
+            results: Dict[str, Data]) -> None:
         ...
 
     def completeMavenBuild(
@@ -452,7 +452,7 @@ class HostExports:
             self,
             task_id: TaskID,
             build_id: BuildID,
-            results: Dict[str, Dict[str, Any]],
+            results: Dict[str, Data],
             rpm_results: Any) -> None:
         ...
 
@@ -472,7 +472,7 @@ class HostExports:
     def evalPolicy(
             self,
             name: str,
-            data: Dict[str, Any]) -> str:
+            data: Data) -> str:
         ...
 
     def failBuild(
@@ -515,14 +515,14 @@ class HostExports:
             filepath: str,
             buildinfo: BuildInfo,
             type: str,
-            typeInfo: Dict[str, Any]) -> None:
+            typeInfo: Data) -> None:
         ...
 
     def importImage(
             self,
             task_id: TaskID,
             build_info: BuildInfo,
-            results: Dict[str, Dict[str, Any]]) -> None:
+            results: Dict[str, Data]) -> None:
         ...
 
     def importWrapperRPMs(
@@ -534,7 +534,7 @@ class HostExports:
 
     def initBuild(
             self,
-            data: Dict[str, Any]) -> BuildID:
+            data: Data) -> BuildID:
         ...
 
     def initImageBuild(
@@ -571,21 +571,21 @@ class HostExports:
     def moveImageBuildToScratch(
             self,
             task_id: TaskID,
-            results: Dict[str, Any]) -> None:
+            results: Data) -> None:
         ...
 
     def moveMavenBuildToScratch(
             self,
             task_id: TaskID,
-            results: Dict[str, Any],
-            rpm_results: Dict[str, Any]) -> None:
+            results: Data,
+            rpm_results: Data) -> None:
         ...
 
     def moveWinBuildToScratch(
             self,
             task_id: TaskID,
-            results: Dict[str, Any],
-            rpm_results: Dict[str, Any]) -> None:
+            results: Data,
+            rpm_results: Data) -> None:
         ...
 
     def newBuildRoot(
@@ -597,7 +597,7 @@ class HostExports:
 
     def openTask(
             self,
-            task_id: TaskID) -> Optional[Dict[str, Any]]:
+            task_id: TaskID) -> Optional[Data]:
         ...
 
     def refuseTask(
@@ -612,7 +612,7 @@ class HostExports:
             repo_id: RepoID,
             data: Dict[Arch, Tuple[str, List[str]]],
             expire: bool = False,
-            repo_json_updates: Optional[Dict[str, Any]] = None) -> None:
+            repo_json_updates: Optional[Data] = None) -> None:
         ...
 
     def repoInit(
@@ -639,7 +639,7 @@ class HostExports:
 
     def setHostData(
             self,
-            hostdata: Dict[str, Any]) -> None:
+            hostdata: Data) -> None:
         ...
 
     def setTaskWeight(
@@ -659,7 +659,7 @@ class HostExports:
     def subtask2(
             self,
             __parent: TaskID,
-            __taskopts: Dict[str, Any],
+            __taskopts: Data,
             __method: str,
             *args,
             **opts) -> int:
@@ -722,14 +722,14 @@ class HostExports:
             self,
             task_load: float,
             ready: bool,
-            data: Optional[Dict[str, Any]] = None) -> None:
+            data: Optional[Data] = None) -> None:
         ...
 
     def updateMavenBuildRootList(
             self,
             brootid: BuildrootID,
             task_id: TaskID,
-            mavenlist: List[Dict[str, Any]],
+            mavenlist: List[Data],
             ignore: Optional[List[Union[int, str]]] = None,
             project: bool = False,
             ignore_unknown: bool = False,
@@ -821,7 +821,7 @@ class RootExports:
 
     @staticmethod
     def CGImport(
-            metadata: Union[str, Dict[str, Any]],
+            metadata: Union[str, Data],
             directory: str,
             token: Optional[str] = None) -> BuildInfo:
         ...
@@ -829,7 +829,7 @@ class RootExports:
     @staticmethod
     def CGInitBuild(
             cg: str,
-            data: Dict[str, Any]) -> CGInitInfo:
+            data: Data) -> CGInitInfo:
         ...
 
     @staticmethod
@@ -870,7 +870,7 @@ class RootExports:
 
     def addExternalRPM(
             self,
-            rpminfo: Dict[str, Any],
+            rpminfo: Data,
             external_repo: Union[str, ExternalRepoID],
             strict: bool = True) -> None:
         ...
@@ -934,7 +934,7 @@ class RootExports:
             self,
             src: str,
             target: str,
-            opts: Optional[Dict[str, Any]] = None,
+            opts: Optional[Data] = None,
             priority: Optional[int] = None,
             channel: Optional[str] = None) -> int:
         ...
@@ -947,13 +947,13 @@ class RootExports:
             target: str,
             ksfile: str,
             img_type: str,
-            opts: Optional[Dict[str, Any]] = None,
+            opts: Optional[Data] = None,
             priority: Optional[int] = None) -> int:
         ...
 
     def buildImageIndirection(
             self,
-            opts: Optional[Dict[str, Any]] = None,
+            opts: Optional[Data] = None,
             priority: Optional[int] = None) -> TaskID:
         ...
 
@@ -964,7 +964,7 @@ class RootExports:
             arches: List[Arch],
             target: str,
             inst_tree: str,
-            opts: Optional[Dict[str, Any]] = None,
+            opts: Optional[Data] = None,
             priority: Optional[int] = None) -> TaskID:
         ...
 
@@ -972,7 +972,7 @@ class RootExports:
             self,
             build: BuildID,
             limit: Optional[int] = None,
-            lazy: bool = False) -> Dict[str, Any]:
+            lazy: bool = False) -> Data:
         ...
 
     def cancelBuild(
@@ -1002,16 +1002,16 @@ class RootExports:
             self,
             srcs: List[str],
             target: str,
-            opts: Optional[Dict[str, Any]] = None,
+            opts: Optional[Data] = None,
             priority: Optional[int] = None,
             channel: Optional[str] = None) -> int:
         ...
 
     def chainMaven(
             self,
-            builds: List[Dict[str, Any]],
+            builds: List[Data],
             target: str,
-            opts: Optional[Dict[str, Any]] = None,
+            opts: Optional[Data] = None,
             priority: Optional[int] = None,
             channel: str = 'maven') -> int:
         ...
@@ -1042,7 +1042,7 @@ class RootExports:
             name: str,
             verify: Optional[ChecksumType] = None,
             tail: Optional[int] = None,
-            volume: Optional[str] = None) -> Dict[str, Any]:
+            volume: Optional[str] = None) -> Data:
         ...
 
     def count(
@@ -1058,7 +1058,7 @@ class RootExports:
             methodName: str,
             *args,
             filterOpts: FilterOptions,
-            **kw) -> Tuple[int, List[Dict[str, Any]]]:
+            **kw) -> Tuple[int, List[Data]]:
         ...
 
     @overload
@@ -1066,7 +1066,7 @@ class RootExports:
             self,
             methodName: str,
             *args,
-            **kw) -> Tuple[int, List[Dict[str, Any]]]:
+            **kw) -> Tuple[int, List[Data]]:
         ...
 
     @staticmethod
@@ -1310,7 +1310,7 @@ class RootExports:
     @staticmethod
     def evalPolicy(
             name: str,
-            data: Dict[str, Any]) -> str:
+            data: Data) -> str:
         ...
 
     def fault(self) -> NoReturn:
@@ -1322,7 +1322,7 @@ class RootExports:
             methodName: str,
             *args,
             filterOpts: FilterOptions,
-            **kw) -> List[Dict[str, Any]]:
+            **kw) -> List[Data]:
         ...
 
     @overload
@@ -1330,7 +1330,7 @@ class RootExports:
             self,
             methodName: str,
             *args,
-            **kw) -> List[Dict[str, Any]]:
+            **kw) -> List[Data]:
         ...
 
     @staticmethod
@@ -1409,23 +1409,23 @@ class RootExports:
     def getBuildNotification(
             self,
             id: int,
-            strict: bool = False) -> Optional[Dict[str, Any]]:
+            strict: bool = False) -> Optional[Data]:
         ...
 
     def getBuildNotificationBlock(
             self,
             id: int,
-            strict: bool = False) -> Optional[Dict[str, Any]]:
+            strict: bool = False) -> Optional[Data]:
         ...
 
     def getBuildNotificationBlocks(
             self,
-            userID: Union[str, UserID, None] = None) -> Dict[str, Any]:
+            userID: Union[str, UserID, None] = None) -> Data:
         ...
 
     def getBuildNotifications(
             self,
-            userID: Union[str, UserID, None] = None) -> Dict[str, Any]:
+            userID: Union[str, UserID, None] = None) -> Data:
         ...
 
     @staticmethod
@@ -1654,7 +1654,7 @@ class RootExports:
     @staticmethod
     def getMavenBuild(
             buildInfo: Union[str, BuildID],
-            strict: bool = False) -> Dict[str, Any]:
+            strict: bool = False) -> Data:
         # TODO: need a return typedict
         ...
 
@@ -1768,7 +1768,7 @@ class RootExports:
             rpmID: Optional[int] = None,
             taskID: Optional[TaskID] = None,
             filepath: Optional[str] = None,
-            headers: Optional[List[str]] = None) -> Dict[str, Any]:
+            headers: Optional[List[str]] = None) -> Data:
         ...
 
     @overload
@@ -1778,7 +1778,7 @@ class RootExports:
             taskID: Optional[TaskID] = None,
             filepath: Optional[str] = None,
             headers: Optional[List[str]] = None,
-            strict: Optional[bool] = False) -> Dict[str, Any]:
+            strict: Optional[bool] = False) -> Data:
         # :since: koji 1.29
         ...
 
@@ -1799,7 +1799,7 @@ class RootExports:
 
     @staticmethod
     def getTagID(
-            info: Union[str, TagID, Dict[str, Any]],
+            info: Union[str, TagID, Data],
             strict: bool = False,
             create: bool = False) -> Optional[TagID]:
         ...
@@ -1852,7 +1852,7 @@ class RootExports:
 
     def getTaskRequest(
             self,
-            taskId: TaskID) -> Dict[str, Any]:
+            taskId: TaskID) -> Data:
         ...
 
     def getTaskResult(
@@ -1920,7 +1920,7 @@ class RootExports:
     @staticmethod
     def getWinBuild(
             buildInfo: Union[str, BuildID],
-            strict: bool = False) -> Dict[str, Any]:
+            strict: bool = False) -> Data:
         ...
 
     @staticmethod
@@ -2045,7 +2045,7 @@ class RootExports:
             filepath: str,
             buildinfo: BuildInfo,
             type: str,
-            typeInfo: Dict[str, Any]) -> ArchiveInfo:
+            typeInfo: Data) -> ArchiveInfo:
         ...
 
     def importRPM(
@@ -2065,7 +2065,7 @@ class RootExports:
             size: Optional[int] = None,
             checksum: Optional[int] = None,
             checksum_type: Optional[ChecksumType] = None,
-            typeInfo: Optional[Dict[str, Any]] = None,
+            typeInfo: Optional[Data] = None,
             queryOpts: Optional[QueryOptions] = None,
             imageID: Optional[int] = None,
             archiveID: Optional[ArchiveID] = None,
@@ -2273,8 +2273,8 @@ class RootExports:
             strict: bool = False) \
             -> Union[List[str],
                      Dict[str, List[str]],
-                     Dict[str, Dict[str, Any]],
-                     Dict[str, Dict[str, Dict[str, Any]]]]:
+                     Dict[str, Data],
+                     Dict[str, Dict[str, Data]]]:
         ...
 
     def listTasks(
@@ -2323,7 +2323,7 @@ class RootExports:
             self,
             url: str,
             target: str,
-            opts: Optional[Dict[str, Any]] = None,
+            opts: Optional[Data] = None,
             priority: Optional[int] = None,
             channel: str = 'maven') -> int:
         ...
@@ -2423,7 +2423,7 @@ class RootExports:
     @staticmethod
     def queryHistory(
             tables: Optional[List[str]] = None,
-            **kwargs: Any) -> Dict[str, List[Dict[str, Any]]]:
+            **kwargs: Any) -> Dict[str, List[Data]]:
         ...
 
     @staticmethod
@@ -2491,7 +2491,7 @@ class RootExports:
     def restartHosts(
             self,
             priority: int = 5,
-            options: Optional[Dict[str, Any]] = None) -> TaskID:
+            options: Optional[Data] = None) -> TaskID:
         ...
 
     def resubmitTask(
@@ -2558,13 +2558,13 @@ class RootExports:
     @overload
     def showOpts(
             self,
-            as_string: Literal[False]) -> Dict[str, Any]:
+            as_string: Literal[False]) -> Data:
         ...
 
     @overload
     def showOpts(
             self,
-            as_string: bool = True) -> Union[str, Dict[str, Any]]:
+            as_string: bool = True) -> Union[str, Data]:
         ...
 
     def showSession(self) -> str:
@@ -2690,7 +2690,7 @@ class RootExports:
             vm: str,
             url: str,
             target: str,
-            opts: Optional[Dict[str, Any]] = None,
+            opts: Optional[Data] = None,
             priority: Optional[int] = None,
             channel: str = 'vm') -> int:
         ...
@@ -2705,7 +2705,7 @@ class RootExports:
             target: str,
             priority: Optional[int] = None,
             channel: str = 'maven',
-            opts: Optional[Dict[str, Any]] = None) -> int:
+            opts: Optional[Data] = None) -> int:
         ...
 
     def writeSignedRPM(
@@ -2794,7 +2794,7 @@ class Task:
     def getOwner(self) -> int:
         ...
 
-    def getRequest(self) -> Dict[str, Any]:
+    def getRequest(self) -> Data:
         ...
 
     def getResult(
@@ -2823,7 +2823,7 @@ class Task:
 
     def open(
             self,
-            host_id: HostID) -> Optional[Dict[str, Any]]:
+            host_id: HostID) -> Optional[Data]:
         ...
 
     def runCallbacks(
@@ -2948,7 +2948,7 @@ def add_external_repo_to_tag(
 
 
 def add_external_rpm(
-        rpminfo: Dict[str, Any],
+        rpminfo: Data,
         external_repo: Union[str, ExternalRepoID],
         strict: bool = True) -> RPMInfo:
     ...
@@ -3022,7 +3022,7 @@ def assert_cg(
 
 def assert_policy(
         name: str,
-        data: Dict[str, Any],
+        data: Data,
         default: str = 'deny',
         force: bool = False) -> None:
     ...
@@ -3044,7 +3044,7 @@ def build_notification(
 def build_references(
         build_id: BuildID,
         limit: Optional[int] = None,
-        lazy: bool = False) -> Dict[str, Any]:
+        lazy: bool = False) -> Data:
     # TODO: create a TypedDict
     ...
 
@@ -3062,7 +3062,7 @@ def cancel_build(
 
 
 def cg_import(
-        metadata: Union[str, Dict[str, Any]],
+        metadata: Union[str, Data],
         directory: str,
         token: Optional[str] = None) -> BuildInfo:
     ...
@@ -3070,7 +3070,7 @@ def cg_import(
 
 def cg_init_build(
         cg: str,
-        data: Dict[str, Any]) -> CGInitInfo:
+        data: Data) -> CGInitInfo:
     ...
 
 
@@ -3098,7 +3098,7 @@ def check_noarch_rpms(
 
 def check_policy(
         name: str,
-        data: Dict[str, Any],
+        data: Data,
         default: str = 'deny',
         strict: bool = False,
         force: bool = False) -> Tuple[bool, str]:
@@ -3119,7 +3119,7 @@ def check_tag_access(
 
 
 def check_volume_policy(
-        data: Dict[str, Any],
+        data: Data,
         strict: bool = False,
         default: Optional[str] = None) -> Optional[NamedID]:
     ...
@@ -3176,7 +3176,7 @@ def create_rpm_checksum(
 
 
 def create_rpm_checksums_output(
-        query_result: Dict[str, Any],
+        query_result: Data,
         list_chsum_sigkeys: List[ChecksumType]) \
         -> Dict[str, Dict[ChecksumType, str]]:
     ...
@@ -3226,7 +3226,7 @@ def delete_tag(
 def dist_repo_init(
         tag: Union[int, str],
         keys: List[str],
-        task_opts: Dict[str, Any]) -> Tuple[int, int]:
+        task_opts: Data) -> Tuple[int, int]:
     ...
 
 
@@ -3298,7 +3298,7 @@ def ensure_volume_symlink(
 
 def eval_policy(
         name: str,
-        data: Dict[str, Any]) -> str:
+        data: Data) -> str:
     ...
 
 
@@ -3364,13 +3364,13 @@ def get_build_logs(
 
 
 def get_build_notifications(
-        user_id: UserID) -> Dict[str, Any]:
+        user_id: UserID) -> Data:
     # TODO: need a new TypedDict
     ...
 
 
 def get_build_notification_blocks(
-        user_id: UserID) -> Dict[str, Any]:
+        user_id: UserID) -> Data:
     ...
 
 
@@ -3416,7 +3416,7 @@ def get_channel(
 
 
 def get_channel_id(
-        info: Union[str, int, Dict[str, Any]],
+        info: Union[str, int, Data],
         strict: bool = False,
         create: bool = False) -> Optional[int]:
     ...
@@ -3430,7 +3430,7 @@ def get_external_repo(
 
 
 def get_external_repo_id(
-        info: Union[str, ExternalRepoID, Dict[str, Any]],
+        info: Union[str, ExternalRepoID, Data],
         strict: bool = False,
         create: bool = False) -> Optional[ExternalRepoID]:
     ...
@@ -3451,7 +3451,7 @@ def get_external_repos(
 
 
 def get_group_id(
-        info: Union[str, UserID, Dict[str, Any]],
+        info: Union[str, UserID, Data],
         strict: bool = False,
         create: bool = False) -> int:
     ...
@@ -3471,7 +3471,7 @@ def get_host(
 
 def get_id(
         table: str,
-        info: Union[str, int, Dict[str, Any]],
+        info: Union[str, int, Data],
         strict: bool = False,
         create: bool = False) -> Optional[int]:
     ...
@@ -3497,7 +3497,7 @@ def get_maven_archive(
 
 def get_maven_build(
         buildInfo: Union[str, BuildID],
-        strict: bool = False) -> Dict[str, Any]:
+        strict: bool = False) -> Data:
     # TODO: need a return typedict
     ...
 
@@ -3521,14 +3521,14 @@ def get_notification_recipients(
 
 
 def get_package_id(
-        info: Union[str, PackageID, Dict[str, Any]],
+        info: Union[str, PackageID, Data],
         strict: bool = False,
         create: bool = False) -> Optional[PackageID]:
     ...
 
 
 def get_perm_id(
-        info: Union[str, PermID, Dict[str, Any]],
+        info: Union[str, PermID, Data],
         strict: bool = False,
         create: bool = False) -> Optional[PermID]:
     ...
@@ -3578,7 +3578,7 @@ def get_tag_groups(
 
 
 def get_tag_id(
-        info: Union[str, TagID, Dict[str, Any]],
+        info: Union[str, TagID, Data],
         strict: bool = False,
         create: bool = False) -> Optional[TagID]:
     ...
@@ -3627,7 +3627,7 @@ def get_win_archive(
 
 def get_win_build(
         buildInfo: Union[str, BuildID],
-        strict: bool = False) -> Dict[str, Any]:
+        strict: bool = False) -> Data:
     # TODO: need a return typedict
     ...
 
@@ -3755,7 +3755,7 @@ def grplist_unblock(
 
 
 def handle_upload(
-        environ: Dict[str, Any]) -> Dict[str, Any]:
+        environ: Data) -> Data:
     ...
 
 
@@ -3763,7 +3763,7 @@ def import_archive(
         filepath: str,
         buildinfo: BuildInfo,
         type: str,
-        typeInfo: Dict[str, Any],
+        typeInfo: Data,
         buildroot_id: Optional[BuildrootID] = None) -> ArchiveInfo:
     ...
 
@@ -3772,9 +3772,9 @@ def import_archive_internal(
         filepath: str,
         buildinfo: BuildInfo,
         type: str,
-        typeInfo: Dict[str, Any],
+        typeInfo: Data,
         buildroot_id: Optional[int] = None,
-        fileinfo: Optional[Dict[str, Any]] = None) -> ArchiveInfo:
+        fileinfo: Optional[Data] = None) -> ArchiveInfo:
     ...
 
 
@@ -3800,7 +3800,7 @@ def import_rpm(
         buildinfo: Optional[BuildInfo] = None,
         brootid: Optional[int] = None,
         wrapper: bool = False,
-        fileinfo: Optional[Dict[str, Any]] = None) -> RPMInfo:
+        fileinfo: Optional[Data] = None) -> RPMInfo:
     ...
 
 
@@ -3814,7 +3814,7 @@ def import_rpm_file(
 def importImageInternal(
         task_id: TaskID,
         build_info: BuildInfo,
-        imgdata: Dict[str, Any]) -> None:
+        imgdata: Data) -> None:
     ...
 
 
@@ -3835,7 +3835,7 @@ def list_archives(
         size: Optional[int] = None,
         checksum: Optional[int] = None,
         checksum_type: Optional[ChecksumType] = None,
-        typeInfo: Optional[Dict[str, Any]] = None,
+        typeInfo: Optional[Data] = None,
         queryOpts: Optional[QueryOptions] = None,
         imageID: Optional[int] = None,
         archiveID: Optional[ArchiveID] = None,
@@ -3889,8 +3889,8 @@ def list_task_output(
         all_volumes: bool = False,
         strict: bool = False) -> Union[List[str],
                                        Dict[str, List[str]],
-                                       Dict[str, Dict[str, Any]],
-                                       Dict[str, Dict[str, Dict[str, Any]]]]:
+                                       Dict[str, Data],
+                                       Dict[str, Dict[str, Data]]]:
     # TODO: oh my god the overload for this is going to be a mess
     ...
 
@@ -3917,7 +3917,7 @@ def lookup_build_target(
 
 
 def lookup_channel(
-        info: Union[str, ChannelID, Dict[str, Any]],
+        info: Union[str, ChannelID, Data],
         strict: bool = False,
         create: bool = False) -> Optional[NamedID]:
     ...
@@ -3932,28 +3932,28 @@ def lookup_group(
 
 def lookup_name(
         table: str,
-        info: Union[str, int, Dict[str, Any]],
+        info: Union[str, int, Data],
         strict: bool = False,
         create: bool = False) -> Optional[NamedID]:
     ...
 
 
 def lookup_package(
-        info: Union[str, PackageID, Dict[str, Any]],
+        info: Union[str, PackageID, Data],
         strict: bool = False,
         create: bool = False) -> Optional[NamedID]:
     ...
 
 
 def lookup_perm(
-        info: Union[str, PermID, Dict[str, Any]],
+        info: Union[str, PermID, Data],
         strict: bool = False,
         create: bool = False) -> Optional[NamedID]:
     ...
 
 
 def lookup_tag(
-        info: Union[str, TaskID, Dict[str, Any]],
+        info: Union[str, TaskID, Data],
         strict: bool = False,
         create: bool = False) -> Optional[NamedID]:
     ...
@@ -3991,12 +3991,12 @@ def name_or_id_clause(
 @overload
 def name_or_id_clause(
         table: str,
-        info: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
+        info: Data) -> Tuple[str, Data]:
     ...
 
 
 def new_build(
-        data: Dict[str, Any],
+        data: Data,
         strict: bool = False) -> BuildID:
     ...
 
@@ -4101,75 +4101,75 @@ def pkglist_unblock(
 
 
 def policy_data_from_task(
-        task_id: TaskID) -> Dict[str, Any]:
+        task_id: TaskID) -> Data:
     ...
 
 
 def policy_data_from_task_args(
         method: str,
-        arglist: List) -> Dict[str, Any]:
+        arglist: List) -> Data:
     ...
 
 
 def policy_get_brs(
-        data: Dict[str, Any]) -> Set[Optional[BuildrootID]]:
+        data: Data) -> Set[Optional[BuildrootID]]:
     ...
 
 
 @overload
 def policy_get_build_tags(
-        data: Dict[str, Any]) -> List[str]:
+        data: Data) -> List[str]:
     ...
 
 
 @overload
 def policy_get_build_tags(
-        data: Dict[str, Any],
+        data: Data,
         taginfo: Literal[False]) -> List[str]:
     ...
 
 
 @overload
 def policy_get_build_tags(
-        data: Dict[str, Any],
+        data: Data,
         taginfo: Literal[True]) -> List[TagInfo]:
     ...
 
 
 @overload
 def policy_get_build_tags(
-        data: Dict[str, Any],
+        data: Data,
         taginfo: bool = False) -> Union[List[TagInfo], List[str]]:
     ...
 
 
 def policy_get_build_types(
-        data: Dict[str, Any]) -> Set[str]:
+        data: Data) -> Set[str]:
     ...
 
 
 def policy_get_cgs(
-        data: Dict[str, Any]) -> Set[Optional[str]]:
+        data: Data) -> Set[Optional[str]]:
     ...
 
 
 def policy_get_pkg(
-        data: Dict[str, Any]) -> PackageInfo:
+        data: Data) -> PackageInfo:
     ...
 
 
 def policy_get_release(
-        data: Dict[str, Any]) -> str:
+        data: Data) -> str:
     ...
 
 
 def policy_get_user(
-        data: Dict[str, Any]) -> Optional[UserInfo]:
+        data: Data) -> Optional[UserInfo]:
     ...
 
 
 def policy_get_version(
-        data: Dict[str, Any]) -> str:
+        data: Data) -> str:
     ...
 
 

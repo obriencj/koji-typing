@@ -18,7 +18,7 @@ Koji Types - Client Session Protocol method declarations
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
 """
-from . import ArchiveFileInfo, ArchiveID, ArchiveInfo, ATypeID, ATypeInfo, BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR, BuildrootID, BuildrootInfo, BuildrootState, BuildState, BTypeInfo, ChangelogEntry, ChannelID, ChannelInfo, ChecksumType, CGID, CGInfo, CGInitInfo, ExternalRepoID, ExternalRepoInfo, EventID, EventInfo, FaultInfo, FilterOptions, HostID, HostInfo, ListTasksOptions, MavenInfo, NamedID, NotificationID, OldNew, PackageID, PackageInfo, PermID, PermInfo, POMInfo, QueryOptions, RepoID, RepoInfo, RepoOptions, RepoState, RPMDepType, RPMDepInfo, RPMFileInfo, RPMID, RPMInfo, RPMNVRA, RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo, TagGroupID, TagGroupInfo, TagID, TagInfo, TagInheritance, TagExternalRepos, TagPackageInfo, TagPackageSimple, TargetID, TargetInfo, TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserStatus, UserType, WinInfo
+from . import ArchiveFileInfo, ArchiveID, ArchiveInfo, ATypeID, ATypeInfo, BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR, BuildrootID, BuildrootInfo, BuildrootState, BuildState, BTypeInfo, ChangelogEntry, ChannelID, ChannelInfo, ChecksumType, CGID, CGInfo, CGInitInfo, Data, ExternalRepoID, ExternalRepoInfo, EventID, EventInfo, FaultInfo, FilterOptions, HostID, HostInfo, ListTasksOptions, MavenInfo, NamedID, NotificationID, OldNew, PackageID, PackageInfo, PermID, PermInfo, POMInfo, QueryOptions, RepoID, RepoInfo, RepoOptions, RepoState, RPMDepType, RPMDepInfo, RPMFileInfo, RPMID, RPMInfo, RPMNVRA, RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo, TagGroupID, TagGroupInfo, TagID, TagInfo, TagInheritance, TagExternalRepos, TagPackageInfo, TagPackageSimple, TargetID, TargetInfo, TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserStatus, UserType, WinInfo
 from .arch import Arch
 from datetime import datetime
 from koji import VirtualCall
@@ -26,10 +26,10 @@ from typing import Any, Dict, List, Literal, NoReturn, Optional, Tuple, Union, o
 
 class ClientSession:
 
-    def CGImport(self, metadata: Union[str, Dict[str, Any]], directory: str, token: Optional[str]=None) -> BuildInfo:
+    def CGImport(self, metadata: Union[str, Data], directory: str, token: Optional[str]=None) -> BuildInfo:
         ...
 
-    def CGInitBuild(self, cg: str, data: Dict[str, Any]) -> CGInitInfo:
+    def CGInitBuild(self, cg: str, data: Data) -> CGInitInfo:
         ...
 
     def CGRefundBuild(self, cg: str, build_id: BuildID, token: str, state: BuildState=BuildState.FAILED) -> None:
@@ -47,7 +47,7 @@ class ClientSession:
     def addExternalRepoToTag(self, tag_info: Union[str, TagID], repo_info: Union[str, ExternalRepoID], priority: int, merge_mode: str='koji', arches: Optional[List[Arch]]=None) -> None:
         ...
 
-    def addExternalRPM(self, rpminfo: Dict[str, Any], external_repo: Union[str, ExternalRepoID], strict: bool=True) -> None:
+    def addExternalRPM(self, rpminfo: Data, external_repo: Union[str, ExternalRepoID], strict: bool=True) -> None:
         ...
 
     def addGroupMember(self, group: Union[str, UserID], user: Union[str, UserID], strict: bool=True) -> None:
@@ -74,19 +74,19 @@ class ClientSession:
     def assignTask(self, task_id: TaskID, host: str, force: bool=False, override: bool=False) -> bool:
         ...
 
-    def build(self, src: str, target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: Optional[str]=None) -> int:
+    def build(self, src: str, target: str, opts: Optional[Data]=None, priority: Optional[int]=None, channel: Optional[str]=None) -> int:
         ...
 
-    def buildImage(self, name: str, version: str, arch: Arch, target: str, ksfile: str, img_type: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None) -> int:
+    def buildImage(self, name: str, version: str, arch: Arch, target: str, ksfile: str, img_type: str, opts: Optional[Data]=None, priority: Optional[int]=None) -> int:
         ...
 
-    def buildImageIndirection(self, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None) -> TaskID:
+    def buildImageIndirection(self, opts: Optional[Data]=None, priority: Optional[int]=None) -> TaskID:
         ...
 
-    def buildImageOz(self, name: str, version: str, arches: List[Arch], target: str, inst_tree: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None) -> TaskID:
+    def buildImageOz(self, name: str, version: str, arches: List[Arch], target: str, inst_tree: str, opts: Optional[Data]=None, priority: Optional[int]=None) -> TaskID:
         ...
 
-    def buildReferences(self, build: BuildID, limit: Optional[int]=None, lazy: bool=False) -> Dict[str, Any]:
+    def buildReferences(self, build: BuildID, limit: Optional[int]=None, lazy: bool=False) -> Data:
         ...
 
     def cancelBuild(self, buildID: BuildID, strict: bool=False) -> bool:
@@ -101,10 +101,10 @@ class ClientSession:
     def cancelTaskFull(self, task_id: TaskID, strict: bool=True) -> None:
         ...
 
-    def chainBuild(self, srcs: List[str], target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: Optional[str]=None) -> int:
+    def chainBuild(self, srcs: List[str], target: str, opts: Optional[Data]=None, priority: Optional[int]=None, channel: Optional[str]=None) -> int:
         ...
 
-    def chainMaven(self, builds: List[Dict[str, Any]], target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: str='maven') -> int:
+    def chainMaven(self, builds: List[Data], target: str, opts: Optional[Data]=None, priority: Optional[int]=None, channel: str='maven') -> int:
         ...
 
     def changeBuildVolume(self, build: Union[str, BuildID], volume: str, strict: bool=True) -> None:
@@ -116,18 +116,18 @@ class ClientSession:
     def checkTagPackage(self, tag: Union[str, TagID], pkg: Union[str, PackageID]) -> bool:
         ...
 
-    def checkUpload(self, path: str, name: str, verify: Optional[ChecksumType]=None, tail: Optional[int]=None, volume: Optional[str]=None) -> Dict[str, Any]:
+    def checkUpload(self, path: str, name: str, verify: Optional[ChecksumType]=None, tail: Optional[int]=None, volume: Optional[str]=None) -> Data:
         ...
 
     def count(self, methodName: str, *args: Any, **kw: Any) -> int:
         ...
 
     @overload
-    def countAndFilterResults(self, methodName: str, *args, filterOpts: FilterOptions, **kw) -> Tuple[int, List[Dict[str, Any]]]:
+    def countAndFilterResults(self, methodName: str, *args, filterOpts: FilterOptions, **kw) -> Tuple[int, List[Data]]:
         ...
 
     @overload
-    def countAndFilterResults(self, methodName: str, *args, **kw) -> Tuple[int, List[Dict[str, Any]]]:
+    def countAndFilterResults(self, methodName: str, *args, **kw) -> Tuple[int, List[Data]]:
         ...
 
     def createBuildTarget(self, name: str, build_tag: Union[str, TagID], dest_tag: Union[str, TagID]) -> None:
@@ -241,18 +241,18 @@ class ClientSession:
     def error(self) -> NoReturn:
         ...
 
-    def evalPolicy(self, name: str, data: Dict[str, Any]) -> str:
+    def evalPolicy(self, name: str, data: Data) -> str:
         ...
 
     def fault(self) -> NoReturn:
         ...
 
     @overload
-    def filterResults(self, methodName: str, *args, filterOpts: FilterOptions, **kw) -> List[Dict[str, Any]]:
+    def filterResults(self, methodName: str, *args, filterOpts: FilterOptions, **kw) -> List[Data]:
         ...
 
     @overload
-    def filterResults(self, methodName: str, *args, **kw) -> List[Dict[str, Any]]:
+    def filterResults(self, methodName: str, *args, **kw) -> List[Data]:
         ...
 
     def findBuildID(self, X: BuildSpecifier, strict: bool=False) -> Optional[BuildID]:
@@ -297,16 +297,16 @@ class ClientSession:
     def getBuildLogs(self, build: BuildSpecifier) -> BuildLogs:
         ...
 
-    def getBuildNotification(self, id: int, strict: bool=False) -> Optional[Dict[str, Any]]:
+    def getBuildNotification(self, id: int, strict: bool=False) -> Optional[Data]:
         ...
 
-    def getBuildNotificationBlock(self, id: int, strict: bool=False) -> Optional[Dict[str, Any]]:
+    def getBuildNotificationBlock(self, id: int, strict: bool=False) -> Optional[Data]:
         ...
 
-    def getBuildNotificationBlocks(self, userID: Union[str, UserID, None]=None) -> Dict[str, Any]:
+    def getBuildNotificationBlocks(self, userID: Union[str, UserID, None]=None) -> Data:
         ...
 
-    def getBuildNotifications(self, userID: Union[str, UserID, None]=None) -> Dict[str, Any]:
+    def getBuildNotifications(self, userID: Union[str, UserID, None]=None) -> Data:
         ...
 
     def getBuildroot(self, buildrootID: BuildrootID, strict: bool=False) -> BuildrootInfo:
@@ -414,7 +414,7 @@ class ClientSession:
     def getMavenArchive(self, archive_id: ArchiveID, strict: bool=False) -> ArchiveInfo:
         ...
 
-    def getMavenBuild(self, buildInfo: Union[str, BuildID], strict: bool=False) -> Dict[str, Any]:
+    def getMavenBuild(self, buildInfo: Union[str, BuildID], strict: bool=False) -> Data:
         ...
 
     def getNextRelease(self, build_info: BuildNVR, incr: int=1) -> str:
@@ -466,11 +466,11 @@ class ClientSession:
         ...
 
     @overload
-    def getRPMHeaders(self, rpmID: Optional[int]=None, taskID: Optional[TaskID]=None, filepath: Optional[str]=None, headers: Optional[List[str]]=None) -> Dict[str, Any]:
+    def getRPMHeaders(self, rpmID: Optional[int]=None, taskID: Optional[TaskID]=None, filepath: Optional[str]=None, headers: Optional[List[str]]=None) -> Data:
         ...
 
     @overload
-    def getRPMHeaders(self, rpmID: Optional[int]=None, taskID: Optional[TaskID]=None, filepath: Optional[str]=None, headers: Optional[List[str]]=None, strict: Optional[bool]=False) -> Dict[str, Any]:
+    def getRPMHeaders(self, rpmID: Optional[int]=None, taskID: Optional[TaskID]=None, filepath: Optional[str]=None, headers: Optional[List[str]]=None, strict: Optional[bool]=False) -> Data:
         ...
 
     def getSessionInfo(self, details: bool=False, user_id: Optional[UserID]=None) -> Union[None, SessionInfo, List[SessionInfo]]:
@@ -479,7 +479,7 @@ class ClientSession:
     def getTag(self, tagInfo: Union[str, TagID], strict: bool=False, event: Optional[EventID]=None, blocked: bool=False) -> Optional[TagInfo]:
         ...
 
-    def getTagID(self, info: Union[str, TagID, Dict[str, Any]], strict: bool=False, create: bool=False) -> Optional[TagID]:
+    def getTagID(self, info: Union[str, TagID, Data], strict: bool=False, create: bool=False) -> Optional[TagID]:
         ...
 
     def getTagExternalRepos(self, tag_info: Union[str, TagID, None]=None, repo_info: Union[str, ExternalRepoID, None]=None, event: Optional[EventID]=None) -> TagExternalRepos:
@@ -502,7 +502,7 @@ class ClientSession:
     def getTaskInfo(self, task_id: TaskID, request: bool=False, strict: bool=False) -> TaskInfo:
         ...
 
-    def getTaskRequest(self, taskId: TaskID) -> Dict[str, Any]:
+    def getTaskRequest(self, taskId: TaskID) -> Data:
         ...
 
     def getTaskResult(self, taskId: TaskID, raise_fault: bool=True) -> Any:
@@ -536,7 +536,7 @@ class ClientSession:
     def getWinArchive(self, archive_id: ArchiveID, strict: bool=False) -> ArchiveInfo:
         ...
 
-    def getWinBuild(self, buildInfo: Union[str, BuildID], strict: bool=False) -> Dict[str, Any]:
+    def getWinBuild(self, buildInfo: Union[str, BuildID], strict: bool=False) -> Data:
         ...
 
     def grantCGAccess(self, user: Union[str, UserID], cg: Union[str, CGID], create: bool=False) -> None:
@@ -587,13 +587,13 @@ class ClientSession:
     def hello(self, *args) -> str:
         ...
 
-    def importArchive(self, filepath: str, buildinfo: BuildInfo, type: str, typeInfo: Dict[str, Any]) -> ArchiveInfo:
+    def importArchive(self, filepath: str, buildinfo: BuildInfo, type: str, typeInfo: Data) -> ArchiveInfo:
         ...
 
     def importRPM(self, path: str, basename: str) -> RPMInfo:
         ...
 
-    def listArchives(self, buildID: Optional[BuildID]=None, buildrootID: Optional[BuildrootID]=None, componentBuildrootID: Optional[BuildrootID]=None, hostID: Optional[HostID]=None, type: Optional[str]=None, filename: Optional[str]=None, size: Optional[int]=None, checksum: Optional[int]=None, checksum_type: Optional[ChecksumType]=None, typeInfo: Optional[Dict[str, Any]]=None, queryOpts: Optional[QueryOptions]=None, imageID: Optional[int]=None, archiveID: Optional[ArchiveID]=None, strict: bool=False) -> List[ArchiveInfo]:
+    def listArchives(self, buildID: Optional[BuildID]=None, buildrootID: Optional[BuildrootID]=None, componentBuildrootID: Optional[BuildrootID]=None, hostID: Optional[HostID]=None, type: Optional[str]=None, filename: Optional[str]=None, size: Optional[int]=None, checksum: Optional[int]=None, checksum_type: Optional[ChecksumType]=None, typeInfo: Optional[Data]=None, queryOpts: Optional[QueryOptions]=None, imageID: Optional[int]=None, archiveID: Optional[ArchiveID]=None, strict: bool=False) -> List[ArchiveInfo]:
         ...
 
     def listArchiveFiles(self, archive_id: ArchiveID, queryOpts: Optional[QueryOptions]=None, strict: bool=False) -> List[ArchiveFileInfo]:
@@ -652,7 +652,7 @@ class ClientSession:
     def listTags(self, build: Optional[BuildSpecifier]=None, package: Union[str, PackageID, None]=None, perms: bool=True, queryOpts: Optional[QueryOptions]=None, pattern: Optional[str]=None) -> List[TagInfo]:
         ...
 
-    def listTaskOutput(self, taskID: TaskID, stat: bool=False, all_volumes: bool=False, strict: bool=False) -> Union[List[str], Dict[str, List[str]], Dict[str, Dict[str, Any]], Dict[str, Dict[str, Dict[str, Any]]]]:
+    def listTaskOutput(self, taskID: TaskID, stat: bool=False, all_volumes: bool=False, strict: bool=False) -> Union[List[str], Dict[str, List[str]], Dict[str, Data], Dict[str, Dict[str, Data]]]:
         ...
 
     def listTasks(self, opts: Optional[ListTasksOptions]=None, queryOpts: Optional[QueryOptions]=None) -> List[TaskInfo]:
@@ -675,7 +675,7 @@ class ClientSession:
     def massTag(self, tag: Union[str, TagID], builds: List[Union[str, BuildID]]) -> None:
         ...
 
-    def mavenBuild(self, url: str, target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: str='maven') -> int:
+    def mavenBuild(self, url: str, target: str, opts: Optional[Data]=None, priority: Optional[int]=None, channel: str='maven') -> int:
         ...
 
     def mavenEnabled(self) -> bool:
@@ -717,7 +717,7 @@ class ClientSession:
     def promoteBuild(self, build: Union[str, int], force: bool=False) -> BuildInfo:
         ...
 
-    def queryHistory(self, tables: Optional[List[str]]=None, **kwargs: Any) -> Dict[str, List[Dict[str, Any]]]:
+    def queryHistory(self, tables: Optional[List[str]]=None, **kwargs: Any) -> Dict[str, List[Data]]:
         ...
 
     def queryRPMSigs(self, rpm_id: Union[RPMID, str, BuildNVR, None]=None, sigkey: Optional[str]=None, queryOpts: Optional[QueryOptions]=None) -> List[RPMSignature]:
@@ -753,7 +753,7 @@ class ClientSession:
     def resetBuild(self, build: Union[str, BuildID]) -> None:
         ...
 
-    def restartHosts(self, priority: int=5, options: Optional[Dict[str, Any]]=None) -> TaskID:
+    def restartHosts(self, priority: int=5, options: Optional[Data]=None) -> TaskID:
         ...
 
     def resubmitTask(self, taskID: TaskID) -> int:
@@ -789,11 +789,11 @@ class ClientSession:
         ...
 
     @overload
-    def showOpts(self, as_string: Literal[False]) -> Dict[str, Any]:
+    def showOpts(self, as_string: Literal[False]) -> Data:
         ...
 
     @overload
-    def showOpts(self, as_string: bool=True) -> Union[str, Dict[str, Any]]:
+    def showOpts(self, as_string: bool=True) -> Union[str, Data]:
         ...
 
     def showSession(self) -> str:
@@ -838,13 +838,13 @@ class ClientSession:
     def uploadFile(self, path: str, name: str, size: int, md5sum: str, offset: int, data: str, volume: Optional[str]=None, checksum: Union[str, Tuple[ChecksumType, str], None]=None) -> bool:
         ...
 
-    def winBuild(self, vm: str, url: str, target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: str='vm') -> int:
+    def winBuild(self, vm: str, url: str, target: str, opts: Optional[Data]=None, priority: Optional[int]=None, channel: str='vm') -> int:
         ...
 
     def winEnabled(self) -> bool:
         ...
 
-    def wrapperRPM(self, build: Union[int, str], url: str, target: str, priority: Optional[int]=None, channel: str='maven', opts: Optional[Dict[str, Any]]=None) -> int:
+    def wrapperRPM(self, build: Union[int, str], url: str, target: str, priority: Optional[int]=None, channel: str='maven', opts: Optional[Data]=None) -> int:
         ...
 
     def writeSignedRPM(self, an_rpm: str, sigkey: str, force: bool=False) -> None:
@@ -852,10 +852,10 @@ class ClientSession:
 
 class Host:
 
-    def assertPolicy(self, name, data: Dict[str, Any], default: str='deny') -> None:
+    def assertPolicy(self, name, data: Data, default: str='deny') -> None:
         ...
 
-    def checkPolicy(self, name: str, data: Dict[str, Any], default: str='deny', strict: bool=False) -> Tuple[bool, str]:
+    def checkPolicy(self, name: str, data: Data, default: str='deny', strict: bool=False) -> Tuple[bool, str]:
         ...
 
     def closeTask(self, task_id: TaskID, response: Any) -> None:
@@ -864,13 +864,13 @@ class Host:
     def completeBuild(self, task_id: TaskID, build_id: BuildID, srpm: str, rpms: List[str], brmap: Optional[Dict[str, BuildrootID]]=None, logs: Optional[Dict[Arch, List[str]]]=None) -> BuildInfo:
         ...
 
-    def completeImageBuild(self, task_id: TaskID, build_id: BuildID, results: Dict[str, Dict[str, Any]]) -> None:
+    def completeImageBuild(self, task_id: TaskID, build_id: BuildID, results: Dict[str, Data]) -> None:
         ...
 
     def completeMavenBuild(self, task_id: TaskID, build_id: BuildID, maven_results: Any, rpm_results: Any) -> None:
         ...
 
-    def completeWinBuild(self, task_id: TaskID, build_id: BuildID, results: Dict[str, Dict[str, Any]], rpm_results: Any) -> None:
+    def completeWinBuild(self, task_id: TaskID, build_id: BuildID, results: Dict[str, Data], rpm_results: Any) -> None:
         ...
 
     def createMavenBuild(self, build_info: BuildInfo, maven_info: MavenInfo) -> None:
@@ -879,7 +879,7 @@ class Host:
     def distRepoMove(self, repo_id: RepoID, uploadpath: str, arch: Arch) -> None:
         ...
 
-    def evalPolicy(self, name: str, data: Dict[str, Any]) -> str:
+    def evalPolicy(self, name: str, data: Data) -> str:
         ...
 
     def failBuild(self, task_id: TaskID, build_id: BuildID) -> None:
@@ -906,16 +906,16 @@ class Host:
     def getTasks(self) -> List[TaskInfo]:
         ...
 
-    def importArchive(self, filepath: str, buildinfo: BuildInfo, type: str, typeInfo: Dict[str, Any]) -> None:
+    def importArchive(self, filepath: str, buildinfo: BuildInfo, type: str, typeInfo: Data) -> None:
         ...
 
-    def importImage(self, task_id: TaskID, build_info: BuildInfo, results: Dict[str, Dict[str, Any]]) -> None:
+    def importImage(self, task_id: TaskID, build_info: BuildInfo, results: Dict[str, Data]) -> None:
         ...
 
     def importWrapperRPMs(self, task_id: TaskID, build_id: BuildID, rpm_results: Dict[str, List[str]]) -> None:
         ...
 
-    def initBuild(self, data: Dict[str, Any]) -> BuildID:
+    def initBuild(self, data: Data) -> BuildID:
         ...
 
     def initImageBuild(self, task_id: TaskID, build_info: BuildInfo) -> BuildInfo:
@@ -933,25 +933,25 @@ class Host:
     def moveBuildToScratch(self, task_id: TaskID, srpm: str, rpms: List[str], logs: Optional[Dict[str, List[str]]]=None) -> None:
         ...
 
-    def moveImageBuildToScratch(self, task_id: TaskID, results: Dict[str, Any]) -> None:
+    def moveImageBuildToScratch(self, task_id: TaskID, results: Data) -> None:
         ...
 
-    def moveMavenBuildToScratch(self, task_id: TaskID, results: Dict[str, Any], rpm_results: Dict[str, Any]) -> None:
+    def moveMavenBuildToScratch(self, task_id: TaskID, results: Data, rpm_results: Data) -> None:
         ...
 
-    def moveWinBuildToScratch(self, task_id: TaskID, results: Dict[str, Any], rpm_results: Dict[str, Any]) -> None:
+    def moveWinBuildToScratch(self, task_id: TaskID, results: Data, rpm_results: Data) -> None:
         ...
 
     def newBuildRoot(self, repo: RepoID, arch: Arch, task_id: Optional[TaskID]=None) -> BuildrootID:
         ...
 
-    def openTask(self, task_id: TaskID) -> Optional[Dict[str, Any]]:
+    def openTask(self, task_id: TaskID) -> Optional[Data]:
         ...
 
     def refuseTask(self, task_id: TaskID, soft: bool=True, msg: str='') -> None:
         ...
 
-    def repoDone(self, repo_id: RepoID, data: Dict[Arch, Tuple[str, List[str]]], expire: bool=False, repo_json_updates: Optional[Dict[str, Any]]=None) -> None:
+    def repoDone(self, repo_id: RepoID, data: Dict[Arch, Tuple[str, List[str]]], expire: bool=False, repo_json_updates: Optional[Data]=None) -> None:
         ...
 
     def repoInit(self, tag: Union[str, TagID], task_id: Optional[TaskID]=None, event: Optional[EventID]=None, opts: Optional[RepoOptions]=None) -> Tuple[RepoID, EventID]:
@@ -963,7 +963,7 @@ class Host:
     def setBuildRootState(self, brootid: BuildrootID, state: BuildrootState, task_id: Optional[TaskID]=None) -> None:
         ...
 
-    def setHostData(self, hostdata: Dict[str, Any]) -> None:
+    def setHostData(self, hostdata: Data) -> None:
         ...
 
     def setTaskWeight(self, task_id: TaskID, weight: float) -> None:
@@ -972,7 +972,7 @@ class Host:
     def subtask(self, method: str, arglist: List, parent: TaskID, **opts) -> int:
         ...
 
-    def subtask2(self, __parent: TaskID, __taskopts: Dict[str, Any], __method: str, *args, **opts) -> int:
+    def subtask2(self, __parent: TaskID, __taskopts: Data, __method: str, *args, **opts) -> int:
         ...
 
     def tagBuild(self, task_id: TaskID, tag: Union[str, TagID], build: BuildSpecifier, force: bool=False, fromtag: Union[str, TagID, None]=None) -> None:
@@ -996,10 +996,10 @@ class Host:
     def updateBuildRootList(self, brootid: BuildrootID, rpmlist: List[RPMInfo], task_id: Optional[TaskID]=None) -> None:
         ...
 
-    def updateHost(self, task_load: float, ready: bool, data: Optional[Dict[str, Any]]=None) -> None:
+    def updateHost(self, task_load: float, ready: bool, data: Optional[Data]=None) -> None:
         ...
 
-    def updateMavenBuildRootList(self, brootid: BuildrootID, task_id: TaskID, mavenlist: List[Dict[str, Any]], ignore: Optional[List[Union[int, str]]]=None, project: bool=False, ignore_unknown: bool=False, extra_deps: Optional[List[Union[int, str]]]=None) -> None:
+    def updateMavenBuildRootList(self, brootid: BuildrootID, task_id: TaskID, mavenlist: List[Data], ignore: Optional[List[Union[int, str]]]=None, project: bool=False, ignore_unknown: bool=False, extra_deps: Optional[List[Union[int, str]]]=None) -> None:
         ...
 
     def writeSignedRPM(self, an_rpm: str, sigkey: str, force: bool=False) -> None:
@@ -1007,10 +1007,10 @@ class Host:
 
 class MultiCallHost:
 
-    def assertPolicy(self, name, data: Dict[str, Any], default: str='deny') -> VirtualCall[None]:
+    def assertPolicy(self, name, data: Data, default: str='deny') -> VirtualCall[None]:
         ...
 
-    def checkPolicy(self, name: str, data: Dict[str, Any], default: str='deny', strict: bool=False) -> VirtualCall[Tuple[bool, str]]:
+    def checkPolicy(self, name: str, data: Data, default: str='deny', strict: bool=False) -> VirtualCall[Tuple[bool, str]]:
         ...
 
     def closeTask(self, task_id: TaskID, response: Any) -> VirtualCall[None]:
@@ -1019,13 +1019,13 @@ class MultiCallHost:
     def completeBuild(self, task_id: TaskID, build_id: BuildID, srpm: str, rpms: List[str], brmap: Optional[Dict[str, BuildrootID]]=None, logs: Optional[Dict[Arch, List[str]]]=None) -> VirtualCall[BuildInfo]:
         ...
 
-    def completeImageBuild(self, task_id: TaskID, build_id: BuildID, results: Dict[str, Dict[str, Any]]) -> VirtualCall[None]:
+    def completeImageBuild(self, task_id: TaskID, build_id: BuildID, results: Dict[str, Data]) -> VirtualCall[None]:
         ...
 
     def completeMavenBuild(self, task_id: TaskID, build_id: BuildID, maven_results: Any, rpm_results: Any) -> VirtualCall[None]:
         ...
 
-    def completeWinBuild(self, task_id: TaskID, build_id: BuildID, results: Dict[str, Dict[str, Any]], rpm_results: Any) -> VirtualCall[None]:
+    def completeWinBuild(self, task_id: TaskID, build_id: BuildID, results: Dict[str, Data], rpm_results: Any) -> VirtualCall[None]:
         ...
 
     def createMavenBuild(self, build_info: BuildInfo, maven_info: MavenInfo) -> VirtualCall[None]:
@@ -1034,7 +1034,7 @@ class MultiCallHost:
     def distRepoMove(self, repo_id: RepoID, uploadpath: str, arch: Arch) -> VirtualCall[None]:
         ...
 
-    def evalPolicy(self, name: str, data: Dict[str, Any]) -> VirtualCall[str]:
+    def evalPolicy(self, name: str, data: Data) -> VirtualCall[str]:
         ...
 
     def failBuild(self, task_id: TaskID, build_id: BuildID) -> VirtualCall[None]:
@@ -1061,16 +1061,16 @@ class MultiCallHost:
     def getTasks(self) -> VirtualCall[List[TaskInfo]]:
         ...
 
-    def importArchive(self, filepath: str, buildinfo: BuildInfo, type: str, typeInfo: Dict[str, Any]) -> VirtualCall[None]:
+    def importArchive(self, filepath: str, buildinfo: BuildInfo, type: str, typeInfo: Data) -> VirtualCall[None]:
         ...
 
-    def importImage(self, task_id: TaskID, build_info: BuildInfo, results: Dict[str, Dict[str, Any]]) -> VirtualCall[None]:
+    def importImage(self, task_id: TaskID, build_info: BuildInfo, results: Dict[str, Data]) -> VirtualCall[None]:
         ...
 
     def importWrapperRPMs(self, task_id: TaskID, build_id: BuildID, rpm_results: Dict[str, List[str]]) -> VirtualCall[None]:
         ...
 
-    def initBuild(self, data: Dict[str, Any]) -> VirtualCall[BuildID]:
+    def initBuild(self, data: Data) -> VirtualCall[BuildID]:
         ...
 
     def initImageBuild(self, task_id: TaskID, build_info: BuildInfo) -> VirtualCall[BuildInfo]:
@@ -1088,25 +1088,25 @@ class MultiCallHost:
     def moveBuildToScratch(self, task_id: TaskID, srpm: str, rpms: List[str], logs: Optional[Dict[str, List[str]]]=None) -> VirtualCall[None]:
         ...
 
-    def moveImageBuildToScratch(self, task_id: TaskID, results: Dict[str, Any]) -> VirtualCall[None]:
+    def moveImageBuildToScratch(self, task_id: TaskID, results: Data) -> VirtualCall[None]:
         ...
 
-    def moveMavenBuildToScratch(self, task_id: TaskID, results: Dict[str, Any], rpm_results: Dict[str, Any]) -> VirtualCall[None]:
+    def moveMavenBuildToScratch(self, task_id: TaskID, results: Data, rpm_results: Data) -> VirtualCall[None]:
         ...
 
-    def moveWinBuildToScratch(self, task_id: TaskID, results: Dict[str, Any], rpm_results: Dict[str, Any]) -> VirtualCall[None]:
+    def moveWinBuildToScratch(self, task_id: TaskID, results: Data, rpm_results: Data) -> VirtualCall[None]:
         ...
 
     def newBuildRoot(self, repo: RepoID, arch: Arch, task_id: Optional[TaskID]=None) -> VirtualCall[BuildrootID]:
         ...
 
-    def openTask(self, task_id: TaskID) -> VirtualCall[Optional[Dict[str, Any]]]:
+    def openTask(self, task_id: TaskID) -> VirtualCall[Optional[Data]]:
         ...
 
     def refuseTask(self, task_id: TaskID, soft: bool=True, msg: str='') -> VirtualCall[None]:
         ...
 
-    def repoDone(self, repo_id: RepoID, data: Dict[Arch, Tuple[str, List[str]]], expire: bool=False, repo_json_updates: Optional[Dict[str, Any]]=None) -> VirtualCall[None]:
+    def repoDone(self, repo_id: RepoID, data: Dict[Arch, Tuple[str, List[str]]], expire: bool=False, repo_json_updates: Optional[Data]=None) -> VirtualCall[None]:
         ...
 
     def repoInit(self, tag: Union[str, TagID], task_id: Optional[TaskID]=None, event: Optional[EventID]=None, opts: Optional[RepoOptions]=None) -> VirtualCall[Tuple[RepoID, EventID]]:
@@ -1118,7 +1118,7 @@ class MultiCallHost:
     def setBuildRootState(self, brootid: BuildrootID, state: BuildrootState, task_id: Optional[TaskID]=None) -> VirtualCall[None]:
         ...
 
-    def setHostData(self, hostdata: Dict[str, Any]) -> VirtualCall[None]:
+    def setHostData(self, hostdata: Data) -> VirtualCall[None]:
         ...
 
     def setTaskWeight(self, task_id: TaskID, weight: float) -> VirtualCall[None]:
@@ -1127,7 +1127,7 @@ class MultiCallHost:
     def subtask(self, method: str, arglist: List, parent: TaskID, **opts) -> VirtualCall[int]:
         ...
 
-    def subtask2(self, __parent: TaskID, __taskopts: Dict[str, Any], __method: str, *args, **opts) -> VirtualCall[int]:
+    def subtask2(self, __parent: TaskID, __taskopts: Data, __method: str, *args, **opts) -> VirtualCall[int]:
         ...
 
     def tagBuild(self, task_id: TaskID, tag: Union[str, TagID], build: BuildSpecifier, force: bool=False, fromtag: Union[str, TagID, None]=None) -> VirtualCall[None]:
@@ -1151,10 +1151,10 @@ class MultiCallHost:
     def updateBuildRootList(self, brootid: BuildrootID, rpmlist: List[RPMInfo], task_id: Optional[TaskID]=None) -> VirtualCall[None]:
         ...
 
-    def updateHost(self, task_load: float, ready: bool, data: Optional[Dict[str, Any]]=None) -> VirtualCall[None]:
+    def updateHost(self, task_load: float, ready: bool, data: Optional[Data]=None) -> VirtualCall[None]:
         ...
 
-    def updateMavenBuildRootList(self, brootid: BuildrootID, task_id: TaskID, mavenlist: List[Dict[str, Any]], ignore: Optional[List[Union[int, str]]]=None, project: bool=False, ignore_unknown: bool=False, extra_deps: Optional[List[Union[int, str]]]=None) -> VirtualCall[None]:
+    def updateMavenBuildRootList(self, brootid: BuildrootID, task_id: TaskID, mavenlist: List[Data], ignore: Optional[List[Union[int, str]]]=None, project: bool=False, ignore_unknown: bool=False, extra_deps: Optional[List[Union[int, str]]]=None) -> VirtualCall[None]:
         ...
 
     def writeSignedRPM(self, an_rpm: str, sigkey: str, force: bool=False) -> VirtualCall[None]:
@@ -1166,10 +1166,10 @@ class MultiCallSession:
     def host(self) -> MultiCallHost:
         ...
 
-    def CGImport(self, metadata: Union[str, Dict[str, Any]], directory: str, token: Optional[str]=None) -> VirtualCall[BuildInfo]:
+    def CGImport(self, metadata: Union[str, Data], directory: str, token: Optional[str]=None) -> VirtualCall[BuildInfo]:
         ...
 
-    def CGInitBuild(self, cg: str, data: Dict[str, Any]) -> VirtualCall[CGInitInfo]:
+    def CGInitBuild(self, cg: str, data: Data) -> VirtualCall[CGInitInfo]:
         ...
 
     def CGRefundBuild(self, cg: str, build_id: BuildID, token: str, state: BuildState=BuildState.FAILED) -> VirtualCall[None]:
@@ -1187,7 +1187,7 @@ class MultiCallSession:
     def addExternalRepoToTag(self, tag_info: Union[str, TagID], repo_info: Union[str, ExternalRepoID], priority: int, merge_mode: str='koji', arches: Optional[List[Arch]]=None) -> VirtualCall[None]:
         ...
 
-    def addExternalRPM(self, rpminfo: Dict[str, Any], external_repo: Union[str, ExternalRepoID], strict: bool=True) -> VirtualCall[None]:
+    def addExternalRPM(self, rpminfo: Data, external_repo: Union[str, ExternalRepoID], strict: bool=True) -> VirtualCall[None]:
         ...
 
     def addGroupMember(self, group: Union[str, UserID], user: Union[str, UserID], strict: bool=True) -> VirtualCall[None]:
@@ -1214,19 +1214,19 @@ class MultiCallSession:
     def assignTask(self, task_id: TaskID, host: str, force: bool=False, override: bool=False) -> VirtualCall[bool]:
         ...
 
-    def build(self, src: str, target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: Optional[str]=None) -> VirtualCall[int]:
+    def build(self, src: str, target: str, opts: Optional[Data]=None, priority: Optional[int]=None, channel: Optional[str]=None) -> VirtualCall[int]:
         ...
 
-    def buildImage(self, name: str, version: str, arch: Arch, target: str, ksfile: str, img_type: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None) -> VirtualCall[int]:
+    def buildImage(self, name: str, version: str, arch: Arch, target: str, ksfile: str, img_type: str, opts: Optional[Data]=None, priority: Optional[int]=None) -> VirtualCall[int]:
         ...
 
-    def buildImageIndirection(self, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None) -> VirtualCall[TaskID]:
+    def buildImageIndirection(self, opts: Optional[Data]=None, priority: Optional[int]=None) -> VirtualCall[TaskID]:
         ...
 
-    def buildImageOz(self, name: str, version: str, arches: List[Arch], target: str, inst_tree: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None) -> VirtualCall[TaskID]:
+    def buildImageOz(self, name: str, version: str, arches: List[Arch], target: str, inst_tree: str, opts: Optional[Data]=None, priority: Optional[int]=None) -> VirtualCall[TaskID]:
         ...
 
-    def buildReferences(self, build: BuildID, limit: Optional[int]=None, lazy: bool=False) -> VirtualCall[Dict[str, Any]]:
+    def buildReferences(self, build: BuildID, limit: Optional[int]=None, lazy: bool=False) -> VirtualCall[Data]:
         ...
 
     def cancelBuild(self, buildID: BuildID, strict: bool=False) -> VirtualCall[bool]:
@@ -1241,10 +1241,10 @@ class MultiCallSession:
     def cancelTaskFull(self, task_id: TaskID, strict: bool=True) -> VirtualCall[None]:
         ...
 
-    def chainBuild(self, srcs: List[str], target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: Optional[str]=None) -> VirtualCall[int]:
+    def chainBuild(self, srcs: List[str], target: str, opts: Optional[Data]=None, priority: Optional[int]=None, channel: Optional[str]=None) -> VirtualCall[int]:
         ...
 
-    def chainMaven(self, builds: List[Dict[str, Any]], target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: str='maven') -> VirtualCall[int]:
+    def chainMaven(self, builds: List[Data], target: str, opts: Optional[Data]=None, priority: Optional[int]=None, channel: str='maven') -> VirtualCall[int]:
         ...
 
     def changeBuildVolume(self, build: Union[str, BuildID], volume: str, strict: bool=True) -> VirtualCall[None]:
@@ -1256,18 +1256,18 @@ class MultiCallSession:
     def checkTagPackage(self, tag: Union[str, TagID], pkg: Union[str, PackageID]) -> VirtualCall[bool]:
         ...
 
-    def checkUpload(self, path: str, name: str, verify: Optional[ChecksumType]=None, tail: Optional[int]=None, volume: Optional[str]=None) -> VirtualCall[Dict[str, Any]]:
+    def checkUpload(self, path: str, name: str, verify: Optional[ChecksumType]=None, tail: Optional[int]=None, volume: Optional[str]=None) -> VirtualCall[Data]:
         ...
 
     def count(self, methodName: str, *args: Any, **kw: Any) -> VirtualCall[int]:
         ...
 
     @overload
-    def countAndFilterResults(self, methodName: str, *args, filterOpts: FilterOptions, **kw) -> VirtualCall[Tuple[int, List[Dict[str, Any]]]]:
+    def countAndFilterResults(self, methodName: str, *args, filterOpts: FilterOptions, **kw) -> VirtualCall[Tuple[int, List[Data]]]:
         ...
 
     @overload
-    def countAndFilterResults(self, methodName: str, *args, **kw) -> VirtualCall[Tuple[int, List[Dict[str, Any]]]]:
+    def countAndFilterResults(self, methodName: str, *args, **kw) -> VirtualCall[Tuple[int, List[Data]]]:
         ...
 
     def createBuildTarget(self, name: str, build_tag: Union[str, TagID], dest_tag: Union[str, TagID]) -> VirtualCall[None]:
@@ -1381,18 +1381,18 @@ class MultiCallSession:
     def error(self) -> VirtualCall[NoReturn]:
         ...
 
-    def evalPolicy(self, name: str, data: Dict[str, Any]) -> VirtualCall[str]:
+    def evalPolicy(self, name: str, data: Data) -> VirtualCall[str]:
         ...
 
     def fault(self) -> VirtualCall[NoReturn]:
         ...
 
     @overload
-    def filterResults(self, methodName: str, *args, filterOpts: FilterOptions, **kw) -> VirtualCall[List[Dict[str, Any]]]:
+    def filterResults(self, methodName: str, *args, filterOpts: FilterOptions, **kw) -> VirtualCall[List[Data]]:
         ...
 
     @overload
-    def filterResults(self, methodName: str, *args, **kw) -> VirtualCall[List[Dict[str, Any]]]:
+    def filterResults(self, methodName: str, *args, **kw) -> VirtualCall[List[Data]]:
         ...
 
     def findBuildID(self, X: BuildSpecifier, strict: bool=False) -> VirtualCall[Optional[BuildID]]:
@@ -1437,16 +1437,16 @@ class MultiCallSession:
     def getBuildLogs(self, build: BuildSpecifier) -> VirtualCall[BuildLogs]:
         ...
 
-    def getBuildNotification(self, id: int, strict: bool=False) -> VirtualCall[Optional[Dict[str, Any]]]:
+    def getBuildNotification(self, id: int, strict: bool=False) -> VirtualCall[Optional[Data]]:
         ...
 
-    def getBuildNotificationBlock(self, id: int, strict: bool=False) -> VirtualCall[Optional[Dict[str, Any]]]:
+    def getBuildNotificationBlock(self, id: int, strict: bool=False) -> VirtualCall[Optional[Data]]:
         ...
 
-    def getBuildNotificationBlocks(self, userID: Union[str, UserID, None]=None) -> VirtualCall[Dict[str, Any]]:
+    def getBuildNotificationBlocks(self, userID: Union[str, UserID, None]=None) -> VirtualCall[Data]:
         ...
 
-    def getBuildNotifications(self, userID: Union[str, UserID, None]=None) -> VirtualCall[Dict[str, Any]]:
+    def getBuildNotifications(self, userID: Union[str, UserID, None]=None) -> VirtualCall[Data]:
         ...
 
     def getBuildroot(self, buildrootID: BuildrootID, strict: bool=False) -> VirtualCall[BuildrootInfo]:
@@ -1554,7 +1554,7 @@ class MultiCallSession:
     def getMavenArchive(self, archive_id: ArchiveID, strict: bool=False) -> VirtualCall[ArchiveInfo]:
         ...
 
-    def getMavenBuild(self, buildInfo: Union[str, BuildID], strict: bool=False) -> VirtualCall[Dict[str, Any]]:
+    def getMavenBuild(self, buildInfo: Union[str, BuildID], strict: bool=False) -> VirtualCall[Data]:
         ...
 
     def getNextRelease(self, build_info: BuildNVR, incr: int=1) -> VirtualCall[str]:
@@ -1606,11 +1606,11 @@ class MultiCallSession:
         ...
 
     @overload
-    def getRPMHeaders(self, rpmID: Optional[int]=None, taskID: Optional[TaskID]=None, filepath: Optional[str]=None, headers: Optional[List[str]]=None) -> VirtualCall[Dict[str, Any]]:
+    def getRPMHeaders(self, rpmID: Optional[int]=None, taskID: Optional[TaskID]=None, filepath: Optional[str]=None, headers: Optional[List[str]]=None) -> VirtualCall[Data]:
         ...
 
     @overload
-    def getRPMHeaders(self, rpmID: Optional[int]=None, taskID: Optional[TaskID]=None, filepath: Optional[str]=None, headers: Optional[List[str]]=None, strict: Optional[bool]=False) -> VirtualCall[Dict[str, Any]]:
+    def getRPMHeaders(self, rpmID: Optional[int]=None, taskID: Optional[TaskID]=None, filepath: Optional[str]=None, headers: Optional[List[str]]=None, strict: Optional[bool]=False) -> VirtualCall[Data]:
         ...
 
     def getSessionInfo(self, details: bool=False, user_id: Optional[UserID]=None) -> VirtualCall[Union[None, SessionInfo, List[SessionInfo]]]:
@@ -1619,7 +1619,7 @@ class MultiCallSession:
     def getTag(self, tagInfo: Union[str, TagID], strict: bool=False, event: Optional[EventID]=None, blocked: bool=False) -> VirtualCall[Optional[TagInfo]]:
         ...
 
-    def getTagID(self, info: Union[str, TagID, Dict[str, Any]], strict: bool=False, create: bool=False) -> VirtualCall[Optional[TagID]]:
+    def getTagID(self, info: Union[str, TagID, Data], strict: bool=False, create: bool=False) -> VirtualCall[Optional[TagID]]:
         ...
 
     def getTagExternalRepos(self, tag_info: Union[str, TagID, None]=None, repo_info: Union[str, ExternalRepoID, None]=None, event: Optional[EventID]=None) -> VirtualCall[TagExternalRepos]:
@@ -1642,7 +1642,7 @@ class MultiCallSession:
     def getTaskInfo(self, task_id: TaskID, request: bool=False, strict: bool=False) -> VirtualCall[TaskInfo]:
         ...
 
-    def getTaskRequest(self, taskId: TaskID) -> VirtualCall[Dict[str, Any]]:
+    def getTaskRequest(self, taskId: TaskID) -> VirtualCall[Data]:
         ...
 
     def getTaskResult(self, taskId: TaskID, raise_fault: bool=True) -> VirtualCall[Any]:
@@ -1676,7 +1676,7 @@ class MultiCallSession:
     def getWinArchive(self, archive_id: ArchiveID, strict: bool=False) -> VirtualCall[ArchiveInfo]:
         ...
 
-    def getWinBuild(self, buildInfo: Union[str, BuildID], strict: bool=False) -> VirtualCall[Dict[str, Any]]:
+    def getWinBuild(self, buildInfo: Union[str, BuildID], strict: bool=False) -> VirtualCall[Data]:
         ...
 
     def grantCGAccess(self, user: Union[str, UserID], cg: Union[str, CGID], create: bool=False) -> VirtualCall[None]:
@@ -1727,13 +1727,13 @@ class MultiCallSession:
     def hello(self, *args) -> VirtualCall[str]:
         ...
 
-    def importArchive(self, filepath: str, buildinfo: BuildInfo, type: str, typeInfo: Dict[str, Any]) -> VirtualCall[ArchiveInfo]:
+    def importArchive(self, filepath: str, buildinfo: BuildInfo, type: str, typeInfo: Data) -> VirtualCall[ArchiveInfo]:
         ...
 
     def importRPM(self, path: str, basename: str) -> VirtualCall[RPMInfo]:
         ...
 
-    def listArchives(self, buildID: Optional[BuildID]=None, buildrootID: Optional[BuildrootID]=None, componentBuildrootID: Optional[BuildrootID]=None, hostID: Optional[HostID]=None, type: Optional[str]=None, filename: Optional[str]=None, size: Optional[int]=None, checksum: Optional[int]=None, checksum_type: Optional[ChecksumType]=None, typeInfo: Optional[Dict[str, Any]]=None, queryOpts: Optional[QueryOptions]=None, imageID: Optional[int]=None, archiveID: Optional[ArchiveID]=None, strict: bool=False) -> VirtualCall[List[ArchiveInfo]]:
+    def listArchives(self, buildID: Optional[BuildID]=None, buildrootID: Optional[BuildrootID]=None, componentBuildrootID: Optional[BuildrootID]=None, hostID: Optional[HostID]=None, type: Optional[str]=None, filename: Optional[str]=None, size: Optional[int]=None, checksum: Optional[int]=None, checksum_type: Optional[ChecksumType]=None, typeInfo: Optional[Data]=None, queryOpts: Optional[QueryOptions]=None, imageID: Optional[int]=None, archiveID: Optional[ArchiveID]=None, strict: bool=False) -> VirtualCall[List[ArchiveInfo]]:
         ...
 
     def listArchiveFiles(self, archive_id: ArchiveID, queryOpts: Optional[QueryOptions]=None, strict: bool=False) -> VirtualCall[List[ArchiveFileInfo]]:
@@ -1792,7 +1792,7 @@ class MultiCallSession:
     def listTags(self, build: Optional[BuildSpecifier]=None, package: Union[str, PackageID, None]=None, perms: bool=True, queryOpts: Optional[QueryOptions]=None, pattern: Optional[str]=None) -> VirtualCall[List[TagInfo]]:
         ...
 
-    def listTaskOutput(self, taskID: TaskID, stat: bool=False, all_volumes: bool=False, strict: bool=False) -> VirtualCall[Union[List[str], Dict[str, List[str]], Dict[str, Dict[str, Any]], Dict[str, Dict[str, Dict[str, Any]]]]]:
+    def listTaskOutput(self, taskID: TaskID, stat: bool=False, all_volumes: bool=False, strict: bool=False) -> VirtualCall[Union[List[str], Dict[str, List[str]], Dict[str, Data], Dict[str, Dict[str, Data]]]]:
         ...
 
     def listTasks(self, opts: Optional[ListTasksOptions]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[TaskInfo]]:
@@ -1815,7 +1815,7 @@ class MultiCallSession:
     def massTag(self, tag: Union[str, TagID], builds: List[Union[str, BuildID]]) -> VirtualCall[None]:
         ...
 
-    def mavenBuild(self, url: str, target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: str='maven') -> VirtualCall[int]:
+    def mavenBuild(self, url: str, target: str, opts: Optional[Data]=None, priority: Optional[int]=None, channel: str='maven') -> VirtualCall[int]:
         ...
 
     def mavenEnabled(self) -> VirtualCall[bool]:
@@ -1857,7 +1857,7 @@ class MultiCallSession:
     def promoteBuild(self, build: Union[str, int], force: bool=False) -> VirtualCall[BuildInfo]:
         ...
 
-    def queryHistory(self, tables: Optional[List[str]]=None, **kwargs: Any) -> VirtualCall[Dict[str, List[Dict[str, Any]]]]:
+    def queryHistory(self, tables: Optional[List[str]]=None, **kwargs: Any) -> VirtualCall[Dict[str, List[Data]]]:
         ...
 
     def queryRPMSigs(self, rpm_id: Union[RPMID, str, BuildNVR, None]=None, sigkey: Optional[str]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[RPMSignature]]:
@@ -1893,7 +1893,7 @@ class MultiCallSession:
     def resetBuild(self, build: Union[str, BuildID]) -> VirtualCall[None]:
         ...
 
-    def restartHosts(self, priority: int=5, options: Optional[Dict[str, Any]]=None) -> VirtualCall[TaskID]:
+    def restartHosts(self, priority: int=5, options: Optional[Data]=None) -> VirtualCall[TaskID]:
         ...
 
     def resubmitTask(self, taskID: TaskID) -> VirtualCall[int]:
@@ -1929,11 +1929,11 @@ class MultiCallSession:
         ...
 
     @overload
-    def showOpts(self, as_string: Literal[False]) -> VirtualCall[Dict[str, Any]]:
+    def showOpts(self, as_string: Literal[False]) -> VirtualCall[Data]:
         ...
 
     @overload
-    def showOpts(self, as_string: bool=True) -> VirtualCall[Union[str, Dict[str, Any]]]:
+    def showOpts(self, as_string: bool=True) -> VirtualCall[Union[str, Data]]:
         ...
 
     def showSession(self) -> VirtualCall[str]:
@@ -1978,13 +1978,13 @@ class MultiCallSession:
     def uploadFile(self, path: str, name: str, size: int, md5sum: str, offset: int, data: str, volume: Optional[str]=None, checksum: Union[str, Tuple[ChecksumType, str], None]=None) -> VirtualCall[bool]:
         ...
 
-    def winBuild(self, vm: str, url: str, target: str, opts: Optional[Dict[str, Any]]=None, priority: Optional[int]=None, channel: str='vm') -> VirtualCall[int]:
+    def winBuild(self, vm: str, url: str, target: str, opts: Optional[Data]=None, priority: Optional[int]=None, channel: str='vm') -> VirtualCall[int]:
         ...
 
     def winEnabled(self) -> VirtualCall[bool]:
         ...
 
-    def wrapperRPM(self, build: Union[int, str], url: str, target: str, priority: Optional[int]=None, channel: str='maven', opts: Optional[Dict[str, Any]]=None) -> VirtualCall[int]:
+    def wrapperRPM(self, build: Union[int, str], url: str, target: str, priority: Optional[int]=None, channel: str='maven', opts: Optional[Data]=None) -> VirtualCall[int]:
         ...
 
     def writeSignedRPM(self, an_rpm: str, sigkey: str, force: bool=False) -> VirtualCall[None]:
