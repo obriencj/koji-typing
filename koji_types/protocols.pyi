@@ -151,7 +151,7 @@ class ClientSession:
     def createNotificationBlock(self, user_id: UserID, package_id: Optional[PackageID]=None, tag_id: Optional[TagID]=None) -> None:
         ...
 
-    def createTag(self, name: str, parent: Optional[Union[int, str]]=None, arches: Optional[str]=None, perm: Optional[str]=None, locked: bool=False, maven_support: bool=False, maven_include_all: bool=False, extra: Optional[Dict[str, str]]=None) -> TagID:
+    def createTag(self, name: str, parent: Optional[Union[str, TagID]]=None, arches: Optional[str]=None, perm: Optional[str]=None, locked: bool=False, maven_support: bool=False, maven_include_all: bool=False, extra: Optional[Dict[str, str]]=None) -> TagID:
         ...
 
     def createUser(self, username: str, status: Optional[UserStatus]=None, krb_principal: Optional[str]=None) -> UserID:
@@ -279,7 +279,7 @@ class ClientSession:
     def getArchiveFile(self, archive_id: ArchiveID, filename: str, strict: bool=False) -> Optional[ArchiveFileInfo]:
         ...
 
-    def getArchiveType(self, filename: Optional[str]=None, type_name: Optional[str]=None, type_id: Optional[ATypeID]=None, strict: bool=False) -> ATypeInfo:
+    def getArchiveType(self, filename: Optional[str]=None, type_name: Optional[str]=None, type_id: Optional[ATypeID]=None, strict: bool=False) -> Optional[ATypeInfo]:
         ...
 
     def getArchiveTypes(self) -> List[ATypeInfo]:
@@ -288,7 +288,7 @@ class ClientSession:
     def getAverageBuildDuration(self, package: Union[str, PackageID], age: Optional[int]=None) -> Optional[float]:
         ...
 
-    def getBuild(self, buildInfo: BuildSpecifier, strict: bool=False) -> BuildInfo:
+    def getBuild(self, buildInfo: BuildSpecifier, strict: bool=False) -> Optional[BuildInfo]:
         ...
 
     def getBuildConfig(self, tag: Union[str, TagID], event: Optional[EventID]=None) -> TagInfo:
@@ -309,13 +309,13 @@ class ClientSession:
     def getBuildNotifications(self, userID: Union[str, UserID, None]=None) -> Data:
         ...
 
-    def getBuildroot(self, buildrootID: BuildrootID, strict: bool=False) -> BuildrootInfo:
+    def getBuildroot(self, buildrootID: BuildrootID, strict: bool=False) -> Optional[BuildrootInfo]:
         ...
 
     def getBuildrootListing(self, id: BuildrootID) -> List[RPMInfo]:
         ...
 
-    def getBuildTarget(self, info: Union[str, TargetID], event: Optional[EventID]=None, strict: bool=False) -> TargetInfo:
+    def getBuildTarget(self, info: Union[str, TargetID], event: Optional[EventID]=None, strict: bool=False) -> Optional[TargetInfo]:
         ...
 
     def getBuildTargets(self, info: Union[str, TargetID, None]=None, event: Optional[EventID]=None, buildTagID: Union[str, TagID, TagInfo, None]=None, destTagID: Union[str, TagID, TagInfo, None]=None, queryOpts: Optional[QueryOptions]=None) -> List[TargetInfo]:
@@ -331,11 +331,15 @@ class ClientSession:
         ...
 
     @overload
-    def getEvent(self, id: EventID) -> EventInfo:
+    def getEvent(self, id: EventID) -> Optional[EventInfo]:
         ...
 
     @overload
-    def getEvent(self, id: EventID, strict: bool=False) -> EventInfo:
+    def getEvent(self, id: EventID, strict: Literal[True]) -> EventInfo:
+        ...
+
+    @overload
+    def getEvent(self, id: EventID, strict: bool=False) -> Optional[EventInfo]:
         ...
 
     def getExternalRepo(self, info: Union[str, ExternalRepoID], strict: bool=False, event: Optional[EventID]=None) -> ExternalRepoInfo:
@@ -353,7 +357,7 @@ class ClientSession:
     def getHost(self, hostInfo: Union[str, HostID], strict: bool=False, event: Optional[EventID]=None) -> HostInfo:
         ...
 
-    def getImageArchive(self, archive_id: ArchiveID, strict: bool=False) -> ArchiveInfo:
+    def getImageArchive(self, archive_id: ArchiveID, strict: bool=False) -> Optional[ArchiveInfo]:
         ...
 
     def getImageBuild(self, buildInfo: BuildSpecifier, strict: bool=False) -> Optional[Dict[str, BuildID]]:
@@ -969,10 +973,10 @@ class Host:
     def setTaskWeight(self, task_id: TaskID, weight: float) -> None:
         ...
 
-    def subtask(self, method: str, arglist: List, parent: TaskID, **opts) -> int:
+    def subtask(self, method: str, arglist: List, parent: TaskID, **opts) -> TaskID:
         ...
 
-    def subtask2(self, __parent: TaskID, __taskopts: Data, __method: str, *args, **opts) -> int:
+    def subtask2(self, __parent: TaskID, __taskopts: Data, __method: str, *args, **opts) -> TaskID:
         ...
 
     def tagBuild(self, task_id: TaskID, tag: Union[str, TagID], build: BuildSpecifier, force: bool=False, fromtag: Union[str, TagID, None]=None) -> None:
@@ -1124,10 +1128,10 @@ class MultiCallHost:
     def setTaskWeight(self, task_id: TaskID, weight: float) -> VirtualCall[None]:
         ...
 
-    def subtask(self, method: str, arglist: List, parent: TaskID, **opts) -> VirtualCall[int]:
+    def subtask(self, method: str, arglist: List, parent: TaskID, **opts) -> VirtualCall[TaskID]:
         ...
 
-    def subtask2(self, __parent: TaskID, __taskopts: Data, __method: str, *args, **opts) -> VirtualCall[int]:
+    def subtask2(self, __parent: TaskID, __taskopts: Data, __method: str, *args, **opts) -> VirtualCall[TaskID]:
         ...
 
     def tagBuild(self, task_id: TaskID, tag: Union[str, TagID], build: BuildSpecifier, force: bool=False, fromtag: Union[str, TagID, None]=None) -> VirtualCall[None]:
@@ -1291,7 +1295,7 @@ class MultiCallSession:
     def createNotificationBlock(self, user_id: UserID, package_id: Optional[PackageID]=None, tag_id: Optional[TagID]=None) -> VirtualCall[None]:
         ...
 
-    def createTag(self, name: str, parent: Optional[Union[int, str]]=None, arches: Optional[str]=None, perm: Optional[str]=None, locked: bool=False, maven_support: bool=False, maven_include_all: bool=False, extra: Optional[Dict[str, str]]=None) -> VirtualCall[TagID]:
+    def createTag(self, name: str, parent: Optional[Union[str, TagID]]=None, arches: Optional[str]=None, perm: Optional[str]=None, locked: bool=False, maven_support: bool=False, maven_include_all: bool=False, extra: Optional[Dict[str, str]]=None) -> VirtualCall[TagID]:
         ...
 
     def createUser(self, username: str, status: Optional[UserStatus]=None, krb_principal: Optional[str]=None) -> VirtualCall[UserID]:
@@ -1419,7 +1423,7 @@ class MultiCallSession:
     def getArchiveFile(self, archive_id: ArchiveID, filename: str, strict: bool=False) -> VirtualCall[Optional[ArchiveFileInfo]]:
         ...
 
-    def getArchiveType(self, filename: Optional[str]=None, type_name: Optional[str]=None, type_id: Optional[ATypeID]=None, strict: bool=False) -> VirtualCall[ATypeInfo]:
+    def getArchiveType(self, filename: Optional[str]=None, type_name: Optional[str]=None, type_id: Optional[ATypeID]=None, strict: bool=False) -> VirtualCall[Optional[ATypeInfo]]:
         ...
 
     def getArchiveTypes(self) -> VirtualCall[List[ATypeInfo]]:
@@ -1428,7 +1432,7 @@ class MultiCallSession:
     def getAverageBuildDuration(self, package: Union[str, PackageID], age: Optional[int]=None) -> VirtualCall[Optional[float]]:
         ...
 
-    def getBuild(self, buildInfo: BuildSpecifier, strict: bool=False) -> VirtualCall[BuildInfo]:
+    def getBuild(self, buildInfo: BuildSpecifier, strict: bool=False) -> VirtualCall[Optional[BuildInfo]]:
         ...
 
     def getBuildConfig(self, tag: Union[str, TagID], event: Optional[EventID]=None) -> VirtualCall[TagInfo]:
@@ -1449,13 +1453,13 @@ class MultiCallSession:
     def getBuildNotifications(self, userID: Union[str, UserID, None]=None) -> VirtualCall[Data]:
         ...
 
-    def getBuildroot(self, buildrootID: BuildrootID, strict: bool=False) -> VirtualCall[BuildrootInfo]:
+    def getBuildroot(self, buildrootID: BuildrootID, strict: bool=False) -> VirtualCall[Optional[BuildrootInfo]]:
         ...
 
     def getBuildrootListing(self, id: BuildrootID) -> VirtualCall[List[RPMInfo]]:
         ...
 
-    def getBuildTarget(self, info: Union[str, TargetID], event: Optional[EventID]=None, strict: bool=False) -> VirtualCall[TargetInfo]:
+    def getBuildTarget(self, info: Union[str, TargetID], event: Optional[EventID]=None, strict: bool=False) -> VirtualCall[Optional[TargetInfo]]:
         ...
 
     def getBuildTargets(self, info: Union[str, TargetID, None]=None, event: Optional[EventID]=None, buildTagID: Union[str, TagID, TagInfo, None]=None, destTagID: Union[str, TagID, TagInfo, None]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[TargetInfo]]:
@@ -1471,11 +1475,15 @@ class MultiCallSession:
         ...
 
     @overload
-    def getEvent(self, id: EventID) -> VirtualCall[EventInfo]:
+    def getEvent(self, id: EventID) -> VirtualCall[Optional[EventInfo]]:
         ...
 
     @overload
-    def getEvent(self, id: EventID, strict: bool=False) -> VirtualCall[EventInfo]:
+    def getEvent(self, id: EventID, strict: Literal[True]) -> VirtualCall[EventInfo]:
+        ...
+
+    @overload
+    def getEvent(self, id: EventID, strict: bool=False) -> VirtualCall[Optional[EventInfo]]:
         ...
 
     def getExternalRepo(self, info: Union[str, ExternalRepoID], strict: bool=False, event: Optional[EventID]=None) -> VirtualCall[ExternalRepoInfo]:
@@ -1493,7 +1501,7 @@ class MultiCallSession:
     def getHost(self, hostInfo: Union[str, HostID], strict: bool=False, event: Optional[EventID]=None) -> VirtualCall[HostInfo]:
         ...
 
-    def getImageArchive(self, archive_id: ArchiveID, strict: bool=False) -> VirtualCall[ArchiveInfo]:
+    def getImageArchive(self, archive_id: ArchiveID, strict: bool=False) -> VirtualCall[Optional[ArchiveInfo]]:
         ...
 
     def getImageBuild(self, buildInfo: BuildSpecifier, strict: bool=False) -> VirtualCall[Optional[Dict[str, BuildID]]]:

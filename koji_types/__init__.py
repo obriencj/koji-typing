@@ -77,6 +77,7 @@ __all__ = (
     "HistoryEntry",
     "HostID",
     "HostInfo",
+    "Identifier",
     "ListTasksOptions",
     "MavenInfo",
     "NamedID",
@@ -366,7 +367,7 @@ class ArchiveInfo(TypedDict):
     type_extensions: str
     """ space-delimited extensions shared by this archive's type """
 
-    type_id: int
+    type_id: ATypeID
     """ ID of the archive's type """
 
     type_name: str

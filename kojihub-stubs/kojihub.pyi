@@ -655,7 +655,7 @@ class HostExports:
             method: str,
             arglist: List,
             parent: TaskID,
-            **opts) -> int:
+            **opts) -> TaskID:
         ...
 
     def subtask2(
@@ -664,7 +664,7 @@ class HostExports:
             __taskopts: Data,
             __method: str,
             *args,
-            **opts) -> int:
+            **opts) -> TaskID:
         ...
 
     def tagBuild(
@@ -1123,7 +1123,7 @@ class RootExports:
     @staticmethod
     def createTag(
             name: str,
-            parent: Optional[Union[int, str]] = None,
+            parent: Optional[Union[str, TagID]] = None,
             arches: Optional[str] = None,
             perm: Optional[str] = None,
             locked: bool = False,
@@ -1378,7 +1378,7 @@ class RootExports:
             filename: Optional[str] = None,
             type_name: Optional[str] = None,
             type_id: Optional[ATypeID] = None,
-            strict: bool = False) -> ATypeInfo:
+            strict: bool = False) -> Optional[ATypeInfo]:
         ...
 
     @staticmethod
@@ -1394,7 +1394,7 @@ class RootExports:
     @staticmethod
     def getBuild(
             buildInfo: BuildSpecifier,
-            strict: bool = False) -> BuildInfo:
+            strict: bool = False) -> Optional[BuildInfo]:
         ...
 
     def getBuildConfig(
@@ -1433,7 +1433,7 @@ class RootExports:
     @staticmethod
     def getBuildroot(
             buildrootID: BuildrootID,
-            strict: bool = False) -> BuildrootInfo:
+            strict: bool = False) -> Optional[BuildrootInfo]:
         ...
 
     def getBuildrootListing(
@@ -1445,7 +1445,7 @@ class RootExports:
     def getBuildTarget(
             info: Union[str, TargetID],
             event: Optional[EventID] = None,
-            strict: bool = False) -> TargetInfo:
+            strict: bool = False) -> Optional[TargetInfo]:
         ...
 
     @staticmethod
@@ -1484,14 +1484,22 @@ class RootExports:
     @overload
     def getEvent(
             self,
-            id: EventID) -> EventInfo:
+            id: EventID) -> Optional[EventInfo]:
         ...
 
     @overload
     def getEvent(
             self,
             id: EventID,
-            strict: bool = False) -> EventInfo:
+            strict: Literal[True]) -> EventInfo:
+        # :since: koji 1.35
+        ...
+
+    @overload
+    def getEvent(
+            self,
+            id: EventID,
+            strict: bool = False) -> Optional[EventInfo]:
         # :since: koji 1.35
         ...
 
@@ -1531,7 +1539,7 @@ class RootExports:
     @staticmethod
     def getImageArchive(
             archive_id: ArchiveID,
-            strict: bool = False) -> ArchiveInfo:
+            strict: bool = False) -> Optional[ArchiveInfo]:
         ...
 
     @staticmethod
@@ -3401,19 +3409,19 @@ def get_build_targets(
 
 def get_build_type(
         buildInfo: Union[str, BuildID, BuildNVR, BuildInfo],
-        strict: bool = False) -> BTypeInfo:
+        strict: bool = False) -> Optional[BTypeInfo]:
     ...
 
 
 def get_buildroot(
         buildrootID: BuildrootID,
-        strict: bool = False) -> BuildrootInfo:
+        strict: bool = False) -> Optional[BuildrootInfo]:
     ...
 
 
 def get_channel(
         channelInfo: Union[str, ChannelID],
-        strict: bool = False) -> ChannelInfo:
+        strict: bool = False) -> Optional[ChannelInfo]:
     ...
 
 
@@ -3467,7 +3475,7 @@ def get_group_members(
 def get_host(
         hostInfo: Union[str, HostID],
         strict: bool = False,
-        event: Optional[EventID] = None) -> HostInfo:
+        event: Optional[EventID] = None) -> Optional[HostInfo]:
     ...
 
 
@@ -3481,7 +3489,7 @@ def get_id(
 
 def get_image_archive(
         archive_id: ArchiveID,
-        strict: bool = False) -> ArchiveInfo:
+        strict: bool = False) -> Optional[ArchiveInfo]:
     ...
 
 
@@ -3493,13 +3501,13 @@ def get_image_build(
 
 def get_maven_archive(
         archive_id: ArchiveID,
-        strict: bool = False) -> ArchiveInfo:
+        strict: bool = False) -> Optional[ArchiveInfo]:
     ...
 
 
 def get_maven_build(
         buildInfo: Union[str, BuildID],
-        strict: bool = False) -> Data:
+        strict: bool = False) -> Optional[Data]:
     # TODO: need a return typedict
     ...
 
@@ -3623,13 +3631,13 @@ def get_verify_class(
 
 def get_win_archive(
         archive_id: ArchiveID,
-        strict: bool = False) -> ArchiveInfo:
+        strict: bool = False) -> Optional[ArchiveInfo]:
     ...
 
 
 def get_win_build(
         buildInfo: Union[str, BuildID],
-        strict: bool = False) -> Data:
+        strict: bool = False) -> Optional[Data]:
     # TODO: need a return typedict
     ...
 
@@ -3999,7 +4007,7 @@ def name_or_id_clause(
 
 def new_build(
         data: Data,
-        strict: bool = False) -> BuildID:
+        strict: bool = False) -> Optional[BuildID]:
     ...
 
 
@@ -4021,7 +4029,7 @@ def new_maven_build(
 
 def new_package(
         name: str,
-        strict: bool = True) -> PackageID:
+        strict: bool = True) -> Optional[PackageID]:
     ...
 
 
@@ -4393,7 +4401,7 @@ def repo_expire_older(
 
 def repo_info(
         repo_id: RepoID,
-        strict: bool = False) -> RepoInfo:
+        strict: bool = False) -> Optional[RepoInfo]:
     ...
 
 
