@@ -36,8 +36,8 @@ kojihub.kojihub.HostExports.subtask2
 kojihub.kojixmlrpc.HandlerAccess.call
 
 
-# this is created by setup_logging1 but not pre-declared at the
-# module-level, so MyPy doesn't think it's available at runtime
+# this is created by setup_logging1 but is not pre-declared at the
+# module-level, so stubtest doesn't think it's available at runtime
 
 kojihub.kojixmlrpc.log_handler
 
