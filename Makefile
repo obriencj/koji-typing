@@ -14,7 +14,7 @@ VERSION := $(shell $(PYTHON) ./setup.py --version)
 
 WHEEL := dist/$(subst -,_,$(PROJECT))-$(VERSION)-py3-none-any.whl
 
-DIRS := koji-stubs koji_cli-stubs koji_types
+DIRS := koji-stubs kojihub-stubs koji_cli-stubs koji_types
 SOURCES := setup.cfg $(foreach d,$(DIRS),$(wildcard $(d)/*.py $(d)/*.pyi))
 
 
