@@ -5,28 +5,31 @@
 # when comparing to upstream git of koji, we won't use this list.
 
 
-# koji 1.35
+## koji 1.36
+# ...
 
-koji.ClientSession.hub_version
-koji.ClientSession.hub_version_str
-koji.DBHandler
-
-koji.daemon.TaskManager.checkAvailDelay
-koji.daemon.TaskManager.cleanDelayTimes
-
-koji.policy.MatchAllTest
-koji.policy.MatchAnyTest
-
-koji.tasks.RefuseTask
-koji.tasks.WaitrepoTask.handler
-
-koji.util.rmtree
-koji.util.RepoWatcher
-koji.util.SimpleProxyLogger
-
-koji_cli.commands.anon_handle_list_users
-koji_cli.commands.handle_request_repo
-koji_cli.commands.handle_wait_repo_request
+## koji 1.35
+#
+# koji.ClientSession.hub_version
+# koji.ClientSession.hub_version_str
+# koji.DBHandler
+#
+# koji.daemon.TaskManager.checkAvailDelay
+# koji.daemon.TaskManager.cleanDelayTimes
+#
+# koji.policy.MatchAllTest
+# koji.policy.MatchAnyTest
+#
+# koji.tasks.RefuseTask
+# koji.tasks.WaitrepoTask.handler
+#
+# koji.util.rmtree
+# koji.util.RepoWatcher
+# koji.util.SimpleProxyLogger
+#
+# koji_cli.commands.anon_handle_list_users
+# koji_cli.commands.handle_request_repo
+# koji_cli.commands.handle_wait_repo_request
 
 
 # The end.
