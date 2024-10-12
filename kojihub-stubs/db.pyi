@@ -111,13 +111,13 @@ class BulkUpdateProcessor:
             match_keys: Optional[List[str]] = None) -> None:
         ...
 
-    def get_sql(self) -> str:
+    def execute(self) -> int:
         ...
 
     def get_keys(self) -> Tuple[List[str], List[str]]:
         ...
 
-    def execute(self) -> int:
+    def get_sql(self) -> str:
         ...
 
 
@@ -132,16 +132,17 @@ class CursorWrapper:
     def __getattr__(self, key: str) -> Any:
         ...
 
-    def fetchone(self, *args, **kwargs) -> Optional[Tuple]:
+    def execute(
+            self,
+            operation: str,
+            parameters: Union[Data, Sequence] = (),
+            log_errors: bool = True) -> Any:
         ...
 
     def fetchall(self, *args, **kwargs) -> List[Tuple]:
         ...
 
-    def quote(
-            self,
-            operation: str,
-            parameters: Data) -> str:
+    def fetchone(self, *args, **kwargs) -> Optional[Tuple]:
         ...
 
     def preformat(
@@ -151,11 +152,10 @@ class CursorWrapper:
             -> Tuple[str, Union[Dict[str, Any], Sequence]]:
         ...
 
-    def execute(
+    def quote(
             self,
             operation: str,
-            parameters: Union[Data, Sequence] = (),
-            log_errors: bool = True) -> Any:
+            parameters: Data) -> str:
         ...
 
 
@@ -169,10 +169,10 @@ class DBWrapper:
     def __getattr__(self, key: str) -> Any:
         ...
 
-    def cursor(self, *args, **kw) -> CursorWrapper:
+    def close(self) -> None:
         ...
 
-    def close(self) -> None:
+    def cursor(self, *args, **kw) -> CursorWrapper:
         ...
 
 
@@ -189,10 +189,10 @@ class DeleteProcessor:
             values: Optional[Data] = None) -> None:
         ...
 
-    def get_values(self) -> Dict[str, Any]:
+    def execute(self) -> int:
         ...
 
-    def execute(self) -> int:
+    def get_values(self) -> Dict[str, Any]:
         ...
 
 
@@ -209,10 +209,10 @@ class InsertProcessor:
             rawdata: Optional[Data] = None):
         ...
 
-    def set(self, **kwargs) -> None:
+    def dup_check(self) -> Optional[bool]:
         ...
 
-    def rawset(self, **kwargs) -> None:
+    def execute(self) -> int:
         ...
 
     def make_create(
@@ -221,10 +221,10 @@ class InsertProcessor:
             user_id: Optional[UserID] = None) -> None:
         ...
 
-    def dup_check(self) -> Optional[bool]:
+    def rawset(self, **kwargs) -> None:
         ...
 
-    def execute(self) -> int:
+    def set(self, **kwargs) -> None:
         ...
 
 
@@ -262,16 +262,16 @@ class QueryProcessor:
     def countOnly(self, count: bool) -> None:
         ...
 
-    def singleValue(self, strict: bool = True) -> Optional[List]:
+    def execute(self) -> Optional[List]:
         ...
 
-    def execute(self) -> Optional[List]:
+    def executeOne(self, strict: bool = False) -> Optional[List]:
         ...
 
     def iterate(self) -> Iterator[List]:
         ...
 
-    def executeOne(self, strict: bool = False) -> Optional[List]:
+    def singleValue(self, strict: bool = True) -> Optional[List]:
         ...
 
 
@@ -293,11 +293,18 @@ class QueryView:
             opts: Optional[QueryProcessorOptions] = None):
         ...
 
-    @property
-    def query(self) -> QueryProcessor:
+    def check_opts(self) -> None:
         ...
 
-    def get_query(self) -> QueryProcessor:
+    def execute(self) -> Optional[List]:
+        ...
+
+    def executeOne(
+            self,
+            strict: bool = False) -> Optional[List]:
+        ...
+
+    def get_clauses(self) -> List[str]:
         ...
 
     def get_fields(
@@ -305,32 +312,25 @@ class QueryView:
             fields: Optional[List[str]]) -> Dict[str, str]:
         ...
 
-    def check_opts(self) -> None:
+    def get_joins(self) -> List[str]:
+        ...
+
+    def get_query(self) -> QueryProcessor:
+        ...
+
+    def iterate(self) -> Iterator[List]:
         ...
 
     def map_field(self, field: str) -> str:
         ...
 
-    def get_clauses(self):
-        ...
-
-    def get_joins(self):
-        ...
-
-    def execute(self):
-        ...
-
-    def executeOne(
-            self,
-            strict: bool = False):
-        ...
-
-    def iterate(self):
+    @property
+    def query(self) -> QueryProcessor:
         ...
 
     def singleValue(
             self,
-            strict: bool = True):
+            strict: bool = True) -> Optional[List]:
         ...
 
 
@@ -361,13 +361,10 @@ class UpdateProcessor:
             values: Optional[Data] = None) -> None:
         ...
 
+    def execute(self) -> int:
+        ...
+
     def get_values(self) -> Data:
-        ...
-
-    def set(self, **kwargs) -> None:
-        ...
-
-    def rawset(self, **kwargs) -> None:
         ...
 
     def make_revoke(
@@ -376,7 +373,10 @@ class UpdateProcessor:
             user_id: Optional[UserID] = None) -> None:
         ...
 
-    def execute(self) -> int:
+    def rawset(self, **kwargs) -> None:
+        ...
+
+    def set(self, **kwargs) -> None:
         ...
 
 
