@@ -290,7 +290,7 @@ class QueryView:
             self,
             clauses: Optional[Sequence[str]] = None,
             fields: Optional[Sequence[str]] = None,
-            opts: Optional[QueryProcessorOptions] = None):
+            opts: Optional[QueryProcessorOptions] = None) -> None:
         ...
 
     def check_opts(self) -> None:
@@ -335,6 +335,7 @@ class QueryView:
 
 
 class Savepoint:
+
     name: str
 
     def __init__(self, name: str) -> None:
