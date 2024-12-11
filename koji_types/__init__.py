@@ -1266,12 +1266,12 @@ class QueryOptions(TypedDict, total=False):
     format
     """
 
+    asList: bool
     countOnly: bool
+    group: str
+    limit: int
     order: str
     offset: int
-    limit: int
-    group: str
-    asList: bool
 
 
 class FilterOptions(TypedDict, total=False):

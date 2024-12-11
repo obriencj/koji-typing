@@ -32,7 +32,7 @@ from typing import (
 
 from koji_types import Data, EventID, UserID
 from koji_types.context import ThreadLocal
-from koji_types.db import QueryProcessorOptions
+from koji_types.hub import QueryProcessorOptions
 
 
 NAMED_RE: Pattern

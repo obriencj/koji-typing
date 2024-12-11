@@ -22,10 +22,21 @@ Koji Types
 
 from typing_extensions import TypedDict
 
+from . import QueryOptions
+
 
 __all__ = (
+    "QueryProcessorOptions",
     "SessionAuth",
 )
+
+
+class QueryProcessorOptions(QueryOptions):
+    """
+    Used by kojihub.db
+    """
+
+    rowLock: bool
 
 
 SessionAuth = TypedDict("SessionAuth", {
