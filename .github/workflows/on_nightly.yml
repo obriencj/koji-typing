@@ -15,6 +15,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Checkout koji
+        run: |
+          git clone --depth 1 https://pagure.io/koji.git tools/koji
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -22,11 +26,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
           sudo apt-get install libkrb5-dev
-          pip install tox tox-gh-actions
+          pip install tox
 
-      - name: Running tox
+      - name: Running mypy
         run: |
           tox -e koji-git kojihub
 
