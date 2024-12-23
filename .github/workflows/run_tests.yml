@@ -45,12 +45,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: https://pagure.io/koji.git
-          path: tools/koji
-          fetch-depth: 1
+      - name: Checkout koji
+        run: |
+          git clone --depth 1 https://pagure.io/koji.git tools/koji
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
