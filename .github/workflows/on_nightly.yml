@@ -29,9 +29,13 @@ jobs:
           sudo apt-get install libkrb5-dev
           pip install tox
 
-      - name: Running mypy
+      - name: Running mypy against koji from git
         run: |
-          tox -e koji-git kojihub
+          tox -e koji-git
+
+      - name: Running mypy against koji.hub from git
+        run: |
+          tox -e kojihub
 
 
 # The end.
