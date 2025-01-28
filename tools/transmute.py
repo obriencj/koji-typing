@@ -105,20 +105,18 @@ def inject_self(node):
 
 def pop_staticmethod(node):
     """
-    Looks for a @staticmethod decorator and removes it. Returns
+    Looks for a `@staticmethod` decorator and removes it. Returns
     True if we found one to remove, False if there wasn't such a
     decorator in the first place.
     """
 
     for offset, dec in enumerate(node.decorator_list):
         if isinstance(dec, Name) and dec.id == "staticmethod":
-            break
-    else:
-        return False
+            node.decorator_list = copy(node.decorator_list)
+            node.decorator_list.pop(offset)
+            return True
 
-    node.decorator_list = copy(node.decorator_list)
-    node.decorator_list.pop(offset)
-    return True
+    return False
 
 
 def pop_ellipsis(node):
@@ -135,6 +133,15 @@ def pop_ellipsis(node):
 
 
 def update_session(node, orig):
+    """
+    Copy methods from orig onto node. If a method is decorated as
+    a `@staticmethod`, it will be converted to a normal method with
+    the self argument injected in.
+    """
+
+    # our originals will have an ellipses body in order to still be
+    # well-formed python. We won't need that with the methods
+    # injected, so pop it off
     pop_ellipsis(node)
 
     for fn in orig.body:
@@ -149,6 +156,15 @@ def update_session(node, orig):
 
 
 def update_multicall(node, orig):
+    """
+    Copy methods from orig onto node. The method type signature
+    will be altered from an original return type of `X` to a new
+    return type of `VirtualCall[X]`
+    """
+
+    # our originals will have an ellipses body in order to still be
+    # well-formed python. We won't need that with the methods
+    # injected, so pop it off
     pop_ellipsis(node)
 
     vc = Name("VirtualCall")
