@@ -30,15 +30,19 @@ context: ThreadLocal
 
 class ThreadLocal:
 
-    def __delattr__(self, key: str) -> None:
-        ...
+    # Removed in koji 1.36
+    # def __delattr__(self, key: str) -> None:
+    #     ...
+    #
+    # def __getattr__(self, key: str) -> Any:
+    #     ...
+    #
+    # def __setattr__(self, key: str, value: Any) -> None:
+    #     ...
 
-    def __getattr__(self, key: str) -> Any:
+    def _threadclear(self) -> None:
+        # :since: koji 1.36
         ...
-
-    def __setattr__(self, key: str, value: Any) -> None:
-        ...
-
 
 
 # The end.
