@@ -140,6 +140,7 @@ handle_remove_tag: CLIHandler
 handle_remove_tag_inheritance: CLIHandler
 handle_remove_target: CLIHandler
 handle_request_repo: CLIHandler
+handle_reserve_cg: CLIHandler
 handle_restart_hosts: CLIHandler
 handle_resubmit: CLIHandler
 handle_revoke_cg_access: CLIHandler

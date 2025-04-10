@@ -6,7 +6,8 @@
 
 
 ## koji 1.36
-# ...
+koji_cli.commands.handle_reserve_cg
+
 
 ## koji 1.35
 #
