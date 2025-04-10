@@ -29,10 +29,12 @@ from koji.xmlrpcplug import ExtendedMarshaller
 from logging import Formatter, Handler
 from threading import Lock
 from typing import (
-    Any, Callable, Dict, List, NoReturn, Optional, Tuple, Type, )
+    Any, Callable, Dict, List, NoReturn, Optional, Tuple, Type, Union, )
 
 
 GLOBAL_HEADERS: List[Tuple[str, str]]
+
+config_map: List[List[Union[str, int, None]]]
 
 firstcall: bool
 firstcall_lock: Lock
