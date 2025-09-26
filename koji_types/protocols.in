@@ -35,7 +35,7 @@ from . import (
     TagGroupID, TagGroupInfo, TagID, TagInfo, TagInheritance,
     TagExternalRepos, TagPackageInfo, TagPackageSimple, TargetID,
     TargetInfo, TaskID, TaskInfo, UserGroup, UserID, UserInfo,
-    UserStatus, UserType, WinInfo, )
+    UserStatusValue, UserType, WinInfo, )
 from .arch import Arch
 
 from datetime import datetime

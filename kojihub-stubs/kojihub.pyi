@@ -41,7 +41,7 @@ from koji_types import (
     TagExternalRepos, TagFullInheritance, TagFullInheritanceEntry,
     TagGroupID, TagGroupInfo, TagID, TagInfo, TagInheritance,
     TagPackageInfo, TagPackageSimple, TargetID, TargetInfo, TaskID,
-    TaskInfo, TaskState, UserGroup, UserID, UserInfo, UserStatus,
+    TaskInfo, TaskState, UserGroup, UserID, UserInfo, UserStatusValue,
     UserType, WinInfo, )
 from koji_types.arch import Arch
 from logging import ERROR, INFO, WARNING, Logger
@@ -1135,7 +1135,7 @@ class RootExports:
     def createUser(
             self,
             username: str,
-            status: Optional[UserStatus] = None,
+            status: Optional[UserStatusValue] = None,
             krb_principal: Optional[str] = None) -> UserID:
         ...
 
@@ -4476,7 +4476,7 @@ def set_tag_update(
 
 def set_user_status(
         user: UserInfo,
-        status: UserStatus) -> None:
+        status: UserStatusValue) -> None:
     ...
 
 

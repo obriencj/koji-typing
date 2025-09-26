@@ -18,7 +18,7 @@ Koji Types - Client Session Protocol method declarations
 :author: Christopher O'Brien <obriencj@gmail.com>
 :license: GPL v3
 """
-from . import ArchiveFileInfo, ArchiveID, ArchiveInfo, ATypeID, ATypeInfo, BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR, BuildrootID, BuildrootInfo, BuildrootState, BuildState, BTypeInfo, ChangelogEntry, ChannelID, ChannelInfo, ChecksumType, CGID, CGInfo, CGInitInfo, Data, ExternalRepoID, ExternalRepoInfo, EventID, EventInfo, FaultInfo, FilterOptions, HostID, HostInfo, Identifier, ListTasksOptions, MavenInfo, NamedID, NotificationID, OldNew, PackageID, PackageInfo, PermID, PermInfo, POMInfo, QueryOptions, RepoID, RepoInfo, RepoOptions, RepoState, RPMDepType, RPMDepInfo, RPMFileInfo, RPMID, RPMInfo, RPMNVRA, RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo, TagGroupID, TagGroupInfo, TagID, TagInfo, TagInheritance, TagExternalRepos, TagPackageInfo, TagPackageSimple, TargetID, TargetInfo, TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserStatus, UserType, WinInfo
+from . import ArchiveFileInfo, ArchiveID, ArchiveInfo, ATypeID, ATypeInfo, BuildSpecifier, BuildID, BuildLogs, BuildInfo, BuildNVR, BuildrootID, BuildrootInfo, BuildrootState, BuildState, BTypeInfo, ChangelogEntry, ChannelID, ChannelInfo, ChecksumType, CGID, CGInfo, CGInitInfo, Data, ExternalRepoID, ExternalRepoInfo, EventID, EventInfo, FaultInfo, FilterOptions, HostID, HostInfo, Identifier, ListTasksOptions, MavenInfo, NamedID, NotificationID, OldNew, PackageID, PackageInfo, PermID, PermInfo, POMInfo, QueryOptions, RepoID, RepoInfo, RepoOptions, RepoState, RPMDepType, RPMDepInfo, RPMFileInfo, RPMID, RPMInfo, RPMNVRA, RPMSignature, RPMSigTag, SearchResult, SessionInfo, TagBuildInfo, TagGroupID, TagGroupInfo, TagID, TagInfo, TagInheritance, TagExternalRepos, TagPackageInfo, TagPackageSimple, TargetID, TargetInfo, TaskID, TaskInfo, UserGroup, UserID, UserInfo, UserStatusValue, UserType, WinInfo
 from .arch import Arch
 from datetime import datetime
 from koji import VirtualCall
@@ -154,7 +154,7 @@ class ClientSession:
     def createTag(self, name: str, parent: Optional[Union[str, TagID]]=None, arches: Optional[str]=None, perm: Optional[str]=None, locked: bool=False, maven_support: bool=False, maven_include_all: bool=False, extra: Optional[Dict[str, str]]=None) -> TagID:
         ...
 
-    def createUser(self, username: str, status: Optional[UserStatus]=None, krb_principal: Optional[str]=None) -> UserID:
+    def createUser(self, username: str, status: Optional[UserStatusValue]=None, krb_principal: Optional[str]=None) -> UserID:
         ...
 
     def createWinBuild(self, build_info: BuildSpecifier, win_info: WinInfo) -> None:
@@ -1298,7 +1298,7 @@ class MultiCallSession:
     def createTag(self, name: str, parent: Optional[Union[str, TagID]]=None, arches: Optional[str]=None, perm: Optional[str]=None, locked: bool=False, maven_support: bool=False, maven_include_all: bool=False, extra: Optional[Dict[str, str]]=None) -> VirtualCall[TagID]:
         ...
 
-    def createUser(self, username: str, status: Optional[UserStatus]=None, krb_principal: Optional[str]=None) -> VirtualCall[UserID]:
+    def createUser(self, username: str, status: Optional[UserStatusValue]=None, krb_principal: Optional[str]=None) -> VirtualCall[UserID]:
         ...
 
     def createWinBuild(self, build_info: BuildSpecifier, win_info: WinInfo) -> VirtualCall[None]:

@@ -37,9 +37,9 @@ from weakref import ReferenceType
 from xmlrpc.client import DateTime
 
 from koji_types import (
-    ArchiveInfo, BuildInfo, BuildNVR, FaultInfo, MavenInfo, POMInfo,
-    RepoInfo, RPMInfo, RPMSignature, RPMSigTag, TagInfo, TagGroupInfo,
-    TaskInfo,)
+    ArchiveInfo, BuildInfo, BuildNVR, FaultInfo, GOptions, MavenInfo,
+    POMInfo, RepoInfo, RPMInfo, RPMSignature, RPMSigTag, TagInfo,
+    TagGroupInfo, TaskInfo,)
 from koji_types.protocols import (
     ClientSession as ClientSessionProtocol,
     MultiCallSession as MultiCallSessionProtocol, )
@@ -1031,7 +1031,7 @@ def pom_to_maven_info(
 
 def read_config(
         profile_name: str,
-        user_config: Optional[str] = None) -> Dict[str, Any]:
+        user_config: Optional[str] = None) -> GOptions:
     ...
 
 

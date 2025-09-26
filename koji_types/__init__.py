@@ -36,7 +36,7 @@ from optparse import Values
 from typing import (
     Any, Callable, Dict, Generic, Iterable, List, NewType, Optional,
     Tuple, TypeVar, Union, )
-from typing_extensions import TypedDict
+from typing_extensions import TypeAlias, TypedDict
 
 
 __all__ = (
@@ -191,6 +191,9 @@ class AuthType(IntEnum):
     """ user authenticated via an SSL certificate """
 
 
+AuthTypeValue: TypeAlias = Union[AuthType, int]
+
+
 class BuildrootState(IntEnum):
     """
     Values for a BuildrootInfo's br_state
@@ -204,6 +207,9 @@ class BuildrootState(IntEnum):
     EXPIRED = BR_STATES['EXPIRED']
 
 
+BuildrootStateValue: TypeAlias = Union[BuildrootState, int]
+
+
 class BuildrootType(IntEnum):
     """
     Values for a BuildrootInfo's br_type
@@ -213,6 +219,9 @@ class BuildrootType(IntEnum):
 
     STANDARD = BR_TYPES['STANDARD']
     EXTERNAL = BR_TYPES['EXTERNAL']
+
+
+BuildrootTypeValue: TypeAlias = Union[BuildrootType, int]
 
 
 class BuildState(IntEnum):
@@ -248,6 +257,9 @@ class BuildState(IntEnum):
     """
 
 
+BuildStateValue: TypeAlias = Union[BuildState, int]
+
+
 class ChecksumType(IntEnum):
     """
     Supported checksum types
@@ -258,11 +270,17 @@ class ChecksumType(IntEnum):
     SHA256 = CHECKSUM_TYPES['sha256']
 
 
+ChecksumTypeValue: TypeAlias = Union[ChecksumType, int]
+
+
 class RepoState(IntEnum):
     INIT = REPO_STATES['INIT']
     READY = REPO_STATES['READY']
     EXPIRED = REPO_STATES['DELETED']
     PROBLEM = REPO_STATES['PROBLEM']
+
+
+RepoStateValue: TypeAlias = Union[RepoState, int]
 
 
 class RPMDepType(IntEnum):
@@ -276,12 +294,18 @@ class RPMDepType(IntEnum):
     SUPPLEMENT = DEP_SUPPLEMENT
 
 
+RPMDepTypeValue: TypeAlias = Union[RPMDepType, int]
+
+
 class RPMSigTag(IntEnum):
     DSA = RPM_SIGTAG_DSA
     GPG = RPM_SIGTAG_GPG
     MD5 = RPM_SIGTAG_MD5
     PGP = RPM_SIGTAG_PGP
     RSA = RPM_SIGTAG_RSA
+
+
+RPMSigTagValue: TypeAlias = Union[RPMSigTag, int]
 
 
 class TaskState(IntEnum):
@@ -291,6 +315,9 @@ class TaskState(IntEnum):
     CANCELED = TASK_STATES['CANCELED']
     ASSIGNED = TASK_STATES['ASSIGNED']
     FAILED = TASK_STATES['FAILED']
+
+
+TaskStateValue: TypeAlias = Union[TaskState, int]
 
 
 class UserStatus(IntEnum):
@@ -308,6 +335,9 @@ class UserStatus(IntEnum):
     """
 
 
+UserStatusValue: TypeAlias = Union[UserStatus, int]
+
+
 class UserType(IntEnum):
     """
     Valid values for the ``'usertype'`` item of a `UserInfo` dict
@@ -321,6 +351,9 @@ class UserType(IntEnum):
 
     GROUP = USERTYPES['GROUP']
     """ Account is a group """
+
+
+UserTypeValue: TypeAlias = Union[UserType, int]
 
 
 class ArchiveInfo(TypedDict):
