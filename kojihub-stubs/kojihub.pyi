@@ -2446,7 +2446,7 @@ class RootExports:
     def removeExternalRepoFromTag(
             self,
             tag_info: Union[str, TagID],
-            repo_info: int) -> None:
+            repo_info: Union[str, int]) -> None:
         ...
 
     @staticmethod
