@@ -84,7 +84,7 @@ class TimeOption(Option):
 
 def activate_session(
         session: ClientSession,
-        options: GOptions) -> None:
+        options: Union[GOptions, Dict[str, Any]]) -> None:
     ...
 
 
