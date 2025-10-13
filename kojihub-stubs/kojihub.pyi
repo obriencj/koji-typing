@@ -867,7 +867,7 @@ class RootExports:
             repo_info: Union[str, ExternalRepoID],
             priority: int,
             merge_mode: str = 'koji',
-            arches: Optional[List[Arch]] = None) -> None:
+            arches: Optional[str] = None) -> None:
         ...
 
     def addExternalRPM(
@@ -2157,7 +2157,7 @@ class RootExports:
     def listHosts(
             self,
             arches: Optional[List[str]] = None,
-            channelID: Optional[ChannelID] = None,
+            channelID: Union[str, ChannelID, None] = None,
             ready: Optional[bool] = None,
             enabled: Optional[bool] = None,
             userID: Optional[UserID] = None,
@@ -2166,9 +2166,9 @@ class RootExports:
 
     def listPackages(
             self,
-            tagID: Optional[TagID] = None,
-            userID: Optional[UserID] = None,
-            pkgID: Optional[PackageID] = None,
+            tagID: Union[str, TagID, None] = None,
+            userID: Union[str, UserID, None] = None,
+            pkgID: Union[str, PackageID, None] = None,
             prefix: Optional[str] = None,
             inherited: bool = False,
             with_dups: bool = False,
@@ -2541,10 +2541,19 @@ class RootExports:
             ts: Union[int, float]) -> None:
         ...
 
+    @overload
     def setInheritanceData(
             self,
             tag: Union[str, TagID],
             data: TagInheritance,
+            clear: bool = False) -> None:
+        ...
+
+    @overload
+    def setInheritanceData(
+            self,
+            tag: Union[str, TagID],
+            data: List[Dict[str, Any]],
             clear: bool = False) -> None:
         ...
 

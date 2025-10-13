@@ -44,7 +44,7 @@ class ClientSession:
     def addChannel(self, channel_name: str, description: Optional[str]=None) -> ChannelID:
         ...
 
-    def addExternalRepoToTag(self, tag_info: Union[str, TagID], repo_info: Union[str, ExternalRepoID], priority: int, merge_mode: str='koji', arches: Optional[List[Arch]]=None) -> None:
+    def addExternalRepoToTag(self, tag_info: Union[str, TagID], repo_info: Union[str, ExternalRepoID], priority: int, merge_mode: str='koji', arches: Optional[str]=None) -> None:
         ...
 
     def addExternalRPM(self, rpminfo: Data, external_repo: Union[str, ExternalRepoID], strict: bool=True) -> None:
@@ -624,10 +624,10 @@ class ClientSession:
     def listExternalRepos(self, info: Union[str, ExternalRepoID, None]=None, url: Optional[str]=None, event: Optional[EventID]=None, queryOpts: Optional[QueryOptions]=None) -> List[ExternalRepoInfo]:
         ...
 
-    def listHosts(self, arches: Optional[List[str]]=None, channelID: Optional[ChannelID]=None, ready: Optional[bool]=None, enabled: Optional[bool]=None, userID: Optional[UserID]=None, queryOpts: Optional[QueryOptions]=None) -> List[HostInfo]:
+    def listHosts(self, arches: Optional[List[str]]=None, channelID: Union[str, ChannelID, None]=None, ready: Optional[bool]=None, enabled: Optional[bool]=None, userID: Optional[UserID]=None, queryOpts: Optional[QueryOptions]=None) -> List[HostInfo]:
         ...
 
-    def listPackages(self, tagID: Optional[TagID]=None, userID: Optional[UserID]=None, pkgID: Optional[PackageID]=None, prefix: Optional[str]=None, inherited: bool=False, with_dups: bool=False, event: Optional[EventID]=None, queryOpts: Optional[QueryOptions]=None, with_owners: bool=True, with_blocked: bool=True) -> List[TagPackageInfo]:
+    def listPackages(self, tagID: Union[str, TagID, None]=None, userID: Union[str, UserID, None]=None, pkgID: Union[str, PackageID, None]=None, prefix: Optional[str]=None, inherited: bool=False, with_dups: bool=False, event: Optional[EventID]=None, queryOpts: Optional[QueryOptions]=None, with_owners: bool=True, with_blocked: bool=True) -> List[TagPackageInfo]:
         ...
 
     def listPackagesSimple(self, prefix: Optional[str]=None, queryOpts: Optional[QueryOptions]=None) -> List[TagPackageSimple]:
@@ -727,7 +727,7 @@ class ClientSession:
     def queryRPMSigs(self, rpm_id: Union[RPMID, str, BuildNVR, None]=None, sigkey: Optional[str]=None, queryOpts: Optional[QueryOptions]=None) -> List[RPMSignature]:
         ...
 
-    def removeExternalRepoFromTag(self, tag_info: Union[str, TagID], repo_info: int) -> None:
+    def removeExternalRepoFromTag(self, tag_info: Union[str, TagID], repo_info: Union[str, int]) -> None:
         ...
 
     def removeHostFromChannel(self, hostname: str, channel_name: str) -> None:
@@ -778,7 +778,12 @@ class ClientSession:
     def setBuildTimestamp(self, build: BuildSpecifier, ts: Union[int, float]) -> None:
         ...
 
+    @overload
     def setInheritanceData(self, tag: Union[str, TagID], data: TagInheritance, clear: bool=False) -> None:
+        ...
+
+    @overload
+    def setInheritanceData(self, tag: Union[str, TagID], data: List[Dict[str, Any]], clear: bool=False) -> None:
         ...
 
     def setTaskPriority(self, task_id: TaskID, priority: int, recurse: bool=True) -> None:
@@ -1188,7 +1193,7 @@ class MultiCallSession:
     def addChannel(self, channel_name: str, description: Optional[str]=None) -> VirtualCall[ChannelID]:
         ...
 
-    def addExternalRepoToTag(self, tag_info: Union[str, TagID], repo_info: Union[str, ExternalRepoID], priority: int, merge_mode: str='koji', arches: Optional[List[Arch]]=None) -> VirtualCall[None]:
+    def addExternalRepoToTag(self, tag_info: Union[str, TagID], repo_info: Union[str, ExternalRepoID], priority: int, merge_mode: str='koji', arches: Optional[str]=None) -> VirtualCall[None]:
         ...
 
     def addExternalRPM(self, rpminfo: Data, external_repo: Union[str, ExternalRepoID], strict: bool=True) -> VirtualCall[None]:
@@ -1768,10 +1773,10 @@ class MultiCallSession:
     def listExternalRepos(self, info: Union[str, ExternalRepoID, None]=None, url: Optional[str]=None, event: Optional[EventID]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[ExternalRepoInfo]]:
         ...
 
-    def listHosts(self, arches: Optional[List[str]]=None, channelID: Optional[ChannelID]=None, ready: Optional[bool]=None, enabled: Optional[bool]=None, userID: Optional[UserID]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[HostInfo]]:
+    def listHosts(self, arches: Optional[List[str]]=None, channelID: Union[str, ChannelID, None]=None, ready: Optional[bool]=None, enabled: Optional[bool]=None, userID: Optional[UserID]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[HostInfo]]:
         ...
 
-    def listPackages(self, tagID: Optional[TagID]=None, userID: Optional[UserID]=None, pkgID: Optional[PackageID]=None, prefix: Optional[str]=None, inherited: bool=False, with_dups: bool=False, event: Optional[EventID]=None, queryOpts: Optional[QueryOptions]=None, with_owners: bool=True, with_blocked: bool=True) -> VirtualCall[List[TagPackageInfo]]:
+    def listPackages(self, tagID: Union[str, TagID, None]=None, userID: Union[str, UserID, None]=None, pkgID: Union[str, PackageID, None]=None, prefix: Optional[str]=None, inherited: bool=False, with_dups: bool=False, event: Optional[EventID]=None, queryOpts: Optional[QueryOptions]=None, with_owners: bool=True, with_blocked: bool=True) -> VirtualCall[List[TagPackageInfo]]:
         ...
 
     def listPackagesSimple(self, prefix: Optional[str]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[TagPackageSimple]]:
@@ -1871,7 +1876,7 @@ class MultiCallSession:
     def queryRPMSigs(self, rpm_id: Union[RPMID, str, BuildNVR, None]=None, sigkey: Optional[str]=None, queryOpts: Optional[QueryOptions]=None) -> VirtualCall[List[RPMSignature]]:
         ...
 
-    def removeExternalRepoFromTag(self, tag_info: Union[str, TagID], repo_info: int) -> VirtualCall[None]:
+    def removeExternalRepoFromTag(self, tag_info: Union[str, TagID], repo_info: Union[str, int]) -> VirtualCall[None]:
         ...
 
     def removeHostFromChannel(self, hostname: str, channel_name: str) -> VirtualCall[None]:
@@ -1922,7 +1927,12 @@ class MultiCallSession:
     def setBuildTimestamp(self, build: BuildSpecifier, ts: Union[int, float]) -> VirtualCall[None]:
         ...
 
+    @overload
     def setInheritanceData(self, tag: Union[str, TagID], data: TagInheritance, clear: bool=False) -> VirtualCall[None]:
+        ...
+
+    @overload
+    def setInheritanceData(self, tag: Union[str, TagID], data: List[Dict[str, Any]], clear: bool=False) -> VirtualCall[None]:
         ...
 
     def setTaskPriority(self, task_id: TaskID, priority: int, recurse: bool=True) -> VirtualCall[None]:
