@@ -2545,7 +2545,7 @@ class RootExports:
     def setInheritanceData(
             self,
             tag: Union[str, TagID],
-            data: TagInheritance,
+            data: List[Dict[str, Any]],
             clear: bool = False) -> None:
         ...
 
@@ -2553,7 +2553,7 @@ class RootExports:
     def setInheritanceData(
             self,
             tag: Union[str, TagID],
-            data: List[Dict[str, Any]],
+            data: TagInheritance,
             clear: bool = False) -> None:
         ...
 

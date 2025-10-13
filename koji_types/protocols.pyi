@@ -779,11 +779,11 @@ class ClientSession:
         ...
 
     @overload
-    def setInheritanceData(self, tag: Union[str, TagID], data: TagInheritance, clear: bool=False) -> None:
+    def setInheritanceData(self, tag: Union[str, TagID], data: List[Dict[str, Any]], clear: bool=False) -> None:
         ...
 
     @overload
-    def setInheritanceData(self, tag: Union[str, TagID], data: List[Dict[str, Any]], clear: bool=False) -> None:
+    def setInheritanceData(self, tag: Union[str, TagID], data: TagInheritance, clear: bool=False) -> None:
         ...
 
     def setTaskPriority(self, task_id: TaskID, priority: int, recurse: bool=True) -> None:
@@ -1928,11 +1928,11 @@ class MultiCallSession:
         ...
 
     @overload
-    def setInheritanceData(self, tag: Union[str, TagID], data: TagInheritance, clear: bool=False) -> VirtualCall[None]:
+    def setInheritanceData(self, tag: Union[str, TagID], data: List[Dict[str, Any]], clear: bool=False) -> VirtualCall[None]:
         ...
 
     @overload
-    def setInheritanceData(self, tag: Union[str, TagID], data: List[Dict[str, Any]], clear: bool=False) -> VirtualCall[None]:
+    def setInheritanceData(self, tag: Union[str, TagID], data: TagInheritance, clear: bool=False) -> VirtualCall[None]:
         ...
 
     def setTaskPriority(self, task_id: TaskID, priority: int, recurse: bool=True) -> VirtualCall[None]:
