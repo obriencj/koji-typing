@@ -1031,7 +1031,7 @@ def pom_to_maven_info(
 
 def read_config(
         profile_name: str,
-        user_config: Optional[str] = None) -> GOptions:
+        user_config: Optional[str] = None) -> Dict[str, Any]:
     ...
 
 

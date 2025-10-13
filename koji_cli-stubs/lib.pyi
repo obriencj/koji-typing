@@ -29,7 +29,7 @@ from koji_types import (
     RPMInfo, TaskInfo, )
 from optparse import Option, OptionParser, Values
 from typing import (
-    Any, Callable, Dict, List, NoReturn, Optional, Tuple, Type, )
+    Any, Callable, Dict, List, NoReturn, Optional, Tuple, Type, Union, )
 
 
 categories: Dict[str, str]
@@ -148,7 +148,7 @@ def get_usage_str(usage: str) -> str:
 
 def ensure_connection(
         session: ClientSession,
-        options: Optional[GOptions] = None) -> None:
+        options: Union[GOptions, Dict[str, Any], None] = None) -> None:
     ...
 
 
