@@ -6,7 +6,12 @@
 
 
 ## koji 1.36
+
 koji_cli.commands.handle_reserve_cg
+koji_cli.commands.handle_remove_group_pkg
+koji_cli.commands.handle_remove_group_req
+koji_cli.commands.handle_rename_sig
+koji_cli.commands.handle_unblock_group
 kojihub.kojixmlrpc.config_map
 
 
