@@ -132,6 +132,8 @@ handle_prune_signed_copies: CLIHandler
 handle_regen_repo: CLIHandler
 handle_remove_external_repo: CLIHandler
 handle_remove_group: CLIHandler
+handle_remove_group_pkg: CLIHandler
+handle_remove_group_req: CLIHandler
 handle_remove_host_from_channel: CLIHandler
 handle_remove_notification: CLIHandler
 handle_remove_pkg: CLIHandler
@@ -139,6 +141,7 @@ handle_remove_sig: CLIHandler
 handle_remove_tag: CLIHandler
 handle_remove_tag_inheritance: CLIHandler
 handle_remove_target: CLIHandler
+handle_rename_sig: CLIHandler
 handle_request_repo: CLIHandler
 handle_reserve_cg: CLIHandler
 handle_restart_hosts: CLIHandler
@@ -155,6 +158,7 @@ handle_spin_appliance: CLIHandler
 handle_spin_livecd: CLIHandler
 handle_spin_livemedia: CLIHandler
 handle_tag_build: CLIHandler
+handle_unblock_group: CLIHandler
 handle_unblock_group_pkg: CLIHandler
 handle_unblock_group_req: CLIHandler
 handle_unblock_notification: CLIHandler
