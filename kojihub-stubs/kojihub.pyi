@@ -900,10 +900,20 @@ class RootExports:
             force: bool = False) -> None:
         ...
 
+    @overload
     def addRPMSig(
             self,
             an_rpm: str,
             data: bytes) -> None:
+        ...
+
+    @overload
+    def addRPMSig(
+            self,
+            an_rpm: str,
+            data: bytes,
+            sigkey: Optional[str] = None) -> None:
+        # :since: koji 1.36
         ...
 
     def addUserKrbPrincipal(
@@ -1015,7 +1025,7 @@ class RootExports:
             target: str,
             opts: Optional[Data] = None,
             priority: Optional[int] = None,
-            channel: str = 'maven') -> int:
+            channel: Optional[str] = ...) -> int:
         ...
 
     @staticmethod
@@ -2058,10 +2068,20 @@ class RootExports:
             typeInfo: Data) -> ArchiveInfo:
         ...
 
+    @overload
     def importRPM(
             self,
             path: str,
             basename: str) -> RPMInfo:
+        ...
+
+    @overload
+    def importRPM(
+            self,
+            path: str,
+            basename: str,
+            sigkey: Optional[str] = None) -> RPMInfo:
+        # :since: koji 1.36
         ...
 
     @staticmethod
@@ -2113,6 +2133,7 @@ class RootExports:
             queryOpts: Optional[QueryOptions] = None) -> List[BuildrootInfo]:
         ...
 
+    @overload
     def listBuilds(
             self,
             packageID: Optional[PackageID] = None,
@@ -2132,6 +2153,32 @@ class RootExports:
             pattern: Optional[str] = None,
             cgID: Optional[CGID] = None,
             draft: Optional[bool] = None) -> List[BuildInfo]:
+        ...
+
+    @overload
+    def listBuilds(
+            self,
+            packageID: Optional[PackageID] = None,
+            userID: Optional[UserID] = None,
+            taskID: Optional[TaskID] = None,
+            prefix: Optional[str] = None,
+            state: Optional[BuildState] = None,
+            volumeID: Optional[int] = None,
+            source: Optional[str] = None,
+            createdBefore: Optional[str] = None,
+            createdAfter: Optional[str] = None,
+            completeBefore: Optional[str] = None,
+            completeAfter: Optional[str] = None,
+            type: Optional[str] = None,
+            typeInfo: Optional[Dict] = None,
+            queryOpts: Optional[QueryOptions] = None,
+            pattern: Optional[str] = None,
+            cgID: Optional[CGID] = None,
+            draft: Optional[bool] = None,
+            promotedBefore: Optional[str] = None,
+            promotedAfter: Optional[str] = None,
+            promoter: Optional[UserID] = None) -> List[BuildInfo]:
+        # :since: koji 1.36
         ...
 
     @staticmethod
@@ -2335,7 +2382,7 @@ class RootExports:
             target: str,
             opts: Optional[Data] = None,
             priority: Optional[int] = None,
-            channel: str = 'maven') -> TaskID:
+            channel: Optional[str] = ...) -> TaskID:
         ...
 
     def mavenEnabled(self) -> bool:
@@ -2464,6 +2511,13 @@ class RootExports:
     @staticmethod
     def removeVolume(
             volume: str) -> None:
+        ...
+
+    def renameRPMSig(
+            self,
+            rpminfo: Union[str, RPMID, RPMNVRA],
+            oldkey: str,
+            newkey: str) -> None:
         ...
 
     @staticmethod
@@ -2711,7 +2765,7 @@ class RootExports:
             target: str,
             opts: Optional[Data] = None,
             priority: Optional[int] = None,
-            channel: str = 'vm') -> int:
+            channel: Optional[str] = ...) -> int:
         ...
 
     def winEnabled(self) -> bool:
@@ -2723,7 +2777,7 @@ class RootExports:
             url: str,
             target: str,
             priority: Optional[int] = None,
-            channel: str = 'maven',
+            channel: Optional[str] = ...,
             opts: Optional[Data] = None) -> TaskID:
         ...
 
@@ -2990,7 +3044,8 @@ def add_host_to_channel(
 
 def add_rpm_sig(
         an_rpm: str,
-        sighdr: bytes) -> None:
+        sighdr: bytes,
+        sigkey: Optional[str] = None) -> None:
     ...
 
 
@@ -3124,11 +3179,12 @@ def check_policy(
     ...
 
 
-def check_rpm_sig(
-        an_rpm: str,
-        sigkey: str,
-        sighdr: bytes) -> None:
-    ...
+# Removed in 1.36
+# def check_rpm_sig(
+#         an_rpm: str,
+#         sigkey: str,
+#         sighdr: bytes) -> None:
+#     ...
 
 
 def check_tag_access(
@@ -3307,6 +3363,12 @@ def edit_user(
         userInfo: Union[str, UserID],
         name: Optional[str] = None,
         krb_principal_mappings: Optional[List[OldNew]] = None) -> None:
+    ...
+
+
+def ensure_draft_backlink(
+        old_binfo: BuildInfo,
+        new_binfo: Optional[BuildInfo] = None) -> None:
     ...
 
 
@@ -4391,6 +4453,13 @@ def rename_channel(
     ...
 
 
+def rename_rpm_sig(
+        rpminfo: Union[str, RPMID, RPMNVRA],
+        oldkey: str,
+        newkey: str) -> None:
+    ...
+
+
 def repo_delete(
         repo_id: RepoID) -> int:
     ...
@@ -4524,6 +4593,11 @@ def untagged_builds(
         name: Optional[str] = None,
         queryOpts: Optional[QueryOptions] = None,
         draft: Optional[bool] = None) -> List[BuildNVR]:
+    ...
+
+
+def validate_sigkey_value(
+        sigkey: str) -> None:
     ...
 
 

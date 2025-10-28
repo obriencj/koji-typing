@@ -12,7 +12,14 @@ koji_cli.commands.handle_remove_group_pkg
 koji_cli.commands.handle_remove_group_req
 koji_cli.commands.handle_rename_sig
 koji_cli.commands.handle_unblock_group
+
 kojihub.kojixmlrpc.config_map
+
+kojihub.add_rpm_sig
+kojihub.ensure_draft_backlink
+kojihub.rename_rpm_sig
+kojihub.validate_sigkey_value
+kojihub.RootExports.renameRPMSig
 
 
 ## koji 1.35
